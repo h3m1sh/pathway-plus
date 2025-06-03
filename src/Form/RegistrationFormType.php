@@ -38,15 +38,15 @@ class RegistrationFormType extends AbstractType
                 'required' => false,
                 'attr' => ['class' => 'form-control'],
             ])
-            ->add('roles', ChoiceType::class, [
-                'label' => 'Account Type',
-                'choices' => [
-                    'Student' => 'ROLE_STUDENT',
-                    'Administrator' => 'ROLE_ADMIN',
-                ],
-                'data' => 'ROLE_STUDENT',
-                'attr' => ['class' => 'form-control']
-            ])
+//            ->add('roles', ChoiceType::class, [
+//                'label' => 'Account Type',
+//                'choices' => [
+//                    'Student' => 'ROLE_STUDENT',
+//                    'Administrator' => 'ROLE_ADMIN',
+//                ],
+//                'data' => 'ROLE_STUDENT',
+//                'attr' => ['class' => 'form-control']
+//            ])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,

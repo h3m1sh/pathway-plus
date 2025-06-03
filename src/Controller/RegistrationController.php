@@ -14,7 +14,7 @@ use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 
 final class RegistrationController extends AbstractController
 {
-    #[Route('/registration', name: 'app_registration')]
+    #[Route('/registration', name: 'app_register')]
     public function register(
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
@@ -32,9 +32,8 @@ final class RegistrationController extends AbstractController
             // Hash the password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
-            // Set the role
-            $role = $form->get('role')->getData();
-            $user->setRoles([$role]);
+            // Set default role to student
+            $user->setRoles(['ROLE_STUDENT']);
 
             // Persist the user
             $entityManager->persist($user);
@@ -45,7 +44,7 @@ final class RegistrationController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        return $this->render('registration/index.html.twig', [
+        return $this->render('registration/register.html.twig', [
             'registrationForm' => $form,
         ]);
     }
