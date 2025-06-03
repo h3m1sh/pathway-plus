@@ -17,6 +17,7 @@
         "build": "encore production --progress"
     },
     "dependencies": {
+        "@symfony/stimulus-bridge": "^4.0.1",
         "bootstrap": "^5.3.6",
         "chartjs": "^0.3.24"
     }
