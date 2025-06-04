@@ -42,7 +42,7 @@ class DashboardController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function adminDashboard(): Response
     {
-        return $this->render('admin/admin.html.twig', [
+        return $this->render('admin/skill.html.twig', [
             'user' => $this->getUser(),
         ]);
     }
