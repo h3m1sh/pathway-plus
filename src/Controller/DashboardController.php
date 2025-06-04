@@ -26,9 +26,12 @@ class DashboardController extends AbstractController
     {
         $user = $this->getUser();
 
-        if ($user->isAdmin()) {
-            return $this->redirectToRoute('admin_dashboard');
-        }
+
+//        Redirect to admin dashboard if user is admin
+
+//        if ($user->isAdmin()) {
+//            return $this->redirectToRoute('admin_dashboard');
+//        }
 
         return $this->render('dashboard/index.html.twig', [
             'user' => $user,
@@ -39,7 +42,7 @@ class DashboardController extends AbstractController
     #[IsGranted('ROLE_ADMIN')]
     public function adminDashboard(): Response
     {
-        return $this->render('dashboard/admin.html.twig', [
+        return $this->render('admin/admin.html.twig', [
             'user' => $this->getUser(),
         ]);
     }

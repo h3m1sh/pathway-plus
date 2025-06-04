@@ -1,0 +1,200 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Pathway+ Project Rules for Cursor IDE
+
+## 🎯 Project Overview
+You are working on Pathway+, a Symfony-based web application for higher education students to track micro-credentials and receive career pathway recommendations. The project combines skill tracking with personalized career guidance through an intuitive dashboard interface.
+
+## 📋 Development Workflow Rules
+
+### Task Management
+- Complete ONE task at a time - no parallel feature development
+- Each task should be completable within 1-2 hours maximum
+- Break large features into smaller, testable chunks
+- Always test functionality before moving to the next task
+
+### Git Workflow (MANDATORY)
+- Commit after EVERY completed task, no matter how small
+- Use descriptive commit messages following this format:
+  - `feat: add skill passport widget to dashboard`
+  - `fix: resolve gap analysis calculation bug`
+  - `refactor: optimize job role query performance`
+  - `docs: update API documentation for micro-credentials`
+- Never work on multiple features in the same branch
+- Push commits frequently to avoid losing work
+- Create feature branches for major components:
+  - `feature/admin-crud`
+  - `feature/dashboard-widgets`
+  - `feature/career-roadmap`
+
+## 🏗️ Technical Standards  
+
+### Symfony Best Practices
+- Follow Symfony directory structure religiously
+- Use proper service configuration and dependency injection
+- Implement proper error handling with try-catch blocks
+- Use Symfony forms for all user input
+- Utilize Symfony's security component for authentication/authorization
+- Always use environment variables for configuration (DATABASE_URL, etc.)
+
+### PHP Code Standards
+- Follow PSR-12 coding standards
+- Use strict typing: `declare(strict_types=1);`
+- Type hint all method parameters and return types
+- Use meaningful variable and method names
+- Keep methods under 20 lines when possible
+- Document complex business logic with comments
+
+### Doctrine ORM Rules
+- Always use migrations for database changes
+- Define proper entity relationships with annotations
+- Use repository pattern for custom queries
+- Implement proper cascade options for related entities
+- Never use raw SQL unless absolutely necessary
+- Always validate data before persisting
+
+### Twig Template Guidelines
+- Keep templates clean and semantic
+- Use template inheritance properly (base.html.twig)
+- Extract reusable components into separate templates
+- Use Twig filters for data formatting
+- Keep logic minimal in templates - move to controllers/services
+
+### Frontend Standards
+- Use Bootstrap classes consistently
+- Keep custom CSS minimal and organized
+- Chart.js implementations should be responsive
+- JavaScript should be unobtrusive and progressively enhanced
+- Always test responsive design on mobile devices
+
+## 🌐 External API Integration Rules
+### careers.govt.nz API Guidelines
+- Store API keys securely in environment variables
+- Implement proper error handling for API failures
+- Cache API responses to avoid rate limiting
+- Create dedicated service classes for API interactions
+- Always validate and sanitize external API data
+- Implement fallback behavior when API is unavailable
+- Log API usage for monitoring and debugging
+
+## 🔒 Security Requirements
+- Validate and sanitize ALL user input
+- Use CSRF protection on all forms
+- Implement proper role-based access control (Student/Admin)
+- Never expose sensitive data in templates or APIs
+- Use Symfony's built-in security features
+
+## 🧪 Testing Approach
+- Test each widget/feature immediately after implementation
+- Manually test user flows before committing
+- Test with different user roles (Student/Admin)
+- Verify responsive design on different screen sizes
+- Test database operations with various data scenarios
+
+## 📁 File Organization
+```
+src/
+├── Controller/          # Keep controllers thin, business logic in services
+├── Entity/             # Doctrine entities with proper annotations
+├── Form/               # Symfony form types
+├── Repository/         # Custom database queries
+├── Service/            # Business logic and calculations
+└── Security/           # Custom security voters if needed
+
+templates/
+├── base.html.twig      # Main layout
+├── dashboard/          # Student dashboard templates
+├── admin/              # Admin CRUD templates
+└── components/         # Reusable template parts
+
+public/
+├── css/               # Custom styles (minimal)
+├── js/                # Custom JavaScript
+└── images/            # Badge icons and assets
+```
+
+## 🎨 Dashboard Widget Development Rules
+- Each widget should be a separate Twig template component
+- Widgets must be responsive and mobile-friendly
+- Use Chart.js for all data visualizations
+- Implement loading states for dynamic content
+- Cache expensive calculations when possible
+- Each widget should handle empty/no-data states gracefully
+
+## 📊 Data Handling
+- Always validate data relationships before saving
+- Use Doctrine transactions for multi-entity operations
+- Implement proper error messages for users
+- Cache frequently accessed data (job roles, skills, API responses)
+- Optimize database queries to avoid N+1 problems
+- Handle external API data integration carefully with proper validation
+- Implement data export functionality (PDF/CSV) with proper formatting
+
+## 🚀 Performance Guidelines
+- Minimize database queries in dashboard widgets
+- Use Symfony's profiler to identify bottlenecks
+- Optimize Chart.js configurations for smooth rendering
+- Implement pagination for large data sets
+- Use Symfony's cache component for expensive operations
+- Cache external API responses with appropriate TTL
+- Optimize AI feature performance to avoid blocking UI
+- Monitor and limit API calls to prevent rate limiting
+
+## 🐛 Debugging Rules
+- Use Symfony's debug toolbar during development
+- Log important business logic decisions
+- Never commit debug code or console.log statements
+- Use proper exception handling with meaningful messages
+- Test error scenarios (missing data, invalid input)
+
+## 📝 Documentation Requirements
+- Comment complex business logic
+- Document API endpoints if implementing stretch features
+- Update README.md with setup instructions
+- Document any custom Twig functions or filters
+- Keep inline comments for future developers
+
+## 🔄 Weekly Milestone Tracking
+- **Week 1: Setup & Admin Panel**
+  - ✅ Symfony project, Git, authentication (Student/Admin roles)
+  - ✅ Base layout (Twig + Bootstrap), entity models, Admin CRUD
+  - 🔌 Start careers.govt.nz API access setup
+- **Week 2: Student Dashboard Core**  
+  - ✅ Dashboard layout and core widgets (Skill Passport, Recently Earned, Profile)
+  - 🔄 Real-time data integration
+  - 🔌 API-based Career Selector with careers.govt.nz integration
+- **Week 3: Career Logic & Analytics**
+  - ✅ Career Roadmap, Gap Analysis, Suggested Next Skills widgets
+  - 📊 Progress Meter with Chart.js visualizations
+  - 🔍 Enhanced suggestions using careers.govt.nz data
+- **Week 4: Visual Polish & Stretch Features**
+  - 💅 Performance optimization and visual improvements
+  - 🔌 Complete careers.govt.nz API integration
+  - 🤖 Optional AI features (personalized suggestions, chatbot, NLP job mapping)
+  - 📤 PDF/CSV export functionality
+- **Week 5: Testing, Feedback & Launch**
+  - 🧪 Usability testing, accessibility, bug fixes
+  - 📄 Documentation and demo preparation
+  - 📥 Feedback collection and future roadmap planning
+
+## 🚫 What NOT to Do
+- Never skip database migrations
+- Don't hardcode configuration values
+- Avoid mixing business logic in controllers
+- Don't commit untested code
+- Never ignore Symfony security warnings
+- Don't create overly complex Twig templates
+- Avoid direct database access outside repositories
+
+## 💡 When Stuck
+1. Check Symfony documentation first
+2. Review similar implementations in the codebase
+3. Test with simple data before adding complexity
+4. Break the problem into smaller steps
+5. Commit working partial solutions
+6. Document the issue and attempted solutions
+
+Remember: This project aims to help students visualize their career progression. Every feature should contribute to that goal with a clean, intuitive user experience.

@@ -58,9 +58,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $studentId = null;
 
+    /**
+     * @var Collection<int, StudentProgress>
+     */
+    #[ORM\OneToMany(targetEntity: StudentProgress::class, mappedBy: 'student')]
+    private Collection $studentProgress;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
+        $this->studentProgress = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -217,6 +224,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeRole(string $role): static
     {
         $this->roles = array_filter($this->roles, fn($r) => $r !== $role);
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, StudentProgress>
+     */
+    public function getStudentProgress(): Collection
+    {
+        return $this->studentProgress;
+    }
+
+    public function addStudentProgress(StudentProgress $studentProgress): static
+    {
+        if (!$this->studentProgress->contains($studentProgress)) {
+            $this->studentProgress->add($studentProgress);
+            $studentProgress->setStudent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStudentProgress(StudentProgress $studentProgress): static
+    {
+        if ($this->studentProgress->removeElement($studentProgress)) {
+            // set the owning side to null (unless already changed)
+            if ($studentProgress->getStudent() === $this) {
+                $studentProgress->setStudent(null);
+            }
+        }
+
         return $this;
     }
 }
