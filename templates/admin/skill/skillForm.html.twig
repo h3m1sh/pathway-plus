@@ -1,0 +1,165 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ skill.id ? 'Edit Skill' : 'Create New Skill' }}
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-cogs me-2"></i>
+                            {{ skill.id ? 'Edit Skill' : 'Create New Skill' }}
+                    </h4>
+                </div>
+
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'needs-validation'}}) }}
+
+                    {# Skill Name Field #}
+                    <div class="mb-3">
+                        {{ form_label(form.name, 'Skill Name', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                        {{ form_widget(form.name, {
+                        'attr': {
+                        'class': 'form-control' ~ (form_errors(form.name) ? ' is-invalid' : ''),
+                        'placeholder': 'Enter skill name (e.g., Python Programming)'
+                        }
+                        }) }}
+                        {% if form_errors(form.name) %}
+                        <div class="invalid-feedback">
+                            {{ form_errors(form.name) }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {# Skill Category Field #}
+                    <div class="mb-3">
+                        {{ form_label(form.category, 'Skill Category', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                        {{ form_widget(form.category, {
+                        'attr': {
+                        'class': 'form-select' ~ (form_errors(form.category) ? ' is-invalid' : '')
+                        }
+                        }) }}
+                        {% if form_errors(form.category) %}
+                        <div class="invalid-feedback">
+                            {{ form_errors(form.category) }}
+                        </div>
+                        {% endif %}
+
+                    </div>
+
+                    {# Skill Difficulty Field #}
+                    <div class="mb-3">
+                        {{ form_label(form.difficulty, 'Skill Difficulty', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                        {{ form_widget(form.difficulty, {
+                        'attr': {
+                        'class': 'form-select' ~ (form_errors(form.difficulty) ? ' is-invalid' : '')
+                        }
+                        }) }}
+                        {% if form_errors(form.difficulty) %}
+                        <div class="invalid-feedback">
+                            {{ form_errors(form.difficulty) }}
+                        </div>
+                        {% endif %}
+
+                    </div>
+
+                    {# Skill Description Field #}
+                    <div class="mb-4">
+                        {{ form_label(form.description, 'Skill Description', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                        {{ form_widget(form.description, {
+                        'attr': {
+                        'class': 'form-control' ~ (form_errors(form.description) ? ' is-invalid' : ''),
+                        'rows': '4',
+                        'placeholder': 'Provide a detailed description of this skill, including key competencies and applications...'
+                        }
+                        }) }}
+                        {% if form_errors(form.description) %}
+                        <div class="invalid-feedback">
+                            {{ form_errors(form.description) }}
+                        </div>
+                        {% endif %}
+
+                    </div>
+
+                    {# Submit Button #}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ path('app_admin_skill_new') }}" class="btn btn-outline-secondary me-md-2">
+                            <i class="fas fa-times me-1"></i>
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn text-white" style="background-color: #0C6EFD; border-color: #0C6EFD;">
+                            <i class="fas fa-save me-1"></i>
+                            Save Skill
+                        </button>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+            {# Display general form errors if any #}
+            {% if form_errors(form) %}
+            <div class="alert alert-danger mt-3" role="alert">
+                <h6 class="alert-heading">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    Please correct the following errors:
+                </h6>
+                {{ form_errors(form) }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{# Custom CSS for enhanced styling #}
+<style>
+    .card {
+        border: none;
+        border-radius: 12px;
+    }
+
+    .card-header {
+        border-radius: 12px 12px 0 0 !important;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #0C6EFD;
+        box-shadow: 0 0 0 0.2rem rgba(12, 110, 253, 0.25);
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+        transition: all 0.2s ease-in-out;
+    }
+
+    .form-label {
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-text {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 15px;
+        }
+
+        .card {
+            margin: 0 10px;
+        }
+
+        .d-grid .btn {
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}

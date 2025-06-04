@@ -92,6 +92,7 @@
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                             <form method="post" action="{{ path('app_admin_skill_delete', {'id': skill.id}) }}" style="display: inline-block;">
+                                                <input type="hidden" name="_method" value="DELETE">
                                                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ skill.id) }}">
                                                 <button type="submit" class="btn btn-danger">Delete</button>
                                             </form>
