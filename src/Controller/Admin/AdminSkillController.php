@@ -14,12 +14,19 @@ use Doctrine\ORM\EntityManagerInterface;
 final class AdminSkillController extends AbstractController
 {
     #[Route('/admin/skill', name: 'app_admin_skill')]
-    public function index(SkillRepository $repository): Response
+    public function index(SkillRepository $repository, Request $request): Response
     {
-        $skills = $repository->findAll();
+        $page = $request->query->getInt('page', 1);
+        $itemsPerPage = 5;
+        
+        $skills = $repository->findPaginatedByCategory($page, $itemsPerPage);
 
         return $this->render('admin/skill/skill.html.twig', [
-            'skills' => $skills,
+            'skills' => $skills->getCurrentPageResults(),
+            'currentPage' => $skills->getCurrentPage(),
+            'totalPages' => $skills->getNbPages(),
+            'totalItems' => $skills->getNbResults(),
+            'itemsPerPage' => $itemsPerPage,
         ]);
     }
 
@@ -62,6 +69,8 @@ final class AdminSkillController extends AbstractController
             return $this->redirectToRoute('app_admin_skill');
         }
 
+
+
         return $this->render('admin/skill/skillForm.html.twig', [
             'skill' => $skill,
             'form' => $form->createView(),
@@ -99,10 +108,12 @@ final class AdminSkillController extends AbstractController
     {
         $skill = $skillRepository->find($id);
 
+
         if (!$skill) {
             throw $this->createNotFoundException('Skill not found');
         }
-        
+
+
         $entityManager->remove($skill);
         $entityManager->flush();
         return $this->redirectToRoute('app_admin_skill');

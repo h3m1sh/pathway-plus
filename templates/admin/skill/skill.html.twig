@@ -117,10 +117,69 @@
             {% if skills|length > 0 %}
                 <div class="card-footer bg-white py-3">
                     <div class="row align-items-center">
-                        <div class="col-md-6">
-                            <small class="text-muted">Showing {{ skills|length }} skill{{ skills|length > 1 ? 's' : '' }}</small>
+                        <div class="col-lg-4">
+                            <small class="text-muted">
+                                Showing {{ ((currentPage - 1) * itemsPerPage + 1) }} to {{ min(currentPage * itemsPerPage, totalItems) }} of {{ totalItems }} skill{{ totalItems != 1 ? 's' : '' }}
+                            </small>
                         </div>
-                        <div class="col-md-6 text-md-end">
+                        <div class="col-lg-4 text-center">
+                            {% if totalPages > 1 %}
+                                <nav aria-label="Skills pagination">
+                                    <ul class="pagination pagination-sm justify-content-center mb-0">
+                                        <!-- Previous Button -->
+                                        <li class="page-item {{ currentPage <= 1 ? 'disabled' : '' }}">
+                                            <a class="page-link" href="{{ currentPage > 1 ? path('app_admin_skill', {'page': currentPage - 1}) : '#' }}" aria-label="Previous">
+                                                <i class="bi bi-chevron-left"></i>
+                                            </a>
+                                        </li>
+
+                                        <!-- Page Numbers -->
+                                        {% set startPage = max(1, currentPage - 2) %}
+                                        {% set endPage = min(totalPages, currentPage + 2) %}
+
+                                        {% if startPage > 1 %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ path('app_admin_skill_index', {'page': 1}) }}">1</a>
+                                            </li>
+                                            {% if startPage > 2 %}
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">...</span>
+                                                </li>
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% for page in startPage..endPage %}
+                                            <li class="page-item {{ page == currentPage ? 'active' : '' }}">
+                                                {% if page == currentPage %}
+                                                    <span class="page-link">{{ page }}</span>
+                                                {% else %}
+                                                    <a class="page-link" href="{{ path('app_admin_skill', {'page': page}) }}">{{ page }}</a>
+                                                {% endif %}
+                                            </li>
+                                        {% endfor %}
+
+                                        {% if endPage < totalPages %}
+                                            {% if endPage < totalPages - 1 %}
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">...</span>
+                                                </li>
+                                            {% endif %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ path('app_admin_skill_index', {'page': totalPages}) }}">{{ totalPages }}</a>
+                                            </li>
+                                        {% endif %}
+
+                                        <!-- Next Button -->
+                                        <li class="page-item {{ currentPage >= totalPages ? 'disabled' : '' }}">
+                                            <a class="page-link" href="{{ currentPage < totalPages ? path('app_admin_skill', {'page': currentPage + 1}) : '#' }}" aria-label="Next">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            {% endif %}
+                        </div>
+                        <div class="col-lg-4 text-lg-end text-center mt-2 mt-lg-0">
                             <a href="{{ path('app_admin_skill_new') }}" class="btn btn-outline-primary btn-sm">
                                 <i class="bi bi-plus-circle me-1"></i> Add Skill
                             </a>
