@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Skills Management{% endblock %}
+{% block title %}Micro-Credentials Management{% endblock %}
 
 {% block body %}
     <div class="container py-4">
-        <h1 class="mb-4">Skills Management</h1>
+        <h1 class="mb-4">Micro-Credentials Management</h1>
 
         <div class="card shadow-sm">
             <div class="card-header bg-white py-3">
@@ -14,14 +14,14 @@
                         <span class="input-group-text bg-light border-end-0">
                             <i class="bi bi-search"></i>
                         </span>
-                            <input type="text" id="skillSearch" class="form-control border-start-0"
-                                   placeholder="Search by name, category or difficulty..."
-                                   aria-label="Search skills">
+                            <input type="text" id="microCredentialSearch" class="form-control border-start-0"
+                                   placeholder="Search by name, category or level..."
+                                   aria-label="Search micro-credentials">
                         </div>
                     </div>
                     <div class="col-md-4 text-md-end">
-                        <a href="{{ path('app_admin_skill_new') }}" class="btn btn-primary">
-                            <i class="bi bi-plus-circle me-1"></i> Add Skill
+                        <a href="{{ path('app_admin_micro_credential_new') }}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-1"></i> Add Micro-Credential
                         </a>
                     </div>
                 </div>
@@ -29,71 +29,83 @@
 
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0" id="skillsTable">
+                    <table class="table table-hover mb-0" id="microCredentialsTable">
                         <thead class="table-light">
                         <tr>
                             <th scope="col" class="ps-3">ID</th>
                             <th scope="col">Name</th>
                             <th scope="col">Description</th>
                             <th scope="col">Category</th>
-                            <th scope="col">Difficulty</th>
+                            <th scope="col">Level</th>
+                            <th scope="col">Visible</th>
                             <th scope="col" class="text-end pe-3">Actions</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {% for skill in skills %}
+                        {% for microCredential in micro_credentials %}
                             <tr>
-                                <td class="ps-3">{{ skill.id }}</td>
-                                <td>{{ skill.name }}</td>
+                                <td class="ps-3">{{ microCredential.id }}</td>
+                                <td>{{ microCredential.name }}</td>
                                 <td>
-                                    {% if skill.description|length > 100 %}
-                                        {{ skill.description|slice(0, 100) }}...
+                                    {% if microCredential.description|length > 100 %}
+                                        {{ microCredential.description|slice(0, 100) }}...
                                     {% else %}
-                                        {{ skill.description }}
+                                        {{ microCredential.description }}
                                     {% endif %}
                                 </td>
-                                <td>{{ skill.category }}</td>
+                                <td>{{ microCredential.category ?? 'Not Set' }}</td>
                                 <td>
-                                    {% if skill.difficulty == 'Beginner' %}
+                                    {% if microCredential.level == 'Beginner' %}
                                         <span class="badge bg-success">Beginner</span>
-                                    {% elseif skill.difficulty == 'Intermediate' %}
+                                    {% elseif microCredential.level == 'Intermediate' %}
                                         <span class="badge bg-warning text-dark">Intermediate</span>
-                                    {% elseif skill.difficulty == 'Advanced' %}
+                                    {% elseif microCredential.level == 'Advanced' %}
                                         <span class="badge bg-danger">Advanced</span>
                                     {% else %}
-                                        <span class="badge bg-secondary">{{ skill.difficulty }}</span>
+                                        <span class="badge bg-secondary">{{ microCredential.level ?? 'Not Set' }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if microCredential.isVisible %}
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-eye me-1"></i>Visible
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-eye-slash me-1"></i>Hidden
+                                        </span>
                                     {% endif %}
                                 </td>
                                 <td class="text-end pe-3">
                                     <div class="btn-group btn-group-sm">
-                                        <a href="{{ path('app_admin_skill_edit', {'id': skill.id}) }}" class="btn btn-outline-primary">
+                                        <a href="{{ path('app_admin_micro_credential_edit', {'id': microCredential.id}) }}" class="btn btn-outline-primary">
                                             <i class="bi bi-pencil-square"></i> Edit
                                         </a>
                                         <button type="button" class="btn btn-outline-danger"
                                                 data-bs-toggle="modal"
-                                                data-bs-target="#deleteModal{{ skill.id }}">
+                                                data-bs-target="#deleteModal{{ microCredential.id }}">
                                             <i class="bi bi-trash"></i> Delete
                                         </button>
                                     </div>
                                 </td>
                             </tr>
 
-                            <!-- Delete Confirmation Modal for each skill -->
-                            <div class="modal fade" id="deleteModal{{ skill.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ skill.id }}" aria-hidden="true">
+                            <!-- Delete Confirmation Modal for each micro-credential -->
+                            <div class="modal fade" id="deleteModal{{ microCredential.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ microCredential.id }}" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="deleteModalLabel{{ skill.id }}">Confirm Delete</h5>
+                                            <h5 class="modal-title" id="deleteModalLabel{{ microCredential.id }}">Confirm Delete</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            Are you sure you want to delete the skill "{{ skill.name }}"?
+                                            Are you sure you want to delete the micro-credential "{{ microCredential.name }}"?
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                            <form method="post" action="{{ path('app_admin_skill_delete', {'id': skill.id}) }}" style="display: inline-block;">
+                                            <form method="post" action="{{ path('app_micro_credential_delete', {'id': microCredential.id}) }}" style="display: inline-block;">
                                                 <input type="hidden" name="_method" value="DELETE">
-                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ skill.id) }}">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ microCredential.id) }}">
                                                 <button type="submit" class="btn btn-danger">Delete</button>
                                             </form>
                                         </div>
@@ -102,9 +114,9 @@
                             </div>
                         {% else %}
                             <tr>
-                                <td colspan="6" class="text-center py-4">
+                                <td colspan="7" class="text-center py-4">
                                     <div class="alert alert-info mb-0">
-                                        <i class="bi bi-info-circle me-2"></i> No skills found. Click "Add Skill" to create your first skill.
+                                        <i class="bi bi-info-circle me-2"></i> No micro-credentials found. Click "Add Micro-Credential" to create your first micro-credential.
                                     </div>
                                 </td>
                             </tr>
@@ -114,21 +126,21 @@
                 </div>
             </div>
 
-            {% if skills|length > 0 %}
+            {% if micro_credentials|length > 0 %}
                 <div class="card-footer bg-white py-3">
                     <div class="row align-items-center">
                         <div class="col-lg-4">
                             <small class="text-muted">
-                                Showing {{ skills|length }} of {{ totalItems }} Skills
+                                Showing {{ micro_credentials|length }} of {{ totalItemsPerPage }} Micro-Credentials
                             </small>
                         </div>
                         <div class="col-lg-4 text-center">
                             {% if totalPages > 1 %}
-                                <nav aria-label="Skills pagination">
+                                <nav aria-label="Micro-credentials pagination">
                                     <ul class="pagination pagination-sm justify-content-center mb-0">
                                         <!-- Previous Button -->
                                         <li class="page-item {{ currentPage <= 1 ? 'disabled' : '' }}">
-                                            <a class="page-link" href="{{ currentPage > 1 ? path('app_admin_skill', {'page': currentPage - 1}) : '#' }}" aria-label="Previous">
+                                            <a class="page-link" href="{{ currentPage > 1 ? path('app_admin_micro_credential_index', {'page': currentPage - 1}) : '#' }}" aria-label="Previous">
                                                 <i class="bi bi-chevron-left"></i>
                                             </a>
                                         </li>
@@ -139,7 +151,7 @@
 
                                         {% if startPage > 1 %}
                                             <li class="page-item">
-                                                <a class="page-link" href="{{ path('app_admin_skill', {'page': 1}) }}">1</a>
+                                                <a class="page-link" href="{{ path('app_admin_micro_credential_index', {'page': 1}) }}">1</a>
                                             </li>
                                             {% if startPage > 2 %}
                                                 <li class="page-item disabled">
@@ -153,7 +165,7 @@
                                                 {% if page == currentPage %}
                                                     <span class="page-link">{{ page }}</span>
                                                 {% else %}
-                                                    <a class="page-link" href="{{ path('app_admin_skill', {'page': page}) }}">{{ page }}</a>
+                                                    <a class="page-link" href="{{ path('app_admin_micro_credential_index', {'page': page}) }}">{{ page }}</a>
                                                 {% endif %}
                                             </li>
                                         {% endfor %}
@@ -165,13 +177,13 @@
                                                 </li>
                                             {% endif %}
                                             <li class="page-item">
-                                                <a class="page-link" href="{{ path('app_admin_skill_index', {'page': totalPages}) }}">{{ totalPages }}</a>
+                                                <a class="page-link" href="{{ path('app_admin_micro_credential_index', {'page': totalPages}) }}">{{ totalPages }}</a>
                                             </li>
                                         {% endif %}
 
                                         <!-- Next Button -->
                                         <li class="page-item {{ currentPage >= totalPages ? 'disabled' : '' }}">
-                                            <a class="page-link" href="{{ currentPage < totalPages ? path('app_admin_skill', {'page': currentPage + 1}) : '#' }}" aria-label="Next">
+                                            <a class="page-link" href="{{ currentPage < totalPages ? path('app_admin_micro_credential_index', {'page': currentPage + 1}) : '#' }}" aria-label="Next">
                                                 <i class="bi bi-chevron-right"></i>
                                             </a>
                                         </li>
@@ -180,8 +192,8 @@
                             {% endif %}
                         </div>
                         <div class="col-lg-4 text-lg-end text-center mt-2 mt-lg-0">
-                            <a href="{{ path('app_admin_skill_new') }}" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-plus-circle me-1"></i> Add Skill
+                            <a href="{{ path('app_admin_micro_credential_new') }}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-plus-circle me-1"></i> Add Micro-Credential
                             </a>
                         </div>
                     </div>
@@ -195,8 +207,8 @@
     {{ parent() }}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const searchInput = document.getElementById('skillSearch');
-            const table = document.getElementById('skillsTable');
+            const searchInput = document.getElementById('microCredentialSearch');
+            const table = document.getElementById('microCredentialsTable');
             const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
 
             searchInput.addEventListener('keyup', function() {
@@ -204,17 +216,17 @@
 
                 for (let i = 0; i < rows.length; i++) {
                     const row = rows[i];
-                    if (row.cells.length < 5) continue; // Skip "no skills found" row
+                    if (row.cells.length < 6) continue; // Skip "no micro-credentials found" row
 
                     const name = row.cells[1].textContent.toLowerCase();
                     const description = row.cells[2].textContent.toLowerCase();
                     const category = row.cells[3].textContent.toLowerCase();
-                    const difficulty = row.cells[4].textContent.toLowerCase();
+                    const level = row.cells[4].textContent.toLowerCase();
 
                     if (name.includes(searchTerm) ||
                         description.includes(searchTerm) ||
                         category.includes(searchTerm) ||
-                        difficulty.includes(searchTerm)) {
+                        level.includes(searchTerm)) {
                         row.style.display = '';
                     } else {
                         row.style.display = 'none';

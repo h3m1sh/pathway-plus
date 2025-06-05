@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Entity\MicroCredential;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Pagerfanta\Pagerfanta;
 
 /**
  * @extends ServiceEntityRepository<MicroCredential>
@@ -14,6 +16,25 @@ class MicroCredentialRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, MicroCredential::class);
+    }
+
+    public function findPaginatedByCategory(int $page = 1, int $maxPerPage = 10, ?string $category = null): Pagerfanta
+    {
+        $qb = $this->createQueryBuilder('s')
+            ->orderBy('s.name', 'ASC');
+
+
+        if ($category) {
+            $qb->andWhere('s.category = :category')
+                ->setParameter('category', $category);
+        }
+
+        $adapter = new QueryAdapter($qb);
+        $pagerfanta = new Pagerfanta($adapter);
+        $pagerfanta->setMaxPerPage($maxPerPage);
+        $pagerfanta->setCurrentPage($page);
+
+        return $pagerfanta;
     }
 
     //    /**

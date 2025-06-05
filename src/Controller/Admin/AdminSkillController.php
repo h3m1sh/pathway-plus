@@ -11,14 +11,15 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Form\SkillFormType;
 use Doctrine\ORM\EntityManagerInterface;
 
+#[Route('/admin/skill')]
 final class AdminSkillController extends AbstractController
 {
-    #[Route('/admin/skill', name: 'app_admin_skill')]
+    #[Route( name: 'app_admin_skill_index')]
     public function index(SkillRepository $repository, Request $request): Response
     {
         $page = $request->query->getInt('page', 1);
         $itemsPerPage = 5;
-        
+
         $skills = $repository->findPaginatedByCategory($page, $itemsPerPage);
 
         return $this->render('admin/skill/skill.html.twig', [
@@ -30,7 +31,7 @@ final class AdminSkillController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/skill/new', name: 'app_admin_skill_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'app_admin_skill_new', methods: ['GET', 'POST'])]
     public function new(EntityManagerInterface $entityManager, Request $request): Response
     {
         $skill = new Skill();
@@ -42,7 +43,7 @@ final class AdminSkillController extends AbstractController
             $skill->setUpdatedAt(new \DateTimeImmutable());
             $entityManager->persist($skill);
             $entityManager->flush();
-            return $this->redirectToRoute('app_admin_skill');
+            return $this->redirectToRoute('app_admin_skill_index');
         }
 
         return $this->render('admin/skill/skillForm.html.twig', [
@@ -51,7 +52,7 @@ final class AdminSkillController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/skill/{id}', name: 'app_admin_skill_show', methods: ['GET', 'POST'])]
+    #[Route('/{id}', name: 'app_admin_skill_show', methods: ['GET', 'POST'])]
     public function show(int $id, SkillRepository $skillRepository, Request $request, EntityManagerInterface $entityManager): Response
     {
         $skill = $skillRepository->find($id);
@@ -66,7 +67,7 @@ final class AdminSkillController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($skill);
             $entityManager->flush();
-            return $this->redirectToRoute('app_admin_skill');
+            return $this->redirectToRoute('app_admin_skill_index');
         }
 
 
@@ -77,7 +78,7 @@ final class AdminSkillController extends AbstractController
         ]);
     }
 
-    #[Route('/admin/skill/edit/{id}', name: 'app_admin_skill_edit', methods: ['GET', 'POST'])]
+    #[Route('/edit/{id}', name: 'app_admin_skill_edit', methods: ['GET', 'POST'])]
     public function edit(int $id,SkillRepository $skillRepository, Request $request, EntityManagerInterface $entityManager): Response
     {
         $skill = $skillRepository->find($id);
@@ -92,7 +93,7 @@ final class AdminSkillController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($skill);
             $entityManager->flush();
-            return $this->redirectToRoute('app_admin_skill');
+            return $this->redirectToRoute('app_admin_skill_index');
         }
 
         return $this->render('admin/skill/skillForm.html.twig', [
@@ -103,7 +104,7 @@ final class AdminSkillController extends AbstractController
 
     }
 
-    #[Route('/admin/skill/delete/{id}', name: 'app_admin_skill_delete', methods: ['DELETE'])]
+    #[Route('/delete/{id}', name: 'app_admin_skill_delete', methods: ['DELETE'])]
     public function delete(SkillRepository $skillRepository, Request $request, EntityManagerInterface $entityManager, int $id): Response
     {
         $skill = $skillRepository->find($id);

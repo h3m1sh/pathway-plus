@@ -46,6 +46,12 @@ class MicroCredential
     #[ORM\OneToMany(targetEntity: StudentProgress::class, mappedBy: 'microCredential')]
     private Collection $studentProgress;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $isVisible = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $updatedAt = null;
+
     public function __construct()
     {
         $this->skills = new ArrayCollection();
@@ -180,6 +186,30 @@ class MicroCredential
                 $studentProgress->setMicroCredential(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isVisible(): ?bool
+    {
+        return $this->isVisible;
+    }
+
+    public function setIsVisible(?bool $isVisible): static
+    {
+        $this->isVisible = $isVisible;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
