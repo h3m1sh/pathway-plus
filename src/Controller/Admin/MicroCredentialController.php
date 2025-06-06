@@ -22,7 +22,6 @@ final class MicroCredentialController extends AbstractController
 
         $microCredentials = $repository->findPaginatedByCategory($page, $itemsPerPage);
 
-
         return $this->render('admin/micro_credential/index.html.twig', [
             'micro_credentials' => $microCredentials->getCurrentPageResults(),
             'currentPage' => $microCredentials->getCurrentPage(),
@@ -46,17 +45,9 @@ final class MicroCredentialController extends AbstractController
             return $this->redirectToRoute('app_admin_micro_credential_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('micro_credential/new.html.twig', [
+        return $this->render('admin/micro_credential/new.html.twig', [
             'micro_credential' => $microCredential,
             'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_admin_micro_credential_show', methods: ['GET'])]
-    public function show(MicroCredential $microCredential): Response
-    {
-        return $this->render('micro_credential/show.html.twig', [
-            'micro_credential' => $microCredential,
         ]);
     }
 
@@ -69,16 +60,16 @@ final class MicroCredentialController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_micro_credential_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_admin_micro_credential_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('micro_credential/edit.html.twig', [
-            'micro_credential' => $microCredential,
+        return $this->render('admin/micro_credential/edit.html.twig', [
+            'microCredential' => $microCredential,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}', name: 'app_micro_credential_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_admin_micro_credential_delete', methods: ['POST'])]
     public function delete(Request $request, MicroCredential $microCredential, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$microCredential->getId(), $request->getPayload()->getString('_token'))) {
@@ -86,6 +77,6 @@ final class MicroCredentialController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_micro_credential_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_admin_micro_credential_index', [], Response::HTTP_SEE_OTHER);
     }
 }

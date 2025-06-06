@@ -70,8 +70,6 @@ final class AdminSkillController extends AbstractController
             return $this->redirectToRoute('app_admin_skill_index');
         }
 
-
-
         return $this->render('admin/skill/skillForm.html.twig', [
             'skill' => $skill,
             'form' => $form->createView(),

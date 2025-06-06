@@ -37,6 +37,25 @@ class MicroCredentialRepository extends ServiceEntityRepository
         return $pagerfanta;
     }
 
+    /**
+     * Get all distinct categories from micro-credentials
+     * @return array
+     */
+    public function findDistinctCategories(): array
+    {
+        $result = $this->createQueryBuilder('m')
+            ->select('DISTINCT m.category')
+            ->where('m.category IS NOT NULL')
+            ->andWhere('m.category != :empty')
+            ->setParameter('empty', '')
+            ->orderBy('m.category', 'ASC')
+            ->getQuery()
+            ->getScalarResult();
+
+        // Extract just the category values from the result array
+        return array_column($result, 'category');
+    }
+
     //    /**
     //     * @return MicroCredential[] Returns an array of MicroCredential objects
     //     */

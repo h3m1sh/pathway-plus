@@ -103,7 +103,7 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                            <form method="post" action="{{ path('app_micro_credential_delete', {'id': microCredential.id}) }}" style="display: inline-block;">
+                                            <form method="post" action="{{ path('app_admin_micro_credential_delete', {'id': microCredential.id}) }}" style="display: inline-block;">
                                                 <input type="hidden" name="_method" value="DELETE">
                                                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ microCredential.id) }}">
                                                 <button type="submit" class="btn btn-danger">Delete</button>
@@ -190,11 +190,6 @@
                                     </ul>
                                 </nav>
                             {% endif %}
-                        </div>
-                        <div class="col-lg-4 text-lg-end text-center mt-2 mt-lg-0">
-                            <a href="{{ path('app_admin_micro_credential_new') }}" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-plus-circle me-1"></i> Add Micro-Credential
-                            </a>
                         </div>
                     </div>
                 </div>
