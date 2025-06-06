@@ -172,7 +172,7 @@
                     <!-- Preview Section -->
                     <div class="preview-section">
                         <h6 class="fw-bold">Live Preview</h6>
-                        
+
                         <!-- Badge Preview -->
                         <div class="badge-placeholder" id="badgePreview">
                             <i class="fas fa-certificate"></i>
@@ -246,13 +246,13 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 {{ form_label(form.name, 'Name', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
-                                {{ form_widget(form.name, {'attr': {'class': 'form-control', 'id': 'nameInput'}}) }}
+                                {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
                                 {{ form_errors(form.name) }}
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 {{ form_label(form.category, 'Category', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
-                                {{ form_widget(form.category, {'attr': {'class': 'form-select', 'id': 'categoryInput'}}) }}
+                                {{ form_widget(form.category, {'attr': {'class': 'form-select'}}) }}
                                 {{ form_errors(form.category) }}
                             </div>
                         </div>
@@ -260,7 +260,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 {{ form_label(form.level, 'Level', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
-                                {{ form_widget(form.level, {'attr': {'class': 'form-select', 'id': 'levelInput'}}) }}
+                                {{ form_widget(form.level, {'attr': {'class': 'form-select'}}) }}
                                 {{ form_errors(form.level) }}
                             </div>
                         </div>
@@ -272,7 +272,7 @@
                                    data-bs-toggle="tooltip"
                                    title="Provide a detailed description of this micro-credential"></i>
                             </label>
-                            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 4, 'id': 'descriptionInput'}}) }}
+                            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 4}}) }}
                             {{ form_errors(form.description) }}
                         </div>
                     </div>
@@ -290,7 +290,7 @@
                                    data-bs-toggle="tooltip"
                                    title="Upload a square image file (PNG, JPG, SVG). Recommended size: 200x200px"></i>
                             </label>
-                            
+
                             <div class="file-upload-area" id="fileUploadArea">
                                 <div class="upload-icon">
                                     <i class="fas fa-cloud-upload-alt"></i>
@@ -308,7 +308,7 @@
                         <div class="row">
                             <div class="col-md-8 mb-3">
                                 {{ form_label(form.badgeUrl, 'Or Badge URL', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
-                                {{ form_widget(form.badgeUrl, {'attr': {'class': 'form-control', 'placeholder': 'https://example.com/badge.png', 'id': 'badgeUrlInput'}}) }}
+                                {{ form_widget(form.badgeUrl, {'attr': {'class': 'form-control', 'placeholder': 'https://example.com/badge.png'}}) }}
                                 {{ form_errors(form.badgeUrl) }}
                                 <div class="form-text">You can either upload a file above or provide a URL to an existing image</div>
                             </div>
@@ -316,7 +316,7 @@
 
                         <div class="mb-3">
                             <div class="form-check form-switch">
-                                {{ form_widget(form.isVisible, {'attr': {'class': 'form-check-input', 'role': 'switch', 'id': 'visibilityInput'}}) }}
+                                {{ form_widget(form.isVisible, {'attr': {'class': 'form-check-input', 'role': 'switch'}}) }}
                                 <label class="form-check-label fw-semibold" for="{{ form.isVisible.vars.id }}">
                                     Visible to Students
                                     <i class="fas fa-info-circle tooltip-icon"
@@ -366,12 +366,12 @@
             });
 
             // Live preview functionality
-            const nameInput = document.getElementById('nameInput');
-            const descriptionInput = document.getElementById('descriptionInput');
-            const categoryInput = document.getElementById('categoryInput');
-            const levelInput = document.getElementById('levelInput');
-            const visibilityInput = document.getElementById('visibilityInput');
-            const badgeUrlInput = document.getElementById('badgeUrlInput');
+            const nameInput = document.querySelector('input[name="{{ form.name.vars.full_name }}"]');
+            const descriptionInput = document.querySelector('textarea[name="{{ form.description.vars.full_name }}"]');
+            const categoryInput = document.querySelector('select[name="{{ form.category.vars.full_name }}"]');
+            const levelInput = document.querySelector('select[name="{{ form.level.vars.full_name }}"]');
+            const visibilityInput = document.querySelector('input[name="{{ form.isVisible.vars.full_name }}"]');
+            const badgeUrlInput = document.querySelector('input[name="{{ form.badgeUrl.vars.full_name }}"]');
 
             const namePreview = document.getElementById('namePreview');
             const descriptionPreview = document.getElementById('descriptionPreview');
@@ -381,40 +381,52 @@
             const badgePreview = document.getElementById('badgePreview');
 
             // Update previews on input change
-            nameInput?.addEventListener('input', function() {
-                namePreview.textContent = this.value || 'New Micro-Credential';
-            });
+            if (nameInput && namePreview) {
+                nameInput.addEventListener('input', function() {
+                    namePreview.textContent = this.value || 'New Micro-Credential';
+                });
+            }
 
-            descriptionInput?.addEventListener('input', function() {
-                const text = this.value || 'Enter a description to see preview...';
-                descriptionPreview.textContent = text.length > 100 ? text.substring(0, 100) + '...' : text;
-            });
+            if (descriptionInput && descriptionPreview) {
+                descriptionInput.addEventListener('input', function() {
+                    const text = this.value || 'Enter a description to see preview...';
+                    descriptionPreview.textContent = text.length > 100 ? text.substring(0, 100) + '...' : text;
+                });
+            }
 
-            categoryInput?.addEventListener('change', function() {
-                categoryPreview.textContent = this.value || 'Not Selected';
-            });
+            if (categoryInput && categoryPreview) {
+                categoryInput.addEventListener('change', function() {
+                    categoryPreview.textContent = this.value || 'Not Selected';
+                });
+            }
 
-            levelInput?.addEventListener('change', function() {
-                levelPreview.textContent = this.value || 'Not Selected';
-            });
+            if (levelInput && levelPreview) {
+                levelInput.addEventListener('change', function() {
+                    levelPreview.textContent = this.value || 'Not Selected';
+                });
+            }
 
-            visibilityInput?.addEventListener('change', function() {
-                if (this.checked) {
-                    visibilityPreview.textContent = 'Visible';
-                    visibilityPreview.className = 'visibility-badge visibility-visible';
-                } else {
-                    visibilityPreview.textContent = 'Hidden';
-                    visibilityPreview.className = 'visibility-badge visibility-hidden';
-                }
-            });
+            if (visibilityInput && visibilityPreview) {
+                visibilityInput.addEventListener('change', function() {
+                    if (this.checked) {
+                        visibilityPreview.textContent = 'Visible';
+                        visibilityPreview.className = 'visibility-badge visibility-visible';
+                    } else {
+                        visibilityPreview.textContent = 'Hidden';
+                        visibilityPreview.className = 'visibility-badge visibility-hidden';
+                    }
+                });
+            }
 
-            badgeUrlInput?.addEventListener('input', function() {
-                if (this.value) {
-                    badgePreview.innerHTML = `<img src="${this.value}" alt="Badge" class="w-100 h-100 rounded-circle object-fit-cover" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-certificate\\'></i>'">`;
-                } else {
-                    badgePreview.innerHTML = '<i class="fas fa-certificate"></i>';
-                }
-            });
+            if (badgeUrlInput && badgePreview) {
+                badgeUrlInput.addEventListener('input', function() {
+                    if (this.value) {
+                        badgePreview.innerHTML = `<img src="${this.value}" alt="Badge" class="w-100 h-100 rounded-circle object-fit-cover" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-certificate\\'></i>'">`;
+                    } else {
+                        badgePreview.innerHTML = '<i class="fas fa-certificate"></i>';
+                    }
+                });
+            }
 
             // File upload functionality
             const fileUploadArea = document.getElementById('fileUploadArea');
