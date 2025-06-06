@@ -9,9 +9,11 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -73,6 +75,27 @@ class MicroCredentialForm extends AbstractType
                 'placeholder' => 'Select level...',
                 'attr' => [
                     'class' => 'form-select'
+                ]
+            ])
+            ->add('badgeFile', FileType::class, [
+                'label' => 'Badge Icon Upload',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '2M',
+                        'mimeTypes' => [
+                            'image/png',
+                            'image/jpeg',
+                            'image/jpg',
+                            'image/svg+xml',
+                        ],
+                        'mimeTypesMessage' => 'Please upload a valid image file (PNG, JPG, SVG)',
+                    ])
+                ],
+                'attr' => [
+                    'class' => 'form-control',
+                    'accept' => 'image/*'
                 ]
             ])
             ->add('badgeUrl', UrlType::class, [

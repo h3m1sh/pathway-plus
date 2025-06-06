@@ -12,7 +12,7 @@ use App\Form\SkillFormType;
 use Doctrine\ORM\EntityManagerInterface;
 
 #[Route('/admin/skill')]
-final class AdminSkillController extends AbstractController
+final class SkillController extends AbstractController
 {
     #[Route( name: 'app_admin_skill_index')]
     public function index(SkillRepository $repository, Request $request): Response

@@ -214,7 +214,7 @@
                     <h2 class="mb-4 fw-bold">Edit Micro-Credential</h2>
 
                     <!-- Form -->
-                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': true}}) }}
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': true, 'enctype': 'multipart/form-data'}}) }}
 
                     <!-- Information Section -->
                     <div class="form-section">
@@ -258,11 +258,27 @@
                     <div class="form-section">
                         <h4 class="form-section-title">Configuration</h4>
 
+                        <!-- Badge Upload -->
+                        {% if form.badgeFile is defined %}
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                Badge Icon Upload
+                                <i class="fas fa-info-circle tooltip-icon"
+                                   data-bs-toggle="tooltip"
+                                   title="Upload a square image file (PNG, JPG, SVG). Recommended size: 200x200px"></i>
+                            </label>
+                            {{ form_widget(form.badgeFile, {'attr': {'class': 'form-control', 'accept': 'image/*'}}) }}
+                            {{ form_errors(form.badgeFile) }}
+                            <div class="form-text">Upload a new badge image to replace the current one</div>
+                        </div>
+                        {% endif %}
+
                         <div class="row">
                             <div class="col-md-8 mb-3">
-                                {{ form_label(form.badgeUrl, 'Badge URL', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_label(form.badgeUrl, 'Or Badge URL', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
                                 {{ form_widget(form.badgeUrl, {'attr': {'class': 'form-control', 'placeholder': 'https://example.com/badge.png'}}) }}
                                 {{ form_errors(form.badgeUrl) }}
+                                <div class="form-text">You can either upload a file above or provide a URL to an existing image</div>
                             </div>
                         </div>
 

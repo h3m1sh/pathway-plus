@@ -1,0 +1,499 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create New Micro-Credential{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .sidebar-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .main-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .badge-placeholder {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 auto 16px;
+        }
+
+        .meta-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .meta-item:last-child {
+            border-bottom: none;
+        }
+
+        .meta-label {
+            font-weight: 500;
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+
+        .meta-value {
+            font-weight: 600;
+            color: #212529;
+            font-size: 0.875rem;
+        }
+
+        .category-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .visibility-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .visibility-visible {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .visibility-hidden {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .form-check-input:checked {
+            background-color: #198754;
+            border-color: #198754;
+        }
+
+        .tooltip-icon {
+            color: #6c757d;
+            cursor: help;
+            margin-left: 0.25rem;
+        }
+
+        .preview-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 2px dashed #dee2e6;
+            margin-bottom: 1rem;
+        }
+
+        .preview-section h6 {
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: #198754;
+            background: #f0f8f4;
+        }
+
+        .file-upload-area.dragover {
+            border-color: #198754;
+            background: #e8f5e8;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+
+        .badge-preview {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-card {
+                margin-bottom: 1.5rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid py-4">
+        <div class="row">
+            <!-- Preview Sidebar -->
+            <div class="col-lg-4 col-xl-3 mb-4">
+                <div class="sidebar-card p-4">
+                    <!-- Preview Section -->
+                    <div class="preview-section">
+                        <h6 class="fw-bold">Live Preview</h6>
+                        
+                        <!-- Badge Preview -->
+                        <div class="badge-placeholder" id="badgePreview">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+
+                        <!-- Title Preview -->
+                        <h5 class="text-center mb-3 fw-bold" id="namePreview">New Micro-Credential</h5>
+
+                        <!-- Description Preview -->
+                        <p class="text-muted text-center mb-4" style="font-size: 0.875rem;" id="descriptionPreview">
+                            Enter a description to see preview...
+                        </p>
+
+                        <!-- Meta Information Preview -->
+                        <div class="mb-4">
+                            <div class="meta-item">
+                                <span class="meta-label">Status</span>
+                                <span class="meta-value text-warning">Draft</span>
+                            </div>
+
+                            <div class="meta-item">
+                                <span class="meta-label">Visibility</span>
+                                <span class="visibility-badge visibility-hidden" id="visibilityPreview">
+                                    Hidden
+                                </span>
+                            </div>
+
+                            <div class="meta-item">
+                                <span class="meta-label">Category</span>
+                                <span class="category-badge" id="categoryPreview">Not Selected</span>
+                            </div>
+
+                            <div class="meta-item">
+                                <span class="meta-label">Level</span>
+                                <span class="meta-value" id="levelPreview">Not Selected</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Help Section -->
+                    <div class="mt-4 pt-3 border-top">
+                        <h6 class="fw-bold text-muted mb-2">
+                            <i class="fas fa-lightbulb me-1"></i> Tips
+                        </h6>
+                        <small class="text-muted d-block mb-2">
+                            • Use clear, descriptive names
+                        </small>
+                        <small class="text-muted d-block mb-2">
+                            • Upload square badge images (recommended: 200x200px)
+                        </small>
+                        <small class="text-muted d-block">
+                            • Choose appropriate skill level and category
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Form Area -->
+            <div class="col-lg-8 col-xl-9">
+                <div class="main-card p-4">
+                    <!-- Page Title -->
+                    <h2 class="mb-4 fw-bold">Create New Micro-Credential</h2>
+
+                    <!-- Form -->
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': true, 'enctype': 'multipart/form-data'}}) }}
+
+                    <!-- Information Section -->
+                    <div class="form-section">
+                        <h4 class="form-section-title">Information</h4>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.name, 'Name', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(form.name, {'attr': {'class': 'form-control', 'id': 'nameInput'}}) }}
+                                {{ form_errors(form.name) }}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.category, 'Category', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(form.category, {'attr': {'class': 'form-select', 'id': 'categoryInput'}}) }}
+                                {{ form_errors(form.category) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.level, 'Level', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(form.level, {'attr': {'class': 'form-select', 'id': 'levelInput'}}) }}
+                                {{ form_errors(form.level) }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Description
+                                <i class="fas fa-info-circle tooltip-icon"
+                                   data-bs-toggle="tooltip"
+                                   title="Provide a detailed description of this micro-credential"></i>
+                            </label>
+                            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 4, 'id': 'descriptionInput'}}) }}
+                            {{ form_errors(form.description) }}
+                        </div>
+                    </div>
+
+                    <!-- Badge & Configuration Section -->
+                    <div class="form-section">
+                        <h4 class="form-section-title">Badge & Configuration</h4>
+
+                        <!-- Badge Upload -->
+                        {% if form.badgeFile is defined %}
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                Badge Icon
+                                <i class="fas fa-info-circle tooltip-icon"
+                                   data-bs-toggle="tooltip"
+                                   title="Upload a square image file (PNG, JPG, SVG). Recommended size: 200x200px"></i>
+                            </label>
+                            
+                            <div class="file-upload-area" id="fileUploadArea">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <h6 class="mb-2">Drop your badge image here or click to browse</h6>
+                                <p class="text-muted mb-3">Supported formats: PNG, JPG, SVG (Max: 2MB)</p>
+                                {{ form_widget(form.badgeFile, {'attr': {'class': 'form-control', 'style': 'display: none;', 'accept': 'image/*'}}) }}
+                                <img id="imagePreview" class="badge-preview" alt="Badge Preview">
+                            </div>
+                            {{ form_errors(form.badgeFile) }}
+                        </div>
+                        {% endif %}
+
+                        <!-- Alternative Badge URL -->
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                {{ form_label(form.badgeUrl, 'Or Badge URL', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(form.badgeUrl, {'attr': {'class': 'form-control', 'placeholder': 'https://example.com/badge.png', 'id': 'badgeUrlInput'}}) }}
+                                {{ form_errors(form.badgeUrl) }}
+                                <div class="form-text">You can either upload a file above or provide a URL to an existing image</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                {{ form_widget(form.isVisible, {'attr': {'class': 'form-check-input', 'role': 'switch', 'id': 'visibilityInput'}}) }}
+                                <label class="form-check-label fw-semibold" for="{{ form.isVisible.vars.id }}">
+                                    Visible to Students
+                                    <i class="fas fa-info-circle tooltip-icon"
+                                       data-bs-toggle="tooltip"
+                                       title="When enabled, this micro-credential will be visible to students in their dashboard"></i>
+                                </label>
+                                {{ form_errors(form.isVisible) }}
+                            </div>
+                        </div>
+
+                        <!-- Skills Association -->
+                        {% if form.skills is defined %}
+                        <div class="mb-3">
+                            {{ form_label(form.skills, 'Associated Skills', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                            {{ form_widget(form.skills, {'attr': {'class': 'form-select', 'size': '5'}}) }}
+                            {{ form_errors(form.skills) }}
+                            <div class="form-text">{{ form.skills.vars.help }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Form Buttons -->
+                    <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                        <a href="{{ path('app_admin_micro_credential_index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i> Create Micro-Credential
+                        </button>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Bootstrap tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Live preview functionality
+            const nameInput = document.getElementById('nameInput');
+            const descriptionInput = document.getElementById('descriptionInput');
+            const categoryInput = document.getElementById('categoryInput');
+            const levelInput = document.getElementById('levelInput');
+            const visibilityInput = document.getElementById('visibilityInput');
+            const badgeUrlInput = document.getElementById('badgeUrlInput');
+
+            const namePreview = document.getElementById('namePreview');
+            const descriptionPreview = document.getElementById('descriptionPreview');
+            const categoryPreview = document.getElementById('categoryPreview');
+            const levelPreview = document.getElementById('levelPreview');
+            const visibilityPreview = document.getElementById('visibilityPreview');
+            const badgePreview = document.getElementById('badgePreview');
+
+            // Update previews on input change
+            nameInput?.addEventListener('input', function() {
+                namePreview.textContent = this.value || 'New Micro-Credential';
+            });
+
+            descriptionInput?.addEventListener('input', function() {
+                const text = this.value || 'Enter a description to see preview...';
+                descriptionPreview.textContent = text.length > 100 ? text.substring(0, 100) + '...' : text;
+            });
+
+            categoryInput?.addEventListener('change', function() {
+                categoryPreview.textContent = this.value || 'Not Selected';
+            });
+
+            levelInput?.addEventListener('change', function() {
+                levelPreview.textContent = this.value || 'Not Selected';
+            });
+
+            visibilityInput?.addEventListener('change', function() {
+                if (this.checked) {
+                    visibilityPreview.textContent = 'Visible';
+                    visibilityPreview.className = 'visibility-badge visibility-visible';
+                } else {
+                    visibilityPreview.textContent = 'Hidden';
+                    visibilityPreview.className = 'visibility-badge visibility-hidden';
+                }
+            });
+
+            badgeUrlInput?.addEventListener('input', function() {
+                if (this.value) {
+                    badgePreview.innerHTML = `<img src="${this.value}" alt="Badge" class="w-100 h-100 rounded-circle object-fit-cover" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-certificate\\'></i>'">`;
+                } else {
+                    badgePreview.innerHTML = '<i class="fas fa-certificate"></i>';
+                }
+            });
+
+            // File upload functionality
+            const fileUploadArea = document.getElementById('fileUploadArea');
+            const fileInput = document.querySelector('input[type="file"]');
+            const imagePreview = document.getElementById('imagePreview');
+
+            if (fileUploadArea && fileInput) {
+                // Click to upload
+                fileUploadArea.addEventListener('click', function() {
+                    fileInput.click();
+                });
+
+                // File input change
+                fileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        handleFileUpload(file);
+                    }
+                });
+
+                // Drag and drop functionality
+                fileUploadArea.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('dragover');
+                });
+
+                fileUploadArea.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('dragover');
+                });
+
+                fileUploadArea.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('dragover');
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        const file = files[0];
+                        if (file.type.startsWith('image/')) {
+                            fileInput.files = files;
+                            handleFileUpload(file);
+                        }
+                    }
+                });
+
+                function handleFileUpload(file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                        
+                        // Update badge preview in sidebar
+                        badgePreview.innerHTML = `<img src="${e.target.result}" alt="Badge" class="w-100 h-100 rounded-circle object-fit-cover">`;
+                        
+                        // Clear badge URL if file is uploaded
+                        if (badgeUrlInput) {
+                            badgeUrlInput.value = '';
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            // Form validation
+            (function() {
+                'use strict';
+                window.addEventListener('load', function() {
+                    var forms = document.getElementsByClassName('needs-validation');
+                    var validation = Array.prototype.filter.call(forms, function(form) {
+                        form.addEventListener('submit', function(event) {
+                            if (form.checkValidity() === false) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                            }
+                            form.classList.add('was-validated');
+                        }, false);
+                    });
+                }, false);
+            })();
+        });
+    </script>
+{% endblock %}
