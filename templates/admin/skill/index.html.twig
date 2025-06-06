@@ -20,7 +20,7 @@
                         </div>
                     </div>
                     <div class="col-md-4 text-md-end">
-                        <a href="{{ path('app_admin_skill_new') }}" class="btn btn-primary">
+                        <a href="{{ path('app_admin_skill_new') }}" class="btn btn-success">
                             <i class="bi bi-plus-circle me-1"></i> Add Skill
                         </a>
                     </div>
@@ -52,7 +52,7 @@
                                         {{ skill.description }}
                                     {% endif %}
                                 </td>
-                                <td>{{ skill.category }}</td>
+                                <td>{{ skill.category ?? 'Not Set' }}</td>
                                 <td>
                                     {% if skill.difficulty == 'Beginner' %}
                                         <span class="badge bg-success">Beginner</span>
@@ -61,7 +61,7 @@
                                     {% elseif skill.difficulty == 'Advanced' %}
                                         <span class="badge bg-danger">Advanced</span>
                                     {% else %}
-                                        <span class="badge bg-secondary">{{ skill.difficulty }}</span>
+                                        <span class="badge bg-secondary">{{ skill.difficulty ?? 'Not Set' }}</span>
                                     {% endif %}
                                 </td>
                                 <td class="text-end pe-3">
@@ -179,11 +179,6 @@
                                 </nav>
                             {% endif %}
                         </div>
-                        <div class="col-lg-4 text-lg-end text-center mt-2 mt-lg-0">
-                            <a href="{{ path('app_admin_skill_new') }}" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-plus-circle me-1"></i> Add Skill
-                            </a>
-                        </div>
                     </div>
                 </div>
             {% endif %}
@@ -204,7 +199,7 @@
 
                 for (let i = 0; i < rows.length; i++) {
                     const row = rows[i];
-                    if (row.cells.length < 5) continue; // Skip "no skills found" row
+                    if (row.cells.length < 6) continue; // Skip "no skills found" row
 
                     const name = row.cells[1].textContent.toLowerCase();
                     const description = row.cells[2].textContent.toLowerCase();
@@ -223,4 +218,4 @@
             });
         });
     </script>
-{% endblock %}
+{% endblock %} 

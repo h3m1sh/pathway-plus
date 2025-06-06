@@ -78,7 +78,7 @@ final class MicroCredentialController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_admin_micro_credential_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_admin_micro_credential_delete', methods: ['DELETE'])]
     public function delete(Request $request, MicroCredential $microCredential, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$microCredential->getId(), $request->getPayload()->getString('_token'))) {

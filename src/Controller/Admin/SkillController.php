@@ -22,7 +22,7 @@ final class SkillController extends AbstractController
 
         $skills = $repository->findPaginatedByCategory($page, $itemsPerPage);
 
-        return $this->render('admin/skill/skill.html.twig', [
+        return $this->render('admin/skill/index.html.twig', [
             'skills' => $skills->getCurrentPageResults(),
             'currentPage' => $skills->getCurrentPage(),
             'totalPages' => $skills->getNbPages(),
@@ -43,10 +43,12 @@ final class SkillController extends AbstractController
             $skill->setUpdatedAt(new \DateTimeImmutable());
             $entityManager->persist($skill);
             $entityManager->flush();
+            
+            $this->addFlash('success', 'Skill created successfully!');
             return $this->redirectToRoute('app_admin_skill_index');
         }
 
-        return $this->render('admin/skill/skillForm.html.twig', [
+        return $this->render('admin/skill/new.html.twig', [
             'form' => $form->createView(),
             'skill' => $skill,
         ]);
@@ -65,12 +67,15 @@ final class SkillController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $skill->setUpdatedAt(new \DateTimeImmutable());
             $entityManager->persist($skill);
             $entityManager->flush();
+            
+            $this->addFlash('success', 'Skill updated successfully!');
             return $this->redirectToRoute('app_admin_skill_index');
         }
 
-        return $this->render('admin/skill/skillForm.html.twig', [
+        return $this->render('admin/skill/edit.html.twig', [
             'skill' => $skill,
             'form' => $form->createView(),
         ]);
@@ -87,6 +92,8 @@ final class SkillController extends AbstractController
 
         $entityManager->remove($skill);
         $entityManager->flush();
+        
+        $this->addFlash('success', 'Skill deleted successfully!');
         return $this->redirectToRoute('app_admin_skill_index');
     }
 }

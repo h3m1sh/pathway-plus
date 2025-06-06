@@ -1,0 +1,358 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Skill{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .sidebar-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .main-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .skill-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 auto 16px;
+        }
+
+        .meta-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .meta-item:last-child {
+            border-bottom: none;
+        }
+
+        .meta-label {
+            font-weight: 500;
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+
+        .meta-value {
+            font-weight: 600;
+            color: #212529;
+            font-size: 0.875rem;
+        }
+
+        .category-badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .difficulty-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .difficulty-beginner {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .difficulty-intermediate {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .difficulty-advanced {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .tooltip-icon {
+            color: #6c757d;
+            cursor: help;
+            margin-left: 0.25rem;
+        }
+
+        .current-data-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            margin-bottom: 1rem;
+        }
+
+        .current-data-section h6 {
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+
+        .action-buttons {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-card {
+                margin-bottom: 1.5rem;
+            }
+
+            .action-buttons {
+                position: static;
+                margin-bottom: 1rem;
+                text-align: right;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid py-4">
+        <div class="row">
+            <!-- Current Data Sidebar -->
+            <div class="col-lg-4 col-xl-3 mb-4">
+                <div class="sidebar-card p-4">
+                    <!-- Current Data Section -->
+                    <div class="current-data-section">
+                        <h6 class="fw-bold">Current Skill</h6>
+                        
+                        <!-- Skill Icon -->
+                        <div class="skill-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+
+                        <!-- Title -->
+                        <h5 class="text-center mb-3 fw-bold">{{ skill.name }}</h5>
+
+                        <!-- Description -->
+                        <p class="text-muted text-center mb-4" style="font-size: 0.875rem;">
+                            {% if skill.description %}
+                                {% if skill.description|length > 80 %}
+                                    {{ skill.description|slice(0, 80) }}...
+                                {% else %}
+                                    {{ skill.description }}
+                                {% endif %}
+                            {% else %}
+                                No description available
+                            {% endif %}
+                        </p>
+
+                        <!-- Meta Information -->
+                        <div class="mb-4">
+                            <div class="meta-item">
+                                <span class="meta-label">Category</span>
+                                <span class="category-badge">{{ skill.category ?? 'Not Set' }}</span>
+                            </div>
+
+                            <div class="meta-item">
+                                <span class="meta-label">Difficulty</span>
+                                <span class="difficulty-badge 
+                                    {%- if skill.difficulty == 'Beginner' %} difficulty-beginner
+                                    {%- elseif skill.difficulty == 'Intermediate' %} difficulty-intermediate
+                                    {%- elseif skill.difficulty == 'Advanced' %} difficulty-advanced
+                                    {%- else %} difficulty-beginner
+                                    {%- endif %}">
+                                    {{ skill.difficulty ?? 'Not Set' }}
+                                </span>
+                            </div>
+
+                            <div class="meta-item">
+                                <span class="meta-label">Created</span>
+                                <span class="meta-value">{{ skill.createdAt ? skill.createdAt|date('M j, Y') : 'Unknown' }}</span>
+                            </div>
+
+                            {% if skill.updatedAt %}
+                            <div class="meta-item">
+                                <span class="meta-label">Updated</span>
+                                <span class="meta-value">{{ skill.updatedAt|date('M j, Y') }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Help Section -->
+                    <div class="mt-4 pt-3 border-top">
+                        <h6 class="fw-bold text-muted mb-2">
+                            <i class="fas fa-lightbulb me-1"></i> Tips
+                        </h6>
+                        <small class="text-muted d-block mb-2">
+                            • Changes will be saved immediately
+                        </small>
+                        <small class="text-muted d-block mb-2">
+                            • Use clear, descriptive skill names
+                        </small>
+                        <small class="text-muted d-block">
+                            • Include key competencies in description
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Form Area -->
+            <div class="col-lg-8 col-xl-9">
+                <div class="main-card p-4 position-relative">
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button type="button" class="btn btn-outline-danger btn-icon" data-bs-toggle="modal" data-bs-target="#deleteModal{{ skill.id }}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+
+                    <!-- Delete Confirmation Modal -->
+                    <div class="modal fade" id="deleteModal{{ skill.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ skill.id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel{{ skill.id }}">Confirm Delete</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to delete the skill "{{ skill.name }}"?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <form method="post" action="{{ path('app_admin_skill_delete', {'id': skill.id}) }}" style="display: inline-block;">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ skill.id) }}">
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Page Title -->
+                    <h2 class="mb-4 fw-bold">Edit Skill</h2>
+
+                    <!-- Form -->
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': true}}) }}
+
+                    <!-- Information Section -->
+                    <div class="form-section">
+                        <h4 class="form-section-title">Information</h4>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.name, 'Skill Name', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Enter skill name (e.g., Python Programming)'}}) }}
+                                {{ form_errors(form.name) }}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.category, 'Category', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(form.category, {'attr': {'class': 'form-select'}}) }}
+                                {{ form_errors(form.category) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.difficulty, 'Difficulty Level', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(form.difficulty, {'attr': {'class': 'form-select'}}) }}
+                                {{ form_errors(form.difficulty) }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Description
+                                <i class="fas fa-info-circle tooltip-icon"
+                                   data-bs-toggle="tooltip"
+                                   title="Provide a detailed description of this skill, including key competencies and applications"></i>
+                            </label>
+                            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 4, 'placeholder': 'Provide a detailed description of this skill, including key competencies and applications...'}}) }}
+                            {{ form_errors(form.description) }}
+                        </div>
+                    </div>
+
+                    <!-- Form Buttons -->
+                    <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                        <a href="{{ path('app_admin_skill_index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-1"></i> Save Changes
+                        </button>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Bootstrap tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Form validation
+            (function() {
+                'use strict';
+                window.addEventListener('load', function() {
+                    var forms = document.getElementsByClassName('needs-validation');
+                    var validation = Array.prototype.filter.call(forms, function(form) {
+                        form.addEventListener('submit', function(event) {
+                            if (form.checkValidity() === false) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                            }
+                            form.classList.add('was-validated');
+                        }, false);
+                    });
+                }, false);
+            })();
+        });
+    </script>
+{% endblock %} 

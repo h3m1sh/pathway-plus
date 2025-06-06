@@ -1,0 +1,334 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create New Skill{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .sidebar-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .main-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .skill-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0 auto 16px;
+        }
+
+        .meta-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .meta-item:last-child {
+            border-bottom: none;
+        }
+
+        .meta-label {
+            font-weight: 500;
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+
+        .meta-value {
+            font-weight: 600;
+            color: #212529;
+            font-size: 0.875rem;
+        }
+
+        .category-badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .difficulty-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .difficulty-beginner {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .difficulty-intermediate {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .difficulty-advanced {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .tooltip-icon {
+            color: #6c757d;
+            cursor: help;
+            margin-left: 0.25rem;
+        }
+
+        .preview-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 2px dashed #dee2e6;
+            margin-bottom: 1rem;
+        }
+
+        .preview-section h6 {
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-card {
+                margin-bottom: 1.5rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid py-4">
+        <div class="row">
+            <!-- Preview Sidebar -->
+            <div class="col-lg-4 col-xl-3 mb-4">
+                <div class="sidebar-card p-4">
+                    <!-- Preview Section -->
+                    <div class="preview-section">
+                        <h6 class="fw-bold">Live Preview</h6>
+                        
+                        <!-- Skill Icon -->
+                        <div class="skill-icon" id="skillIcon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+
+                        <!-- Title Preview -->
+                        <h5 class="text-center mb-3 fw-bold" id="namePreview">New Skill</h5>
+
+                        <!-- Description Preview -->
+                        <p class="text-muted text-center mb-4" style="font-size: 0.875rem;" id="descriptionPreview">
+                            Enter a description to see preview...
+                        </p>
+
+                        <!-- Meta Information Preview -->
+                        <div class="mb-4">
+                            <div class="meta-item">
+                                <span class="meta-label">Status</span>
+                                <span class="meta-value text-warning">Draft</span>
+                            </div>
+
+                            <div class="meta-item">
+                                <span class="meta-label">Category</span>
+                                <span class="category-badge" id="categoryPreview">Not Selected</span>
+                            </div>
+
+                            <div class="meta-item">
+                                <span class="meta-label">Difficulty</span>
+                                <span class="difficulty-badge difficulty-beginner" id="difficultyPreview">Not Selected</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Help Section -->
+                    <div class="mt-4 pt-3 border-top">
+                        <h6 class="fw-bold text-muted mb-2">
+                            <i class="fas fa-lightbulb me-1"></i> Tips
+                        </h6>
+                        <small class="text-muted d-block mb-2">
+                            • Use clear, descriptive skill names
+                        </small>
+                        <small class="text-muted d-block mb-2">
+                            • Choose appropriate difficulty level
+                        </small>
+                        <small class="text-muted d-block">
+                            • Include key competencies in description
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Form Area -->
+            <div class="col-lg-8 col-xl-9">
+                <div class="main-card p-4">
+                    <!-- Page Title -->
+                    <h2 class="mb-4 fw-bold">Create New Skill</h2>
+
+                    <!-- Form -->
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': true}}) }}
+
+                    <!-- Information Section -->
+                    <div class="form-section">
+                        <h4 class="form-section-title">Information</h4>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.name, 'Skill Name', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Enter skill name (e.g., Python Programming)'}}) }}
+                                {{ form_errors(form.name) }}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.category, 'Category', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(form.category, {'attr': {'class': 'form-select'}}) }}
+                                {{ form_errors(form.category) }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(form.difficulty, 'Difficulty Level', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(form.difficulty, {'attr': {'class': 'form-select'}}) }}
+                                {{ form_errors(form.difficulty) }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Description
+                                <i class="fas fa-info-circle tooltip-icon"
+                                   data-bs-toggle="tooltip"
+                                   title="Provide a detailed description of this skill, including key competencies and applications"></i>
+                            </label>
+                            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 4, 'placeholder': 'Provide a detailed description of this skill, including key competencies and applications...'}}) }}
+                            {{ form_errors(form.description) }}
+                        </div>
+                    </div>
+
+                    <!-- Form Buttons -->
+                    <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                        <a href="{{ path('app_admin_skill_index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-plus me-1"></i> Create Skill
+                        </button>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Bootstrap tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Live preview functionality
+            const nameInput = document.querySelector('input[name="{{ form.name.vars.full_name }}"]');
+            const descriptionInput = document.querySelector('textarea[name="{{ form.description.vars.full_name }}"]');
+            const categoryInput = document.querySelector('select[name="{{ form.category.vars.full_name }}"]');
+            const difficultyInput = document.querySelector('select[name="{{ form.difficulty.vars.full_name }}"]');
+
+            const namePreview = document.getElementById('namePreview');
+            const descriptionPreview = document.getElementById('descriptionPreview');
+            const categoryPreview = document.getElementById('categoryPreview');
+            const difficultyPreview = document.getElementById('difficultyPreview');
+
+            // Update previews on input change
+            if (nameInput && namePreview) {
+                nameInput.addEventListener('input', function() {
+                    namePreview.textContent = this.value || 'New Skill';
+                });
+            }
+
+            if (descriptionInput && descriptionPreview) {
+                descriptionInput.addEventListener('input', function() {
+                    const text = this.value || 'Enter a description to see preview...';
+                    descriptionPreview.textContent = text.length > 80 ? text.substring(0, 80) + '...' : text;
+                });
+            }
+
+            if (categoryInput && categoryPreview) {
+                categoryInput.addEventListener('change', function() {
+                    categoryPreview.textContent = this.value || 'Not Selected';
+                });
+            }
+
+            if (difficultyInput && difficultyPreview) {
+                difficultyInput.addEventListener('change', function() {
+                    const difficulty = this.value || 'Not Selected';
+                    difficultyPreview.textContent = difficulty;
+                    
+                    // Update difficulty badge styling
+                    difficultyPreview.className = 'difficulty-badge';
+                    if (difficulty === 'Beginner') {
+                        difficultyPreview.classList.add('difficulty-beginner');
+                    } else if (difficulty === 'Intermediate') {
+                        difficultyPreview.classList.add('difficulty-intermediate');
+                    } else if (difficulty === 'Advanced') {
+                        difficultyPreview.classList.add('difficulty-advanced');
+                    } else {
+                        difficultyPreview.classList.add('difficulty-beginner');
+                    }
+                });
+            }
+
+            // Form validation
+            (function() {
+                'use strict';
+                window.addEventListener('load', function() {
+                    var forms = document.getElementsByClassName('needs-validation');
+                    var validation = Array.prototype.filter.call(forms, function(form) {
+                        form.addEventListener('submit', function(event) {
+                            if (form.checkValidity() === false) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                            }
+                            form.classList.add('was-validated');
+                        }, false);
+                    });
+                }, false);
+            })();
+        });
+    </script>
+{% endblock %} 
