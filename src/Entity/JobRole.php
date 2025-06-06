@@ -37,6 +37,27 @@ class JobRole
     #[ORM\ManyToMany(targetEntity: Skill::class, inversedBy: 'jobRoles')]
     private Collection $skills;
 
+    #[ORM\Column]
+    private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\Column(length: 6)]
+    private ?string $anzsco = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $jobCode = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $EntryRequirements = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $JobOpportunities = null;
+
+    #[ORM\Column(length: 10)]
+    private ?string $YearsOfTraining = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $JobOpportunitiesCaption = null;
+
     public function __construct()
     {
         $this->skills = new ArrayCollection();
@@ -128,6 +149,90 @@ class JobRole
     public function removeSkill(Skill $skill): static
     {
         $this->skills->removeElement($skill);
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getAnzsco(): ?string
+    {
+        return $this->anzsco;
+    }
+
+    public function setAnzsco(string $anzsco): static
+    {
+        $this->anzsco = $anzsco;
+
+        return $this;
+    }
+
+    public function getJobCode(): ?string
+    {
+        return $this->jobCode;
+    }
+
+    public function setJobCode(string $jobCode): static
+    {
+        $this->jobCode = $jobCode;
+
+        return $this;
+    }
+
+    public function getEntryRequirements(): ?string
+    {
+        return $this->EntryRequirements;
+    }
+
+    public function setEntryRequirements(string $EntryRequirements): static
+    {
+        $this->EntryRequirements = $EntryRequirements;
+
+        return $this;
+    }
+
+    public function getJobOpportunities(): ?string
+    {
+        return $this->JobOpportunities;
+    }
+
+    public function setJobOpportunities(string $JobOpportunities): static
+    {
+        $this->JobOpportunities = $JobOpportunities;
+
+        return $this;
+    }
+
+    public function getYearsOfTraining(): ?string
+    {
+        return $this->YearsOfTraining;
+    }
+
+    public function setYearsOfTraining(string $YearsOfTraining): static
+    {
+        $this->YearsOfTraining = $YearsOfTraining;
+
+        return $this;
+    }
+
+    public function getJobOpportunitiesCaption(): ?string
+    {
+        return $this->JobOpportunitiesCaption;
+    }
+
+    public function setJobOpportunitiesCaption(string $JobOpportunitiesCaption): static
+    {
+        $this->JobOpportunitiesCaption = $JobOpportunitiesCaption;
 
         return $this;
     }
