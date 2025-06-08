@@ -40,28 +40,47 @@ class JobRole
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\Column(length: 6)]
+    #[ORM\Column]
     private ?string $anzsco = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column]
     private ?string $jobCode = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $EntryRequirements = null;
+    #[ORM\Column]
+    private ?string $entryRequirements = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $JobOpportunities = null;
+    #[ORM\Column]
+    private ?string $jobOpportunities = null;
 
-    #[ORM\Column(length: 10)]
-    private ?string $YearsOfTraining = null;
+    #[ORM\Column]
+    private ?string $yearsOfTraining = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $JobOpportunitiesCaption = null;
+    #[ORM\Column]
+    private ?string $jobOpportunitiesCaption = null;
+
+    #[ORM\Column(length: 100, options: ['default' => 'careers.govt.nz'])]
+    private string $source = 'careers.govt.nz';
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $lastSyncedAt = null;
+
+    #[ORM\Column(type: 'string', length: 50, options: ['default' => 'synced'])]
+    private string $syncStatus = 'synced'; // synced, error, manual_override
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $syncError = null;
+
+    #[ORM\Column(options: ['default' => false])]
+    private bool $manuallyEdited = false;
+
+    #[ORM\Column(options: ['default' => false])]
+    private bool $isArchived = false;
 
     public function __construct()
     {
         $this->skills = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
