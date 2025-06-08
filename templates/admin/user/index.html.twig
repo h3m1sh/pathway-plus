@@ -1,0 +1,403 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User Management{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">User Management</h1>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <div class="row align-items-center">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" id="userSearch" class="form-control border-start-0"
+                                   placeholder="Search by name, email or student ID..."
+                                   aria-label="Search users">
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3 mb-md-0">
+                        <select id="roleFilter" class="form-select">
+                            <option value="">All Roles</option>
+                            <option value="ROLE_STUDENT">Students</option>
+                            <option value="ROLE_ADMIN">Admins</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 text-md-end">
+                        <a href="{{ path('app_admin_user_new') }}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-1"></i> Add User
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="usersTable">
+                        <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="ps-3">ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Role</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Student ID</th>
+                            <th scope="col">Registered</th>
+                            <th scope="col">Last Login</th>
+                            <th scope="col" class="text-end pe-3">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for user in users %}
+                            <tr data-user-role="{{ user.roles|join(',') }}" data-user-name="{{ user.fullName|lower }}" data-user-email="{{ user.email|lower }}" data-student-id="{{ user.studentId|lower }}">
+                                <td class="ps-3">{{ user.id }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if user.avatarUrl %}
+                                            <img src="{{ user.avatarUrl }}" alt="{{ user.fullName }}" class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+                                        {% else %}
+                                            <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; font-size: 14px;">
+                                                {{ user.firstName|slice(0,1) }}{{ user.lastName|slice(0,1) }}
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <div class="fw-medium">{{ user.fullName }}</div>
+                                            {% if user.studentId %}
+                                                <small class="text-muted">ID: {{ user.studentId }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    {% if user.isAdmin %}
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-shield-fill me-1"></i>Admin
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-info">
+                                            <i class="bi bi-person-fill me-1"></i>Student
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.isActive %}
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle me-1"></i>Active
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-pause-circle me-1"></i>Inactive
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.studentId %}
+                                        <code class="text-primary">{{ user.studentId }}</code>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="text-nowrap">
+                                        {{ user.createdAt|date('M j, Y') }}
+                                        <small class="text-muted d-block">{{ user.createdAt|date('g:i A') }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if user.lastLoginAt %}
+                                        <div class="text-nowrap">
+                                            {{ user.lastLoginAt|date('M j, Y') }}
+                                            <small class="text-muted d-block">{{ user.lastLoginAt|date('g:i A') }}</small>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">Never</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end pe-3">
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ path('app_admin_user_show', {'id': user.id}) }}" class="btn btn-outline-info" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-primary" 
+                                                onclick="editUser({{ user.id }})" title="Edit User">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal{{ user.id }}" title="Delete User">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Delete Confirmation Modal for each user -->
+                            <div class="modal fade" id="deleteModal{{ user.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ user.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel{{ user.id }}">Confirm Delete</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="alert alert-warning">
+                                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                                Are you sure you want to delete the user <strong>"{{ user.fullName }}"</strong>?
+                                            </div>
+                                            <p class="mb-0">This action cannot be undone and will remove all associated data.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form method="post" action="{{ path('app_admin_user_delete', {'id': user.id}) }}" style="display: inline-block;">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                                <button type="submit" class="btn btn-danger">
+                                                    <i class="bi bi-trash me-1"></i>Delete User
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <tr>
+                                <td colspan="9" class="text-center py-5">
+                                    <div class="alert alert-info mb-0">
+                                        <i class="bi bi-info-circle me-2"></i>No users found. Click "Add User" to create your first user account.
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {% if users|length > 0 %}
+                <div class="card-footer bg-white py-3">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6">
+                            <small class="text-muted">
+                                Showing {{ users|length }} users
+                            </small>
+                        </div>
+                        <div class="col-lg-6 text-end">
+                            <small class="text-muted">
+                                Total: {{ users|length }} registered users
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- User Statistics Cards -->
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-people-fill fs-1 me-3"></i>
+                            <div>
+                                <h5 class="mb-0">{{ users|length }}</h5>
+                                <small>Total Users</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-person-fill fs-1 me-3"></i>
+                            <div>
+                                <h5 class="mb-0">{{ users|filter(u => u.isStudent)|length }}</h5>
+                                <small>Students</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-shield-fill fs-1 me-3"></i>
+                            <div>
+                                <h5 class="mb-0">{{ users|filter(u => u.isAdmin)|length }}</h5>
+                                <small>Admins</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill fs-1 me-3"></i>
+                            <div>
+                                <h5 class="mb-0">{{ users|filter(u => u.isActive)|length }}</h5>
+                                <small>Active Users</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('userSearch');
+            const roleFilter = document.getElementById('roleFilter');
+            const table = document.getElementById('usersTable');
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            function filterTable() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedRole = roleFilter.value;
+
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    
+                    // Skip empty state row
+                    if (row.getAttribute('data-user-role') === null) {
+                        continue;
+                    }
+
+                    const userName = row.getAttribute('data-user-name') || '';
+                    const userEmail = row.getAttribute('data-user-email') || '';
+                    const studentId = row.getAttribute('data-student-id') || '';
+                    const userRoles = row.getAttribute('data-user-role') || '';
+
+                    // Search filter
+                    const matchesSearch = searchTerm === '' || 
+                        userName.includes(searchTerm) || 
+                        userEmail.includes(searchTerm) || 
+                        studentId.includes(searchTerm);
+
+                    // Role filter
+                    const matchesRole = selectedRole === '' || userRoles.includes(selectedRole);
+
+                    if (matchesSearch && matchesRole) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            }
+
+            searchInput.addEventListener('keyup', filterTable);
+            roleFilter.addEventListener('change', filterTable);
+        });
+
+        // Edit User Modal Function
+        function editUser(userId) {
+            // First, fetch user data
+            fetch(`{{ path('app_admin_user_show', {'id': '__ID__'}) }}`.replace('__ID__', userId))
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch user data');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    // Show SweetAlert2 modal with edit form
+                    Swal.fire({
+                        title: 'Edit User',
+                        html: '<div id="edit-user-form">Loading...</div>',
+                        width: 800,
+                        showCancelButton: true,
+                        confirmButtonText: 'Save Changes',
+                        cancelButtonText: 'Cancel',
+                        showLoaderOnConfirm: true,
+                        didOpen: () => {
+                            // Load the edit form
+                            fetch(`{{ path('app_admin_user_edit', {'id': '__ID__'}) }}`.replace('__ID__', userId))
+                                .then(response => response.text())
+                                .then(formHtml => {
+                                    // Extract form content from the response
+                                    const parser = new DOMParser();
+                                    const doc = parser.parseFromString(formHtml, 'text/html');
+                                    const form = doc.querySelector('form');
+                                    
+                                    if (form) {
+                                        document.getElementById('edit-user-form').innerHTML = form.outerHTML;
+                                    } else {
+                                        document.getElementById('edit-user-form').innerHTML = '<p class="text-danger">Error loading form</p>';
+                                    }
+                                })
+                                .catch(error => {
+                                    document.getElementById('edit-user-form').innerHTML = '<p class="text-danger">Error: ' + error.message + '</p>';
+                                });
+                        },
+                        preConfirm: () => {
+                            const form = document.querySelector('#edit-user-form form');
+                            if (!form) {
+                                Swal.showValidationMessage('Form not found');
+                                return false;
+                            }
+
+                            const formData = new FormData(form);
+                            
+                            return fetch(form.action, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            })
+                            .then(response => {
+                                if (response.redirected) {
+                                    // If response was redirected (successful), that's good
+                                    return response;
+                                } else if (!response.ok) {
+                                    throw new Error('Failed to update user');
+                                }
+                                return response.text().then(html => {
+                                    // Check if response contains form errors
+                                    if (html.includes('alert-danger') || html.includes('form-error')) {
+                                        throw new Error('Validation errors occurred');
+                                    }
+                                    return response;
+                                });
+                            })
+                            .catch(error => {
+                                Swal.showValidationMessage('Error: ' + error.message);
+                                return false;
+                            });
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'User updated successfully',
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                // Refresh the page to show updated data
+                                window.location.reload();
+                            });
+                        }
+                    });
+                })
+                .catch(error => {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Failed to load user data: ' + error.message,
+                        icon: 'error'
+                    });
+                });
+        }
+    </script>
+{% endblock %}

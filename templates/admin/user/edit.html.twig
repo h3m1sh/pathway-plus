@@ -1,0 +1,301 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit User - {{ user.fullName }}{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_user_index') }}" class="text-decoration-none">User Management</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_admin_user_show', {'id': user.id}) }}" class="text-decoration-none">{{ user.fullName }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit</li>
+            </ol>
+        </nav>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-pencil-square me-2"></i>Edit User - {{ user.fullName }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if form.vars.errors|length > 0 %}
+                            <div class="alert alert-danger">
+                                <h6><i class="bi bi-exclamation-triangle me-1"></i>Please fix the following errors:</h6>
+                                <ul class="mb-0">
+                                    {% for error in form.vars.errors %}
+                                        <li>{{ error.message }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                        
+                        {{ form_start(form, {'attr': {'class': 'user-edit-form', 'id': 'user-edit-form'}}) }}
+                        
+                        <div class="row">
+                            <!-- Personal Information -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-3">
+                                    <i class="bi bi-person me-1"></i>Personal Information
+                                </h6>
+                                
+                                <div class="mb-3">
+                                    {{ form_label(form.firstName, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                                    {{ form_widget(form.firstName, {'attr': {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.firstName) }}
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ form_label(form.lastName, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                                    {{ form_widget(form.lastName, {'attr': {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.lastName) }}
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ form_label(form.email, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                                    {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.email) }}
+                                </div>
+
+                                {% if form.studentId is defined %}
+                                <div class="mb-3">
+                                    {{ form_label(form.studentId, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                                    {{ form_widget(form.studentId, {'attr': {'class': 'form-control', 'placeholder': 'Optional - for student accounts only'}}) }}
+                                    {{ form_errors(form.studentId) }}
+                                    <small class="form-text text-muted">Leave blank for admin accounts</small>
+                                </div>
+                                {% endif %}
+
+                                {% if form.avatarUrl is defined %}
+                                <div class="mb-3">
+                                    {{ form_label(form.avatarUrl, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                                    {{ form_widget(form.avatarUrl, {'attr': {'class': 'form-control', 'placeholder': 'https://example.com/avatar.jpg'}}) }}
+                                    {{ form_errors(form.avatarUrl) }}
+                                    <small class="form-text text-muted">URL to profile picture</small>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Account Settings -->
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-3">
+                                    <i class="bi bi-gear me-1"></i>Account Settings
+                                </h6>
+
+                                {% if form.roles is defined %}
+                                <div class="mb-3">
+                                    {{ form_label(form.roles, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                                    <div class="form-check-container">
+                                        {{ form_widget(form.roles) }}
+                                    </div>
+                                    {{ form_errors(form.roles) }}
+                                    <small class="form-text text-muted">Select the appropriate role(s) for this user</small>
+                                </div>
+                                {% endif %}
+
+                                {% if form.isActive is defined %}
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        {{ form_widget(form.isActive, {'attr': {'class': 'form-check-input'}}) }}
+                                        {{ form_label(form.isActive, null, {'label_attr': {'class': 'form-check-label fw-medium'}}) }}
+                                    </div>
+                                    {{ form_errors(form.isActive) }}
+                                    <small class="form-text text-muted">Inactive users cannot log in</small>
+                                </div>
+                                {% endif %}
+
+                                <!-- Password Section -->
+                                {% if form.plainPassword is defined %}
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="bi bi-lock me-2 text-muted"></i>
+                                        <span class="fw-medium">Password</span>
+                                    </div>
+                                    
+                                    <div class="alert alert-info alert-sm">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Leave password fields empty to keep current password
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-12 mb-3">
+                                            {{ form_label(form.plainPassword.first, null, {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.plainPassword.first, {'attr': {'class': 'form-control', 'placeholder': 'Enter new password'}}) }}
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            {{ form_label(form.plainPassword.second, null, {'label_attr': {'class': 'form-label'}}) }}
+                                            {{ form_widget(form.plainPassword.second, {'attr': {'class': 'form-control', 'placeholder': 'Confirm new password'}}) }}
+                                        </div>
+                                    </div>
+                                    {{ form_errors(form.plainPassword) }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Current User Info -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="bg-light p-3 rounded">
+                                    <h6 class="text-muted mb-2">
+                                        <i class="bi bi-info-circle me-1"></i>Current Information
+                                    </h6>
+                                    <div class="row text-sm">
+                                        <div class="col-md-4">
+                                            <strong>Created:</strong> {{ user.createdAt|date('M j, Y g:i A') }}
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong>Last Updated:</strong> 
+                                            {% if user.updatedAt %}
+                                                {{ user.updatedAt|date('M j, Y g:i A') }}
+                                            {% else %}
+                                                Never
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong>Last Login:</strong> 
+                                            {% if user.lastLoginAt %}
+                                                {{ user.lastLoginAt|date('M j, Y g:i A') }}
+                                            {% else %}
+                                                Never
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{ form_rest(form) }}
+                        {{ form_end(form, {'render_rest': false}) }}
+                    </div>
+
+                    <div class="card-footer bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-muted">
+                                <small>
+                                    <i class="bi bi-clock me-1"></i>
+                                    All changes will be saved immediately
+                                </small>
+                            </div>
+                            <div class="btn-group">
+                                <a href="{{ path('app_admin_user_show', {'id': user.id}) }}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-1"></i>Cancel
+                                </a>
+                                <button type="submit" form="user-edit-form" class="btn btn-primary">
+                                    <i class="bi bi-check-lg me-1"></i>Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Form validation feedback
+            const form = document.querySelector('.user-edit-form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Saving...';
+                    }
+                });
+            }
+
+            // Password field validation
+            const passwordFields = document.querySelectorAll('input[type="password"]');
+            passwordFields.forEach(function(field) {
+                field.addEventListener('input', function() {
+                    const firstPassword = document.querySelector('input[name*="[plainPassword][first]"]');
+                    const secondPassword = document.querySelector('input[name*="[plainPassword][second]"]');
+                    
+                    if (firstPassword && secondPassword && firstPassword.value && secondPassword.value) {
+                        if (firstPassword.value !== secondPassword.value) {
+                            secondPassword.setCustomValidity('Passwords do not match');
+                        } else {
+                            secondPassword.setCustomValidity('');
+                        }
+                    }
+                });
+            });
+
+            // Avatar URL preview
+            const avatarUrlInput = document.querySelector('input[name*="[avatarUrl]"]');
+            if (avatarUrlInput) {
+                avatarUrlInput.addEventListener('blur', function() {
+                    const url = this.value.trim();
+                    if (url) {
+                        // Simple URL validation
+                        try {
+                            new URL(url);
+                            this.classList.remove('is-invalid');
+                            this.classList.add('is-valid');
+                        } catch {
+                            this.classList.remove('is-valid');
+                            this.classList.add('is-invalid');
+                        }
+                    } else {
+                        this.classList.remove('is-valid', 'is-invalid');
+                    }
+                });
+            }
+
+            // Role selection feedback
+            const roleCheckboxes = document.querySelectorAll('input[name*="[roles]"]');
+            roleCheckboxes.forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    const checkedRoles = document.querySelectorAll('input[name*="[roles]"]:checked');
+                    if (checkedRoles.length === 0) {
+                        // Automatically select ROLE_STUDENT if no roles selected
+                        const studentRole = document.querySelector('input[value="ROLE_STUDENT"]');
+                        if (studentRole) {
+                            studentRole.checked = true;
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+    <style>
+        .form-check-container .form-check {
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-check-container .form-check-input {
+            margin-top: 0.25rem;
+        }
+        
+        .alert-sm {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+        }
+        
+        .text-sm {
+            font-size: 0.875rem;
+        }
+        
+        .user-edit-form .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+        
+        .user-edit-form .is-invalid {
+            border-color: #dc3545;
+        }
+        
+        .user-edit-form .is-valid {
+            border-color: #198754;
+        }
+    </style>
+{% endblock %}
