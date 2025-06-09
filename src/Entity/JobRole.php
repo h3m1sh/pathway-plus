@@ -210,48 +210,148 @@ class JobRole
 
     public function getEntryRequirements(): ?string
     {
-        return $this->EntryRequirements;
+        return $this->entryRequirements;
     }
 
-    public function setEntryRequirements(string $EntryRequirements): static
+    public function setEntryRequirements(?string $entryRequirements): static
     {
-        $this->EntryRequirements = $EntryRequirements;
+        $this->entryRequirements = $entryRequirements;
 
         return $this;
     }
 
     public function getJobOpportunities(): ?string
     {
-        return $this->JobOpportunities;
+        return $this->jobOpportunities;
     }
 
-    public function setJobOpportunities(string $JobOpportunities): static
+    public function setJobOpportunities(?string $jobOpportunities): static
     {
-        $this->JobOpportunities = $JobOpportunities;
+        $this->jobOpportunities = $jobOpportunities;
 
         return $this;
     }
 
     public function getYearsOfTraining(): ?string
     {
-        return $this->YearsOfTraining;
+        return $this->yearsOfTraining;
     }
 
-    public function setYearsOfTraining(string $YearsOfTraining): static
+    public function setYearsOfTraining(?string $yearsOfTraining): static
     {
-        $this->YearsOfTraining = $YearsOfTraining;
+        $this->yearsOfTraining = $yearsOfTraining;
 
         return $this;
     }
 
     public function getJobOpportunitiesCaption(): ?string
     {
-        return $this->JobOpportunitiesCaption;
+        return $this->jobOpportunitiesCaption;
     }
 
-    public function setJobOpportunitiesCaption(string $JobOpportunitiesCaption): static
+    public function setJobOpportunitiesCaption(?string $jobOpportunitiesCaption): static
     {
-        $this->JobOpportunitiesCaption = $JobOpportunitiesCaption;
+        $this->jobOpportunitiesCaption = $jobOpportunitiesCaption;
+
+        return $this;
+    }
+
+    public function getSource(): string
+    {
+        return $this->source;
+    }
+
+    public function setSource(string $source): static
+    {
+        $this->source = $source;
+
+        return $this;
+    }
+
+    public function getLastSyncedAt(): ?\DateTimeImmutable
+    {
+        return $this->lastSyncedAt;
+    }
+
+    public function setLastSyncedAt(?\DateTimeImmutable $lastSyncedAt): static
+    {
+        $this->lastSyncedAt = $lastSyncedAt;
+
+        return $this;
+    }
+
+    public function getSyncStatus(): string
+    {
+        return $this->syncStatus;
+    }
+
+    public function setSyncStatus(string $syncStatus): static
+    {
+        $this->syncStatus = $syncStatus;
+
+        return $this;
+    }
+
+    public function getSyncError(): ?string
+    {
+        return $this->syncError;
+    }
+
+    public function setSyncError(?string $syncError): static
+    {
+        $this->syncError = $syncError;
+
+        return $this;
+    }
+
+    public function isManuallyEdited(): bool
+    {
+        return $this->manuallyEdited;
+    }
+
+    public function setManuallyEdited(bool $manuallyEdited): static
+    {
+        $this->manuallyEdited = $manuallyEdited;
+
+        return $this;
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->isArchived;
+    }
+
+    public function setIsArchived(bool $isArchived): static
+    {
+        $this->isArchived = $isArchived;
+
+        return $this;
+    }
+
+    public function markAsSyncSuccessful(): static
+    {
+        $this->setSyncStatus('synced');
+        $this->setSyncError(null);
+        $this->setLastSyncedAt(new \DateTimeImmutable());
+        $this->setUpdatedAt(new \DateTimeImmutable());
+
+        return $this;
+    }
+
+    public function markAsSyncFailed(string $error): static
+    {
+        $this->setSyncStatus('error');
+        $this->setSyncError($error);
+        $this->setLastSyncedAt(new \DateTimeImmutable());
+
+        return $this;
+    }
+
+    public function markAsManuallyEdited(): static
+    {
+        $this->setManuallyEdited(true);
+        $this->setSyncStatus('manual_override');
+        $this->setUpdatedAt(new \DateTimeImmutable());
 
         return $this;
     }

@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/admin/api-test')]
-class ApiTestController extends AbstractController
+class ApiController extends AbstractController
 {
     #[Route('/careers', name: 'admin_test_careers_api')]
     public function testCareersApi(CareersApiClient $apiClient): JsonResponse
@@ -19,7 +19,7 @@ class ApiTestController extends AbstractController
             $isConnected = $apiClient->testConnection();
             $jobsCount = $isConnected ? $apiClient->getJobsCount() : 0;
             $sampleJob = $isConnected ? $apiClient->fetchJobByCode('J80312') : null;
-            
+
             return $this->json([
                 'api_connected' => $isConnected,
                 'total_jobs_available' => $jobsCount,

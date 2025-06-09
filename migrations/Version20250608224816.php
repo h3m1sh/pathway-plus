@@ -14,7 +14,7 @@ final class Version20250608224816 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'JobRole fields for api synchronization';
+        return 'JobRole fields for api';
     }
 
     public function up(Schema $schema): void
