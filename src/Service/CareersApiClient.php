@@ -33,7 +33,7 @@ class CareersApiClient
                 ],
                 'timeout' => 60
             ]);
-            
+
             return $response->toArray();
         } catch (\Exception $e) {
             throw new \RuntimeException('Failed to fetch jobs from API: ' . $e->getMessage(), 0, $e);
@@ -51,7 +51,7 @@ class CareersApiClient
                 'query' => ['JobCode' => $jobCode],
                 'timeout' => 60
             ]);
-            
+
             $data = $response->toArray();
             return $data['items'][0] ?? null;
         } catch (\Exception $e) {
@@ -70,7 +70,7 @@ class CareersApiClient
                 'query' => ['limit' => 1],
                 'timeout' => 60
             ]);
-            
+
             $data = $response->toArray();
             return $data['total'] ?? 0;
         } catch (\Exception $e) {
@@ -89,5 +89,23 @@ class CareersApiClient
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+    public function fetchAllJobsBatched(int $batchSize = 100): \Generator
+    {
+        $offset = 0;
+
+        do {
+            $response = $this->fetchAllJobs($offset, $batchSize);
+            $jobs = $response['items'] ?? [];
+
+            if (!empty($jobs)) {
+                yield $jobs;
+            }
+
+            $offset += $batchSize;
+            $total = $response['total'] ?? 0;
+
+        } while ($offset < $total && !empty($jobs));
     }
 }
