@@ -1,3 +1,4 @@
+# config/services.yaml
 # This file is the entry point to configure your own services.
 # Files in the packages/ subdirectory configure your dependencies.
 
@@ -15,6 +16,12 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/'
+
+    # Custom service configurations
+    App\Service\CareersApiClient:
+        arguments:
+            $apiUsername: '%env(CAREERS_API_USERNAME)%'
+            $apiPassword: '%env(CAREERS_API_PASSWORD)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
