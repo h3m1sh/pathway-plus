@@ -72,7 +72,7 @@ class CareersApiClient
             ]);
 
             $data = $response->toArray();
-            return $data['total'] ?? 0;
+            return $data['_metadata']['totalCount'] ?? 0;
         } catch (\Exception $e) {
             throw new \RuntimeException('Failed to get jobs count from API: ' . $e->getMessage(), 0, $e);
         }
@@ -104,7 +104,7 @@ class CareersApiClient
             }
 
             $offset += $batchSize;
-            $total = $response['total'] ?? 0;
+            $total = $response['_metadata']['totalCount'] ?? 0;
 
         } while ($offset < $total && !empty($jobs));
     }

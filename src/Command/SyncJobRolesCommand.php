@@ -31,6 +31,7 @@ class SyncJobRolesCommand extends Command
             ->addArgument('job-code', InputArgument::OPTIONAL, 'Sync specific job by job code')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Show what would be synced without making changes')
             ->addOption('status', null, InputOption::VALUE_NONE, 'Show sync status information')
+            ->addOption('debug', null, InputOption::VALUE_NONE, 'Show debug information and raw API responses')
             ->setHelp('
 This command syncs job roles from the Careers NZ API.
 
@@ -38,6 +39,7 @@ Examples:
   php bin/console app:sync-jobs                    # Sync all jobs
   php bin/console app:sync-jobs J80312            # Sync specific job
   php bin/console app:sync-jobs --status          # Show sync status
+  php bin/console app:sync-jobs --debug           # Show API debug info
   php bin/console app:sync-jobs --dry-run         # Preview sync without changes
             ');
     }
@@ -45,6 +47,11 @@ Examples:
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+
+        // Show debug info if requested
+        if ($input->getOption('debug')) {
+            return $this->showDebugInfo($io);
+        }
 
         // Show status if requested
         if ($input->getOption('status')) {
@@ -217,6 +224,47 @@ Examples:
         } catch (\Exception $e) {
             $io->error('API connection failed: ' . $e->getMessage());
             return false;
+        }
+    }
+
+    private function showDebugInfo(SymfonyStyle $io): int
+    {
+        $io->title('API Debug Information');
+        
+        try {
+            // Test basic API call
+            $io->section('Testing API Connection');
+            $response = $this->apiClient->fetchAllJobs(0, 1);
+            
+            $io->writeln('Raw API Response:');
+            $io->writeln(json_encode($response, JSON_PRETTY_PRINT));
+            
+            // Test job count
+            $io->section('Testing Job Count');
+            $count = $this->apiClient->getJobsCount();
+            $io->writeln("Jobs count returned: {$count}");
+            
+            // Show response structure
+            $io->section('Response Structure Analysis');
+            $io->writeln('Response keys: ' . implode(', ', array_keys($response)));
+            
+            if (isset($response['items'])) {
+                $io->writeln('Items count: ' . count($response['items']));
+                if (!empty($response['items'])) {
+                    $io->writeln('First item keys: ' . implode(', ', array_keys($response['items'][0])));
+                }
+            }
+            
+            if (isset($response['total'])) {
+                $io->writeln('Total field: ' . $response['total']);
+            }
+            
+            return Command::SUCCESS;
+            
+        } catch (\Exception $e) {
+            $io->error('Debug failed: ' . $e->getMessage());
+            $io->writeln('Exception details: ' . $e->getTraceAsString());
+            return Command::FAILURE;
         }
     }
 }

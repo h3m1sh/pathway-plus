@@ -63,7 +63,6 @@ class JobRoleSyncService
                     }
                 }
 
-
                 $this->entityManager->flush();
                 $this->entityManager->clear();
             }
@@ -138,7 +137,6 @@ class JobRoleSyncService
 
         $this->syncJobSkills($jobRole, $jobData);
 
-
         if ($isNew) {
             $this->entityManager->persist($jobRole);
         }
@@ -146,6 +144,9 @@ class JobRoleSyncService
         $jobRole->setLastSyncedAt(new \DateTimeImmutable());
         $jobRole->setSyncStatus('synced');
         $jobRole->setSyncError(null);
+
+        // Flush changes to database
+        $this->entityManager->flush();
 
         return true;
     }
@@ -161,16 +162,20 @@ class JobRoleSyncService
         $jobRole->setDescription($data['Description'] ?? '');
         $jobRole->setAnzsco($data['ANZSCO'] ?? null);
 
-        $industry = $this->extractIndustryFromData($data);
-        $jobRole->setIndustry($industry);
+        // Map industry from API data
+        $jobRole->setIndustry($data['Industry'] ?? 'General');
 
-        $salaryRange = $this->extractSalaryRange($data['PayDetails'] ?? '');
+        // Extract and set salary range from PayDetails or PayMetadata
+        $salaryRange = $this->extractSalaryRange($data);
         $jobRole->setSalaryRange($salaryRange);
 
+        // Map additional fields
+        $jobRole->setEntryRequirements($data['EntryRequirements'] ?? null);
+        $jobRole->setJobOpportunities($data['JobOpportunities'] ?? null);
+        $jobRole->setYearsOfTraining($data['YearsOfTraining'] ?? null);
+        $jobRole->setJobOpportunitiesCaption($data['JobOpportunitiesCaption'] ?? null);
+
         $jobRole->setSource('careers.govt.nz');
-        $jobRole->setEntryRequirements($data['EntryRequirements'] ?? '');
-
-
     }
 
     /**
@@ -178,71 +183,234 @@ class JobRoleSyncService
      */
     private function syncJobSkills(JobRole $jobRole, array $jobData): void
     {
+        // Extract skills from multiple text fields
+        $skillsText = $this->gatherSkillsText($jobData);
+        
+        if (empty($skillsText)) {
+            return;
+        }
 
-        // TODO: Implement skill extraction in future version
-//        $skillsText = $jobData['SkillsAndKnowledge'] ?? '';
-//
-//        if (empty($skillsText)) {
-//            return;
-//        }
-//
-//        $extractedSkills = $this->extractSkillsFromText($skillsText);
-//
-//        foreach ($extractedSkills as $skillName) {
-//            $skill = $this->findOrCreateSkill($skillName);
-//
-//            if (!$jobRole->getRequiredSkills()->contains($skill)) {
-//                $jobRole->addRequiredSkill($skill);
-//            }
-//        }
+        $extractedSkills = $this->extractSkillsFromText($skillsText);
+
+        foreach ($extractedSkills as $skillName) {
+            $skill = $this->findOrCreateSkill($skillName);
+
+            if (!$jobRole->getSkills()->contains($skill)) {
+                $jobRole->addSkill($skill);
+            }
+        }
     }
 
     /**
-     * Extract skills from text (basic implementation)
+     * Gather skills text from various API fields
+     */
+    private function gatherSkillsText(array $jobData): string
+    {
+        $textSources = [
+            $jobData['SkillsAndKnowledge'] ?? '',
+            $jobData['TasksAndDuties'] ?? '',
+            $jobData['EntryRequirements'] ?? '',
+            $jobData['Description'] ?? ''
+        ];
+
+        $combinedText = implode(' ', array_filter($textSources));
+        
+        // Clean HTML tags and decode entities
+        $cleanText = strip_tags($combinedText);
+        $cleanText = html_entity_decode($cleanText, ENT_QUOTES, 'UTF-8');
+        
+        return $cleanText;
+    }
+
+    /**
+     * Extract skills from text using pattern matching and keyword detection
      */
     private function extractSkillsFromText(string $text): array
     {
         $skills = [];
 
-        // Look for common skill patterns
+        // Common technical skills and tools (case-insensitive matching)
+        $technicalSkills = [
+            'microsoft office', 'excel', 'word', 'powerpoint', 'outlook',
+            'project management', 'leadership', 'communication', 'teamwork',
+            'problem solving', 'analytical thinking', 'customer service',
+            'time management', 'planning', 'budgeting', 'supervision',
+            'training', 'coaching', 'mentoring', 'negotiation', 'presentation',
+            'research', 'analysis', 'reporting', 'documentation', 'compliance',
+            'quality assurance', 'safety', 'risk management', 'data analysis',
+            'financial analysis', 'accounting', 'bookkeeping', 'procurement',
+            'inventory management', 'logistics', 'supply chain', 'marketing',
+            'sales', 'networking', 'relationship building', 'stakeholder management'
+        ];
+
+        // Look for direct mentions of technical skills
+        foreach ($technicalSkills as $skill) {
+            if (stripos($text, $skill) !== false) {
+                $skills[] = ucwords($skill);
+            }
+        }
+
+        // Look for common skill patterns in text
         $patterns = [
-            '/knowledge of ([^,\n\.]+)/i',
-            '/skills in ([^,\n\.]+)/i',
-            '/experience with ([^,\n\.]+)/i',
-            '/ability to ([^,\n\.]+)/i',
+            '/(?:knowledge|understanding|expertise) (?:of|in) ([^,\n\.;]+)/i',
+            '/(?:skills|experience|proficiency) (?:in|with|using) ([^,\n\.;]+)/i',
+            '/(?:ability|capacity) to ([^,\n\.;]+)/i',
+            '/(?:competent|proficient|skilled) (?:in|with|at) ([^,\n\.;]+)/i',
+            '/(?:familiar|familiarization) with ([^,\n\.;]+)/i',
+            '/(?:training|qualification|certification) in ([^,\n\.;]+)/i',
         ];
 
         foreach ($patterns as $pattern) {
             if (preg_match_all($pattern, $text, $matches)) {
                 foreach ($matches[1] as $match) {
-                    $skill = trim($match);
-                    if (strlen($skill) > 3 && strlen($skill) < 100) {
+                    $skill = $this->cleanSkillText($match);
+                    if ($this->isValidSkill($skill)) {
                         $skills[] = $skill;
                     }
                 }
             }
         }
 
-        return array_unique($skills);
+        // Remove duplicates and return
+        return array_values(array_unique(array_filter($skills)));
     }
 
     /**
-     * Find existing skill or create new one
+     * Clean and normalize skill text
+     */
+    private function cleanSkillText(string $text): string
+    {
+        // Clean HTML and decode entities first
+        $cleanText = strip_tags($text);
+        $cleanText = html_entity_decode($cleanText, ENT_QUOTES, 'UTF-8');
+        
+        // Remove common prefixes and suffixes
+        $cleanText = preg_replace('/^(the|a|an)\s+/i', '', trim($cleanText));
+        $cleanText = preg_replace('/\s+(is|are|and|or|required|needed|essential|preferred)$/i', '', $cleanText);
+        
+        // Remove extra whitespace and normalize
+        $cleanText = preg_replace('/\s+/', ' ', $cleanText);
+        
+        // Remove any remaining HTML artifacts like "&lt;" etc
+        $cleanText = preg_replace('/&[a-zA-Z0-9#]+;/', '', $cleanText);
+        
+        return ucwords(strtolower(trim($cleanText)));
+    }
+
+    /**
+     * Validate if extracted text is a valid skill
+     */
+    private function isValidSkill(string $skill): bool
+    {
+        $length = strlen($skill);
+        
+        // Check length bounds
+        if ($length < 3 || $length > 80) {
+            return false;
+        }
+        
+        // Skip common non-skill words
+        $skipWords = [
+            'work', 'working', 'workers', 'people', 'person', 'individuals',
+            'staff', 'team', 'teams', 'others', 'clients', 'customers',
+            'time', 'times', 'hours', 'days', 'weeks', 'months', 'years',
+            'tasks', 'duties', 'responsibilities', 'requirements', 'qualifications',
+            'degree', 'diploma', 'certificate', 'certification', 'training',
+            'environment', 'environments', 'conditions', 'situations'
+        ];
+        
+        $lowerSkill = strtolower($skill);
+        foreach ($skipWords as $skipWord) {
+            if ($lowerSkill === $skipWord || strpos($lowerSkill, $skipWord) === 0) {
+                return false;
+            }
+        }
+        
+        // Must contain at least one letter
+        return preg_match('/[a-zA-Z]/', $skill);
+    }
+
+    /**
+     * Find existing skill or create new one with appropriate categorization
      */
     private function findOrCreateSkill(string $skillName): Skill
     {
+        // Try exact match first
         $skill = $this->skillRepository->findOneBy(['name' => $skillName]);
 
         if (!$skill) {
+            // Try case-insensitive match
+            $existingSkills = $this->skillRepository->findAll();
+            foreach ($existingSkills as $existingSkill) {
+                if (strtolower($existingSkill->getName()) === strtolower($skillName)) {
+                    return $existingSkill;
+                }
+            }
+
+            // Create new skill with appropriate category
             $skill = new Skill();
             $skill->setName($skillName);
-            $skill->setCategory('General'); // Default
-            $skill->setDifficulty('Intermediate'); // Default
+            $skill->setCategory($this->categorizeSkill($skillName));
+            $skill->setDifficulty($this->assessSkillDifficulty($skillName));
+            $skill->setUpdatedAt(new \DateTimeImmutable());
 
             $this->entityManager->persist($skill);
         }
 
         return $skill;
+    }
+
+    /**
+     * Categorize a skill based on its name
+     */
+    private function categorizeSkill(string $skillName): string
+    {
+        $lowerSkill = strtolower($skillName);
+
+        $categories = [
+            'Technical' => ['microsoft', 'excel', 'word', 'powerpoint', 'software', 'computer', 'data analysis', 'programming', 'coding'],
+            'Management' => ['management', 'leadership', 'supervision', 'planning', 'budgeting', 'project', 'team', 'strategic'],
+            'Communication' => ['communication', 'presentation', 'writing', 'speaking', 'negotiation', 'interpersonal', 'networking'],
+            'Analytical' => ['analysis', 'analytical', 'research', 'problem solving', 'critical thinking', 'evaluation'],
+            'Customer Service' => ['customer', 'client', 'service', 'relationship', 'stakeholder'],
+            'Financial' => ['financial', 'accounting', 'bookkeeping', 'finance', 'audit', 'budget'],
+            'Operations' => ['operations', 'logistics', 'supply chain', 'inventory', 'procurement', 'quality']
+        ];
+
+        foreach ($categories as $category => $keywords) {
+            foreach ($keywords as $keyword) {
+                if (stripos($lowerSkill, $keyword) !== false) {
+                    return $category;
+                }
+            }
+        }
+
+        return 'General';
+    }
+
+    /**
+     * Assess skill difficulty based on its nature
+     */
+    private function assessSkillDifficulty(string $skillName): string
+    {
+        $lowerSkill = strtolower($skillName);
+
+        $advancedKeywords = ['management', 'leadership', 'strategic', 'advanced', 'expert', 'specialized'];
+        $beginnerKeywords = ['basic', 'introduction', 'fundamental', 'entry level'];
+
+        foreach ($advancedKeywords as $keyword) {
+            if (stripos($lowerSkill, $keyword) !== false) {
+                return 'Advanced';
+            }
+        }
+
+        foreach ($beginnerKeywords as $keyword) {
+            if (stripos($lowerSkill, $keyword) !== false) {
+                return 'Beginner';
+            }
+        }
+
+        return 'Intermediate';
     }
 
     /**
@@ -274,30 +442,44 @@ class JobRoleSyncService
     }
 
     /**
-     * Extract industry from job data
+     * Extract salary range from job data
      */
-    private function extractIndustryFromData(array $data): string
+    private function extractSalaryRange(array $data): ?string
     {
+        // First try PayMetadata (structured data)
+        if (!empty($data['PayMetadata']) && is_array($data['PayMetadata'])) {
+            $payMeta = $data['PayMetadata'][0] ?? null;
+            if ($payMeta && isset($payMeta['MinimumPay'], $payMeta['MaximumPay'])) {
+                $min = (int)$payMeta['MinimumPay'];
+                $max = (int)$payMeta['MaximumPay'];
+                
+                // Format nicely
+                if ($min > 0 && $max > 0 && $min !== $max) {
+                    return '$' . number_format($min) . ' - $' . number_format($max);
+                } elseif ($min > 0) {
+                    return '$' . number_format($min) . '+';
+                }
+            }
+        }
 
-        return 'General'; // Default for now
-    }
-
-    /**
-     * Extract salary range from pay details text
-     */
-    private function extractSalaryRange(string $payDetails): ?string
-    {
+        // Fallback to PayDetails text parsing
+        $payDetails = $data['PayDetails'] ?? '';
         if (empty($payDetails)) {
             return null;
         }
 
-        // Look for salary patterns like "$60,000 and $70,000"
-        if (preg_match('/\$[\d,]+\s+(?:and|to)\s+\$[\d,]+/i', $payDetails, $matches)) {
+        // Look for patterns like "$55,000 to $100,000" or "$55K-$100K"
+        if (preg_match('/\$[\d,]+(?:K|,\d{3})?\s*(?:to|-)\s*\$[\d,]+(?:K|,\d{3})?/i', $payDetails, $matches)) {
             return $matches[0];
         }
 
-        // Look for single salary mentions
-        if (preg_match('/\$[\d,]+/i', $payDetails, $matches)) {
+        // Look for patterns like "$55,000 and $100,000"
+        if (preg_match('/\$[\d,]+\s+and\s+\$[\d,]+/i', $payDetails, $matches)) {
+            return $matches[0];
+        }
+
+        // Look for single salary mentions like "$60,000"
+        if (preg_match('/\$[\d,]+(?:K|,\d{3})?/i', $payDetails, $matches)) {
             return $matches[0];
         }
 

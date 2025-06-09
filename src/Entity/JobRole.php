@@ -40,22 +40,22 @@ class JobRole
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\Column]
+    #[ORM\Column(length: 20, nullable: true)]
     private ?string $anzsco = null;
 
-    #[ORM\Column]
+    #[ORM\Column(length: 20)]
     private ?string $jobCode = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $entryRequirements = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $jobOpportunities = null;
 
-    #[ORM\Column]
+    #[ORM\Column(length: 50, nullable: true)]
     private ?string $yearsOfTraining = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $jobOpportunitiesCaption = null;
 
     #[ORM\Column(length: 100, options: ['default' => 'careers.govt.nz'])]
@@ -189,7 +189,7 @@ class JobRole
         return $this->anzsco;
     }
 
-    public function setAnzsco(string $anzsco): static
+    public function setAnzsco(?string $anzsco): static
     {
         $this->anzsco = $anzsco;
 
