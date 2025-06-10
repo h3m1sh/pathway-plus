@@ -1,0 +1,332 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Job Role - {{ job_role.title }}{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_admin_job_role_index') }}" class="text-decoration-none">Job Roles</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_admin_job_role_show', {'id': job_role.id}) }}" class="text-decoration-none">{{ job_role.title }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit</li>
+            </ol>
+        </nav>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-pencil-square me-2"></i>Edit Job Role - {{ job_role.title }}
+                            </h5>
+                            {% if job_role.manuallyEdited %}
+                                <span class="badge bg-warning">
+                                    <i class="bi bi-pencil me-1"></i>Manually Edited
+                                </span>
+                            {% elseif job_role.syncStatus == 'synced' %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle me-1"></i>API Synced
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': true}}) }}
+
+                        <!-- Warning for API-synced jobs -->
+                        {% if not job_role.manuallyEdited and job_role.syncStatus == 'synced' %}
+                            <div class="alert alert-warning mb-4">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                <strong>Notice:</strong> This job role is synchronized from the careers.govt.nz API. 
+                                Making changes will mark it as manually edited and prevent future automatic updates.
+                            </div>
+                        {% endif %}
+
+                        <!-- Basic Information Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-muted mb-3 border-bottom pb-2">
+                                    <i class="bi bi-info-circle me-1"></i>Basic Information
+                                </h6>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.title, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control'}
+                                }) }}
+                                <div class="form-text">Enter the official job title</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.jobCode, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control'}
+                                }) }}
+                                <div class="form-text">Unique identifier for this job role</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.anzsco, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control'}
+                                }) }}
+                                <div class="form-text">Australian and New Zealand Standard Classification of Occupations code</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.yearsOfTraining, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control'}
+                                }) }}
+                                <div class="form-text">Typical training duration required</div>
+                            </div>
+                        </div>
+
+                        <!-- Classification Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-muted mb-3 border-bottom pb-2">
+                                    <i class="bi bi-tags me-1"></i>Classification
+                                </h6>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.industry, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control'}
+                                }) }}
+                                <div class="form-text">Industry sector this role belongs to</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.salaryRange, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control'}
+                                }) }}
+                                <div class="form-text">Expected salary range for this position</div>
+                            </div>
+                        </div>
+
+                        <!-- Detailed Information Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-muted mb-3 border-bottom pb-2">
+                                    <i class="bi bi-file-text me-1"></i>Detailed Information
+                                </h6>
+                            </div>
+                            <div class="col-12 mb-3">
+                                {{ form_row(form.description, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control', 'rows': 4}
+                                }) }}
+                                <div class="form-text">Comprehensive overview of the job role and responsibilities</div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                {{ form_row(form.entryRequirements, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control', 'rows': 3}
+                                }) }}
+                                <div class="form-text">Qualifications, experience, and skills needed to enter this role</div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                {{ form_row(form.jobOpportunities, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control', 'rows': 3}
+                                }) }}
+                                <div class="form-text">Career progression opportunities and employment outlook</div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                {{ form_row(form.jobOpportunitiesCaption, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control', 'rows': 2}
+                                }) }}
+                                <div class="form-text">Brief summary of opportunities</div>
+                            </div>
+                        </div>
+
+                        <!-- Skills Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-muted mb-3 border-bottom pb-2">
+                                    <i class="bi bi-list-check me-1"></i>Required Skills
+                                </h6>
+                            </div>
+                            <div class="col-12 mb-3">
+                                {{ form_row(form.skills, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control', 'style': 'min-height: 120px;', 'multiple': true}
+                                }) }}
+                                <div class="form-text" id="skills-help">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Hold Ctrl (Cmd on Mac) to select multiple skills. You can manage skills in the 
+                                    <a href="{{ path('app_admin_skill_index') }}" target="_blank" class="text-decoration-none">Skills Management</a> section.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Current Information -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="bg-light p-3 rounded">
+                                    <h6 class="text-muted mb-2">
+                                        <i class="bi bi-info-circle me-1"></i>Current Information
+                                    </h6>
+                                    <div class="row text-sm">
+                                        <div class="col-md-4">
+                                            <strong>Created:</strong> {{ job_role.createdAt|date('M j, Y g:i A') }}
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong>Last Updated:</strong> {{ job_role.updatedAt|date('M j, Y g:i A') }}
+                                        </div>
+                                        <div class="col-md-4">
+                                            <strong>Source:</strong> 
+                                            <span class="badge bg-secondary">{{ job_role.source }}</span>
+                                        </div>
+                                    </div>
+                                    {% if job_role.lastSyncedAt %}
+                                        <div class="row text-sm mt-2">
+                                            <div class="col-md-6">
+                                                <strong>Last Synced:</strong> {{ job_role.lastSyncedAt|date('M j, Y g:i A') }}
+                                            </div>
+                                            <div class="col-md-6">
+                                                <strong>Sync Status:</strong> 
+                                                {% if job_role.syncStatus == 'synced' %}
+                                                    <span class="badge bg-success">Synced</span>
+                                                {% elseif job_role.syncStatus == 'error' %}
+                                                    <span class="badge bg-danger">Error</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">{{ job_role.syncStatus|title }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row">
+                            <div class="col-12">
+                                <hr class="mb-4">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <a href="{{ path('app_admin_job_role_show', {'id': job_role.id}) }}" class="btn btn-outline-secondary me-2">
+                                            <i class="bi bi-arrow-left me-1"></i>Back to Details
+                                        </a>
+                                        <a href="{{ path('app_admin_job_role_index') }}" class="btn btn-outline-secondary">
+                                            <i class="bi bi-list me-1"></i>Back to List
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <button type="button" class="btn btn-outline-danger me-2" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                            <i class="bi bi-trash me-1"></i>Delete
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-check-circle me-1"></i>Save Changes
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{ form_rest(form) }}
+                        {{ form_end(form, {'render_rest': false}) }}
+                    </div>
+                </div>
+
+                <!-- Help Card for Editing -->
+                <div class="card shadow-sm mt-4 border-warning">
+                    <div class="card-header bg-warning bg-opacity-10">
+                        <h6 class="card-title mb-0 text-warning-emphasis">
+                            <i class="bi bi-info-circle me-2"></i>Editing Guidelines
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <i class="bi bi-arrow-right text-primary me-2"></i>
+                                Changes to API-synced jobs will mark them as manually edited
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-arrow-right text-primary me-2"></i>
+                                Manually edited jobs won't be updated during API synchronization
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-arrow-right text-primary me-2"></i>
+                                Ensure job codes remain unique across all job roles
+                            </li>
+                            <li class="mb-0">
+                                <i class="bi bi-arrow-right text-primary me-2"></i>
+                                Associated skills help students understand career requirements
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">
+                        <i class="bi bi-exclamation-triangle me-2 text-danger"></i>Confirm Deletion
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the job role <strong>"{{ job_role.title }}"</strong>?</p>
+                    <div class="alert alert-warning">
+                        <i class="bi bi-info-circle me-2"></i>
+                        This action cannot be undone. All associated data will be permanently removed.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form method="post" action="{{ path('app_admin_job_role_delete', {'id': job_role.id}) }}" style="display: inline-block;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ job_role.id) }}">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash me-1"></i>Delete Job Role
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for form validation and enhancements -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Bootstrap form validation
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+
+            // Multi-select enhancement
+            const skillsSelect = document.querySelector('#job_role_form_skills');
+            if (skillsSelect) {
+                // Initialize with current selection count
+                const initialCount = skillsSelect.selectedOptions.length;
+                const helpText = document.getElementById('skills-help');
+                if (initialCount > 0) {
+                    helpText.innerHTML = `<i class="bi bi-check-circle text-success me-1"></i>${initialCount} skill(s) currently selected. Hold Ctrl (Cmd on Mac) to modify selection.`;
+                }
+
+                skillsSelect.addEventListener('change', function() {
+                    const selectedCount = this.selectedOptions.length;
+                    if (selectedCount > 0) {
+                        helpText.innerHTML = `<i class="bi bi-check-circle text-success me-1"></i>${selectedCount} skill(s) selected`;
+                    } else {
+                        helpText.innerHTML = `<i class="bi bi-info-circle me-1"></i>Hold Ctrl (Cmd on Mac) to select multiple skills.`;
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %} 

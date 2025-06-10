@@ -1,0 +1,225 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create New Job Role{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_admin_job_role_index') }}" class="text-decoration-none">Job Roles</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Create New Job Role</li>
+            </ol>
+        </nav>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-briefcase-fill me-2"></i>Create New Job Role
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': true}}) }}
+
+                        <!-- Basic Information Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-muted mb-3 border-bottom pb-2">
+                                    <i class="bi bi-info-circle me-1"></i>Basic Information
+                                </h6>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.title, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control'}
+                                }) }}
+                                <div class="form-text">Enter the official job title</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.jobCode, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control'}
+                                }) }}
+                                <div class="form-text">Unique identifier for this job role</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.anzsco, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control'}
+                                }) }}
+                                <div class="form-text">Australian and New Zealand Standard Classification of Occupations code</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.yearsOfTraining, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control'}
+                                }) }}
+                                <div class="form-text">Typical training duration required</div>
+                            </div>
+                        </div>
+
+                        <!-- Classification Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-muted mb-3 border-bottom pb-2">
+                                    <i class="bi bi-tags me-1"></i>Classification
+                                </h6>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.industry, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control'}
+                                }) }}
+                                <div class="form-text">Industry sector this role belongs to</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_row(form.salaryRange, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control'}
+                                }) }}
+                                <div class="form-text">Expected salary range for this position</div>
+                            </div>
+                        </div>
+
+                        <!-- Detailed Information Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-muted mb-3 border-bottom pb-2">
+                                    <i class="bi bi-file-text me-1"></i>Detailed Information
+                                </h6>
+                            </div>
+                            <div class="col-12 mb-3">
+                                {{ form_row(form.description, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control', 'rows': 4}
+                                }) }}
+                                <div class="form-text">Comprehensive overview of the job role and responsibilities</div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                {{ form_row(form.entryRequirements, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control', 'rows': 3}
+                                }) }}
+                                <div class="form-text">Qualifications, experience, and skills needed to enter this role</div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                {{ form_row(form.jobOpportunities, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control', 'rows': 3}
+                                }) }}
+                                <div class="form-text">Career progression opportunities and employment outlook</div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                {{ form_row(form.jobOpportunitiesCaption, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control', 'rows': 2}
+                                }) }}
+                                <div class="form-text">Brief summary of opportunities</div>
+                            </div>
+                        </div>
+
+                        <!-- Skills Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-muted mb-3 border-bottom pb-2">
+                                    <i class="bi bi-list-check me-1"></i>Required Skills
+                                </h6>
+                            </div>
+                            <div class="col-12 mb-3">
+                                {{ form_row(form.skills, {
+                                    'label_attr': {'class': 'form-label fw-semibold'},
+                                    'attr': {'class': 'form-control', 'style': 'min-height: 120px;', 'multiple': true}
+                                }) }}
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Hold Ctrl (Cmd on Mac) to select multiple skills. You can manage skills in the 
+                                    <a href="{{ path('app_admin_skill_index') }}" target="_blank" class="text-decoration-none">Skills Management</a> section.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row">
+                            <div class="col-12">
+                                <hr class="mb-4">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ path('app_admin_job_role_index') }}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-circle me-1"></i>Create Job Role
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{ form_rest(form) }}
+                        {{ form_end(form, {'render_rest': false}) }}
+                    </div>
+                </div>
+
+                <!-- Help Card -->
+                <div class="card shadow-sm mt-4 border-info">
+                    <div class="card-header bg-info bg-opacity-10">
+                        <h6 class="card-title mb-0 text-info">
+                            <i class="bi bi-lightbulb me-2"></i>Tips for Creating Job Roles
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                Use clear, descriptive job titles that match industry standards
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                Include relevant skills to help students understand requirements
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                Provide realistic salary ranges based on current market data
+                            </li>
+                            <li class="mb-0">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                Keep descriptions concise but informative for students
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for form validation -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Bootstrap form validation
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+
+            // Multi-select enhancement
+            const skillsSelect = document.querySelector('#job_role_form_skills');
+            if (skillsSelect) {
+                skillsSelect.addEventListener('change', function() {
+                    const selectedCount = this.selectedOptions.length;
+                    const helpText = this.parentElement.querySelector('.form-text');
+                    if (selectedCount > 0) {
+                        helpText.innerHTML = `<i class="bi bi-check-circle text-success me-1"></i>${selectedCount} skill(s) selected`;
+                    } else {
+                        helpText.innerHTML = `<i class="bi bi-info-circle me-1"></i>Hold Ctrl (Cmd on Mac) to select multiple skills.`;
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %} 

@@ -1,0 +1,293 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ job_role.title }} - Job Role Details{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_admin_job_role_index') }}" class="text-decoration-none">Job Roles</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ job_role.title }}</li>
+            </ol>
+        </nav>
+
+        <!-- Header with actions -->
+        <div class="row mb-4">
+            <div class="col">
+                <h1 class="mb-2">{{ job_role.title }}</h1>
+                <div class="text-muted">
+                    Job Code: <code class="bg-light px-2 py-1 rounded">{{ job_role.jobCode }}</code>
+                    {% if job_role.anzsco %}
+                        | ANZSCO: <span class="badge bg-info">{{ job_role.anzsco }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="btn-group">
+                    <a href="{{ path('app_admin_job_role_edit', {'id': job_role.id}) }}" class="btn btn-primary">
+                        <i class="bi bi-pencil-square me-1"></i>Edit Job Role
+                    </a>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="bi bi-trash me-1"></i>Delete
+                    </button>
+                    <a href="{{ path('app_admin_job_role_index') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>Back to List
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Job Information -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-briefcase me-2"></i>Job Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-2">Industry</h6>
+                                {% if job_role.industry %}
+                                    <span class="badge bg-info fs-6">{{ job_role.industry }}</span>
+                                {% else %}
+                                    <span class="text-muted">Not specified</span>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted mb-2">Salary Range</h6>
+                                {% if job_role.salaryRange %}
+                                    <span class="text-success fw-semibold">{{ job_role.salaryRange }}</span>
+                                {% else %}
+                                    <span class="text-muted">Not specified</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if job_role.yearsOfTraining %}
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <h6 class="text-muted mb-2">Years of Training</h6>
+                                    <p class="mb-0">{{ job_role.yearsOfTraining }}</p>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if job_role.description %}
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <h6 class="text-muted mb-2">Description</h6>
+                                    <div class="border rounded p-3 bg-light">
+                                        {{ job_role.description|nl2br }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if job_role.entryRequirements %}
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <h6 class="text-muted mb-2">Entry Requirements</h6>
+                                    <div class="border rounded p-3 bg-light">
+                                        {{ job_role.entryRequirements|nl2br }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if job_role.jobOpportunities %}
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <h6 class="text-muted mb-2">Job Opportunities</h6>
+                                    <div class="border rounded p-3 bg-light">
+                                        {{ job_role.jobOpportunities|nl2br }}
+                                    </div>
+                                    {% if job_role.jobOpportunitiesCaption %}
+                                        <small class="text-muted mt-2 d-block">{{ job_role.jobOpportunitiesCaption }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Required Skills -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-list-check me-2"></i>Required Skills ({{ job_role.skills|length }})
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if job_role.skills|length > 0 %}
+                            <div class="row">
+                                {% for skill in job_role.skills %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card border">
+                                            <div class="card-body p-3">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <h6 class="card-title mb-1">{{ skill.name }}</h6>
+                                                        {% if skill.category %}
+                                                            <span class="badge bg-secondary">{{ skill.category }}</span>
+                                                        {% endif %}
+                                                        {% if skill.difficulty %}
+                                                            {% if skill.difficulty == 'Beginner' %}
+                                                                <span class="badge bg-success">{{ skill.difficulty }}</span>
+                                                            {% elseif skill.difficulty == 'Intermediate' %}
+                                                                <span class="badge bg-warning text-dark">{{ skill.difficulty }}</span>
+                                                            {% elseif skill.difficulty == 'Advanced' %}
+                                                                <span class="badge bg-danger">{{ skill.difficulty }}</span>
+                                                            {% else %}
+                                                                <span class="badge bg-secondary">{{ skill.difficulty }}</span>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                {% if skill.description %}
+                                                    <p class="card-text mt-2 mb-0 small text-muted">{{ skill.description|slice(0, 100) }}{% if skill.description|length > 100 %}...{% endif %}</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info mb-0">
+                                <i class="bi bi-info-circle me-2"></i>No skills have been associated with this job role yet.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metadata Sidebar -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h6 class="card-title mb-0">
+                            <i class="bi bi-gear me-2"></i>Metadata
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-1">Status</h6>
+                            {% if job_role.manuallyEdited %}
+                                <span class="badge bg-warning">
+                                    <i class="bi bi-pencil me-1"></i>Manually Edited
+                                </span>
+                            {% elseif job_role.syncStatus == 'synced' %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle me-1"></i>API Synced
+                                </span>
+                            {% elseif job_role.syncStatus == 'error' %}
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>Sync Error
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ job_role.syncStatus|title }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-1">Source</h6>
+                            <span class="badge bg-secondary">{{ job_role.source }}</span>
+                        </div>
+
+                        {% if job_role.isArchived %}
+                            <div class="mb-3">
+                                <h6 class="text-muted mb-1">Archive Status</h6>
+                                <span class="badge bg-warning">
+                                    <i class="bi bi-archive me-1"></i>Archived
+                                </span>
+                            </div>
+                        {% endif %}
+
+                        {% if job_role.syncError %}
+                            <div class="mb-3">
+                                <h6 class="text-muted mb-1">Last Sync Error</h6>
+                                <div class="alert alert-danger p-2">
+                                    <small>{{ job_role.syncError }}</small>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <hr>
+
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-1">Created</h6>
+                            <small>{{ job_role.createdAt|date('M j, Y g:i A') }}</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="text-muted mb-1">Last Updated</h6>
+                            <small>{{ job_role.updatedAt|date('M j, Y g:i A') }}</small>
+                        </div>
+
+                        {% if job_role.lastSyncedAt %}
+                            <div class="mb-3">
+                                <h6 class="text-muted mb-1">Last Synced</h6>
+                                <small>{{ job_role.lastSyncedAt|date('M j, Y g:i A') }}</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h6 class="card-title mb-0">
+                            <i class="bi bi-lightning me-2"></i>Quick Actions
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{{ path('app_admin_job_role_edit', {'id': job_role.id}) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-pencil-square me-1"></i>Edit Details
+                            </a>
+                            <a href="{{ path('app_admin_skill_index') }}" class="btn btn-outline-info btn-sm">
+                                <i class="bi bi-list-check me-1"></i>Manage Skills
+                            </a>
+                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                <i class="bi bi-trash me-1"></i>Delete Job Role
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">
+                        <i class="bi bi-exclamation-triangle me-2 text-danger"></i>Confirm Deletion
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the job role <strong>"{{ job_role.title }}"</strong>?</p>
+                    <div class="alert alert-warning">
+                        <i class="bi bi-info-circle me-2"></i>
+                        This action cannot be undone. All associated data will be permanently removed.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form method="post" action="{{ path('app_admin_job_role_delete', {'id': job_role.id}) }}" style="display: inline-block;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ job_role.id) }}">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash me-1"></i>Delete Job Role
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %} 

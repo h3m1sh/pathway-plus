@@ -1,0 +1,246 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Job Roles Management{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <h1 class="mb-4">Job Roles Management</h1>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <div class="row align-items-center">
+                    <div class="col-md-8 mb-3 mb-md-0">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" id="jobRoleSearch" class="form-control border-start-0"
+                                   placeholder="Search by title, industry or job code..."
+                                   aria-label="Search job roles">
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <a href="{{ path('app_admin_job_role_new') }}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle me-1"></i> Add Job Role
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="jobRolesTable">
+                        <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="ps-3">ID</th>
+                            <th scope="col">Title</th>
+                            <th scope="col">Job Code</th>
+                            <th scope="col">Industry</th>
+                            <th scope="col">Salary Range</th>
+                            <th scope="col">Source</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-end pe-3">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for jobRole in job_roles %}
+                            <tr>
+                                <td class="ps-3">{{ jobRole.id }}</td>
+                                <td>
+                                    <div class="fw-semibold">{{ jobRole.title }}</div>
+                                    {% if jobRole.anzsco %}
+                                        <small class="text-muted">ANZSCO: {{ jobRole.anzsco }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <code class="bg-light px-2 py-1 rounded">{{ jobRole.jobCode }}</code>
+                                </td>
+                                <td>
+                                    {% if jobRole.industry %}
+                                        <span class="badge bg-info">{{ jobRole.industry }}</span>
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if jobRole.salaryRange %}
+                                        <small class="text-success fw-semibold">{{ jobRole.salaryRange }}</small>
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ jobRole.source }}</span>
+                                </td>
+                                <td>
+                                    {% if jobRole.manuallyEdited %}
+                                        <span class="badge bg-warning">
+                                            <i class="bi bi-pencil me-1"></i>Manual
+                                        </span>
+                                    {% elseif jobRole.syncStatus == 'synced' %}
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle me-1"></i>Synced
+                                        </span>
+                                    {% elseif jobRole.syncStatus == 'error' %}
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-exclamation-triangle me-1"></i>Error
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ jobRole.syncStatus }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end pe-3">
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ path('app_admin_job_role_show', {'id': jobRole.id}) }}" 
+                                           class="btn btn-outline-info" title="View Details">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="{{ path('app_admin_job_role_edit', {'id': jobRole.id}) }}" 
+                                           class="btn btn-outline-primary" title="Edit">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal{{ jobRole.id }}" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Delete Confirmation Modal for each job role -->
+                            <div class="modal fade" id="deleteModal{{ jobRole.id }}" tabindex="-1" 
+                                 aria-labelledby="deleteModalLabel{{ jobRole.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel{{ jobRole.id }}">
+                                                <i class="bi bi-exclamation-triangle me-2 text-danger"></i>Confirm Deletion
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete the job role <strong>"{{ jobRole.title }}"</strong>?</p>
+                                            <div class="alert alert-warning">
+                                                <i class="bi bi-info-circle me-2"></i>
+                                                This action cannot be undone. All associated data will be permanently removed.
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form method="post" action="{{ path('app_admin_job_role_delete', {'id': jobRole.id}) }}" style="display: inline-block;">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ jobRole.id) }}">
+                                                <button type="submit" class="btn btn-danger">
+                                                    <i class="bi bi-trash me-1"></i>Delete Job Role
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center py-5">
+                                    <div class="alert alert-info mb-0">
+                                        <i class="bi bi-info-circle me-2"></i>No job roles found. Click "Add Job Role" to create your first job role.
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            {% if totalPages > 1 %}
+                <div class="card-footer bg-white">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                Showing {{ ((currentPage - 1) * itemsPerPage) + 1 }} to 
+                                {{ min(currentPage * itemsPerPage, totalItems) }} of {{ totalItems }} job roles
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <nav aria-label="Job roles pagination">
+                                <ul class="pagination pagination-sm justify-content-end mb-0">
+                                    <!-- Previous page -->
+                                    {% if currentPage > 1 %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ path('app_admin_job_role_index', {'page': currentPage - 1}) }}">
+                                                <i class="bi bi-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link"><i class="bi bi-chevron-left"></i></span>
+                                        </li>
+                                    {% endif %}
+
+                                    <!-- Page numbers -->
+                                    {% for page in 1..totalPages %}
+                                        {% if page == currentPage %}
+                                            <li class="page-item active">
+                                                <span class="page-link">{{ page }}</span>
+                                            </li>
+                                        {% elseif page <= 3 or page > totalPages - 3 or (page >= currentPage - 2 and page <= currentPage + 2) %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ path('app_admin_job_role_index', {'page': page}) }}">{{ page }}</a>
+                                            </li>
+                                        {% elseif page == 4 or page == totalPages - 3 %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">...</span>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    <!-- Next page -->
+                                    {% if currentPage < totalPages %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ path('app_admin_job_role_index', {'page': currentPage + 1}) }}">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link"><i class="bi bi-chevron-right"></i></span>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- JavaScript for search functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('jobRoleSearch');
+            const table = document.getElementById('jobRolesTable');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+
+                rows.forEach(row => {
+                    if (row.cells.length === 1) return; // Skip empty state row
+
+                    const title = row.cells[1].textContent.toLowerCase();
+                    const jobCode = row.cells[2].textContent.toLowerCase();
+                    const industry = row.cells[3].textContent.toLowerCase();
+
+                    const matches = title.includes(searchTerm) || 
+                                    jobCode.includes(searchTerm) || 
+                                    industry.includes(searchTerm);
+
+                    row.style.display = matches ? '' : 'none';
+                });
+            });
+        });
+    </script>
+{% endblock %} 
