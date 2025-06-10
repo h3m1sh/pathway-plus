@@ -81,7 +81,7 @@
                                 <div class="col-12">
                                     <h6 class="text-muted mb-2">Description</h6>
                                     <div class="border rounded p-3 bg-light">
-                                        {{ job_role.description|nl2br }}
+                                        {{ job_role.description|raw }}
                                     </div>
                                 </div>
                             </div>
@@ -92,7 +92,7 @@
                                 <div class="col-12">
                                     <h6 class="text-muted mb-2">Entry Requirements</h6>
                                     <div class="border rounded p-3 bg-light">
-                                        {{ job_role.entryRequirements|nl2br }}
+                                        {{ job_role.entryRequirements|raw }}
                                     </div>
                                 </div>
                             </div>
@@ -103,10 +103,10 @@
                                 <div class="col-12">
                                     <h6 class="text-muted mb-2">Job Opportunities</h6>
                                     <div class="border rounded p-3 bg-light">
-                                        {{ job_role.jobOpportunities|nl2br }}
+                                        {{ job_role.jobOpportunities|raw }}
                                     </div>
                                     {% if job_role.jobOpportunitiesCaption %}
-                                        <small class="text-muted mt-2 d-block">{{ job_role.jobOpportunitiesCaption }}</small>
+                                        <small class="text-muted mt-2 d-block">{{ job_role.jobOpportunitiesCaption|raw }}</small>
                                     {% endif %}
                                 </div>
                             </div>

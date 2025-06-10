@@ -222,23 +222,39 @@
             const searchInput = document.getElementById('jobRoleSearch');
             const table = document.getElementById('jobRolesTable');
             const tbody = table.querySelector('tbody');
-            const rows = Array.from(tbody.querySelectorAll('tr'));
+            const rows = Array.from(tbody.querySelectorAll('tr:not(.modal)'));
 
             searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase().trim();
 
                 rows.forEach(row => {
-                    if (row.cells.length === 1) return; // Skip empty state row
+                    // Skip empty state row or rows that don't have job data
+                    if (row.cells.length <= 1 || row.querySelector('.modal')) return;
 
-                    const title = row.cells[1].textContent.toLowerCase();
-                    const jobCode = row.cells[2].textContent.toLowerCase();
-                    const industry = row.cells[3].textContent.toLowerCase();
+                    // Get text content from specific cells, avoiding nested modals
+                    const titleCell = row.cells[1];
+                    const jobCodeCell = row.cells[2];
+                    const industryCell = row.cells[3];
+                    
+                    if (!titleCell || !jobCodeCell || !industryCell) return;
+                    
+                    // Get only the direct text content, not from nested elements
+                    const title = titleCell.querySelector('.fw-semibold')?.textContent.toLowerCase() || '';
+                    const jobCode = jobCodeCell.querySelector('code')?.textContent.toLowerCase() || '';
+                    const industry = industryCell.querySelector('.badge')?.textContent.toLowerCase() || 
+                                   (industryCell.textContent.includes('N/A') ? '' : industryCell.textContent.toLowerCase());
 
                     const matches = title.includes(searchTerm) || 
                                     jobCode.includes(searchTerm) || 
                                     industry.includes(searchTerm);
 
                     row.style.display = matches ? '' : 'none';
+                    
+                    // Also hide/show associated modals
+                    const associatedModal = document.querySelector(`#deleteModal${row.cells[0].textContent.trim()}`);
+                    if (associatedModal) {
+                        associatedModal.style.display = matches ? '' : 'none';
+                    }
                 });
             });
         });
