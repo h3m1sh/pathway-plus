@@ -62,6 +62,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: StudentProgress::class, mappedBy: 'student')]
     private Collection $studentProgress;
 
+    /**
+     * @var Collection<int, JobRole>
+     */
+
+    #[ORM\ManyToMany(targetEntity: JobRole::class, inversedBy: 'interestedStudents')]
+    #[ORM\JoinTable(name: 'user_job_role_interests')]
+    private Collection $jobRoleInterests;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $avatarUrl = null;
 

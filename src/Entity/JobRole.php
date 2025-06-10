@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use PHPUnit\Util\PHP\Job;
 
 #[ORM\Entity(repositoryClass: JobRoleRepository::class)]
 class JobRole
@@ -75,6 +76,12 @@ class JobRole
 
     #[ORM\Column(options: ['default' => false])]
     private bool $isArchived = false;
+
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: JobRole::class, mappedBy: 'jobRoleInterests')]
+    private collection $interestedStudents;
 
     public function __construct()
     {
