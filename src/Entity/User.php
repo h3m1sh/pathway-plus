@@ -81,6 +81,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->createdAt = new \DateTimeImmutable();
         $this->studentProgress = new ArrayCollection();
         $this->updatedAt = new \DateTimeImmutable();
+        $this->jobRoleInterests = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -289,6 +290,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->updatedAt = $updatedAt;
 
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, JobRole>
+     */
+
+    public function getJobRoleInterests(): Collection
+    {
+        return $this->jobRoleInterests;
+    }
+
+    public function addJobRoleInterest(JobRole $jobRole): static
+    {
+        if (!$this->jobRoleInterests->contains($jobRole)) {
+            $this->jobRoleInterests->add($jobRole);
+        }
+    }
+
+    public function removeJobRoleInterest(JobRole $jobRole): static
+    {
+        $this->jobRoleInterests->removeElement($jobRole);
         return $this;
     }
 }

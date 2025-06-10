@@ -80,7 +80,7 @@ class JobRole
     /**
      * @var Collection<int, User>
      */
-    #[ORM\ManyToMany(targetEntity: JobRole::class, mappedBy: 'jobRoleInterests')]
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'jobRoleInterests')]
     private collection $interestedStudents;
 
     public function __construct()
@@ -88,6 +88,7 @@ class JobRole
         $this->skills = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
+        $this->interestedStudents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -360,6 +361,32 @@ class JobRole
         $this->setSyncStatus('manual_override');
         $this->setUpdatedAt(new \DateTimeImmutable());
 
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+
+    public function getInterestedStudents(): Collection
+    {
+        return $this->interestedStudents;
+    }
+
+    public function addInterestedStudent(User $user): static
+    {
+        if (!$this->interestedStudents->contains($user)) {
+            $this->interestedStudents->add($user);
+            $user->addJobRoleInterest($this);
+        }
+        return $this;
+    }
+
+    public function removeInterestedStudent(User $user): static
+    {
+        if ($this->interestedStudents->removeElement($user)) {
+            $user->removeJobRoleInterest($this);
+        }
         return $this;
     }
 }
