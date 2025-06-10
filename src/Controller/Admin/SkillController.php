@@ -18,7 +18,7 @@ final class SkillController extends AbstractController
     public function index(SkillRepository $repository, Request $request): Response
     {
         $page = $request->query->getInt('page', 1);
-        $itemsPerPage = 5;
+        $itemsPerPage = 25;
 
         $skills = $repository->findPaginatedByCategory($page, $itemsPerPage);
 
@@ -43,7 +43,7 @@ final class SkillController extends AbstractController
             $skill->setUpdatedAt(new \DateTimeImmutable());
             $entityManager->persist($skill);
             $entityManager->flush();
-            
+
             $this->addFlash('success', 'Skill created successfully!');
             return $this->redirectToRoute('app_admin_skill_index');
         }
@@ -70,7 +70,7 @@ final class SkillController extends AbstractController
             $skill->setUpdatedAt(new \DateTimeImmutable());
             $entityManager->persist($skill);
             $entityManager->flush();
-            
+
             $this->addFlash('success', 'Skill updated successfully!');
             return $this->redirectToRoute('app_admin_skill_index');
         }
@@ -92,7 +92,7 @@ final class SkillController extends AbstractController
 
         $entityManager->remove($skill);
         $entityManager->flush();
-        
+
         $this->addFlash('success', 'Skill deleted successfully!');
         return $this->redirectToRoute('app_admin_skill_index');
     }

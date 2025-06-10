@@ -139,6 +139,16 @@
 
 {% block body %}
     <div class="container-fluid py-4">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('admin_dashboard') }}" class="text-decoration-none">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_admin_micro_credential_index') }}" class="text-decoration-none">Micro-Credentials Management</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ microCredential.name }}</li>
+            </ol>
+        </nav>
+
         <div class="row">
             <!-- Sidebar -->
             <div class="col-lg-4 col-xl-3 mb-4">

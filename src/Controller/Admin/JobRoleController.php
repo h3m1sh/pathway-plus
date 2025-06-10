@@ -20,7 +20,7 @@ final class JobRoleController extends AbstractController
     public function index(JobRoleRepository $repository, Request $request): Response
     {
         $page = $request->query->getInt('page', 1);
-        $itemsPerPage = 10;
+        $itemsPerPage = 25;
 
         $jobRoles = $repository->findPaginatedByIndustry($page, $itemsPerPage);
 
@@ -51,7 +51,7 @@ final class JobRoleController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // Mark as manually created/edited since it's not from API sync
             $jobRole->markAsManuallyEdited();
-            
+
             $entityManager->persist($jobRole);
             $entityManager->flush();
 
@@ -74,7 +74,7 @@ final class JobRoleController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // Mark as manually edited
             $jobRole->markAsManuallyEdited();
-            
+
             $entityManager->flush();
 
             $this->addFlash('success', 'Job role updated successfully!');
@@ -93,7 +93,7 @@ final class JobRoleController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$jobRole->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($jobRole);
             $entityManager->flush();
-            
+
             $this->addFlash('success', 'Job role deleted successfully!');
         } else {
             $this->addFlash('error', 'Invalid security token.');
@@ -101,4 +101,4 @@ final class JobRoleController extends AbstractController
 
         return $this->redirectToRoute('app_admin_job_role_index', [], Response::HTTP_SEE_OTHER);
     }
-} 
+}

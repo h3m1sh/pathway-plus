@@ -4,6 +4,15 @@
 
 {% block body %}
     <div class="container py-4">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('admin_dashboard') }}" class="text-decoration-none">Dashboard</a></li>
+                <li class="breadcrumb-item">Micro-Credentials Management</li>
+            </ol>
+        </nav>
+
         <h1 class="mb-4">Micro-Credentials Management</h1>
 
         <div class="card shadow-sm">

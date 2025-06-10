@@ -15,7 +15,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 #[Route('admin/user')]
 final class UserController extends AbstractController
 {
-    #[Route(name: 'app_user_index', methods: ['GET'])]
+    #[Route(name: 'app_admin_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
         return $this->render('admin/user/index.html.twig', [
@@ -30,7 +30,7 @@ final class UserController extends AbstractController
         $user->setIsActive(true);
         $user->setCreatedAt(new \DateTime());
         $user->setUpdatedAt(new \DateTimeImmutable());
-        
+
         $form = $this->createForm(UserFormType::class, $user);
         $form->handleRequest($request);
 
@@ -64,7 +64,7 @@ final class UserController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'User created successfully.');
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_admin_user_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('admin/user/new.html.twig', [
@@ -103,7 +103,7 @@ final class UserController extends AbstractController
                 $entityManager->flush();
 
                 $this->addFlash('success', 'User updated successfully.');
-                return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('app_admin_user_index', [], Response::HTTP_SEE_OTHER);
             } else {
                 $this->addFlash('error', 'Please fix the validation errors below.');
             }
@@ -126,6 +126,6 @@ final class UserController extends AbstractController
             $this->addFlash('error', 'Invalid security token.');
         }
 
-        return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_admin_user_index', [], Response::HTTP_SEE_OTHER);
     }
 }

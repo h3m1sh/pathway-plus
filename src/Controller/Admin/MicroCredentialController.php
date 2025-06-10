@@ -19,7 +19,7 @@ final class MicroCredentialController extends AbstractController
     public function index(MicroCredentialRepository $repository, Request $request): Response
     {
         $page = $request->query->getInt('page', 1);
-        $itemsPerPage = 5;
+        $itemsPerPage = 25;
 
         $microCredentials = $repository->findPaginatedByCategory($page, $itemsPerPage);
 

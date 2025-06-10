@@ -7,7 +7,8 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ path('app_admin_job_role_index') }}" class="text-decoration-none">Job Roles</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('admin_dashboard') }}" class="text-decoration-none">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_admin_job_role_index') }}" class="text-decoration-none">Job Role Management</a></li>
                 <li class="breadcrumb-item active" aria-current="page">{{ job_role.title }}</li>
             </ol>
         </nav>
@@ -290,4 +291,4 @@
             </div>
         </div>
     </div>
-{% endblock %} 
+{% endblock %}

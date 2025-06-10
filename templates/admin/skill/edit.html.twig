@@ -152,6 +152,16 @@
 {% endblock %}
 
 {% block body %}
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('admin_dashboard') }}" class="text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ path('app_admin_skill_index') }}" class="text-decoration-none">Skills Management</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ skill.name }}</li>
+        </ol>
+    </nav>
+
     <div class="container-fluid py-4">
         <div class="row">
             <!-- Current Data Sidebar -->
@@ -160,7 +170,7 @@
                     <!-- Current Data Section -->
                     <div class="current-data-section">
                         <h6 class="fw-bold">Current Skill</h6>
-                        
+
                         <!-- Skill Icon -->
                         <div class="skill-icon">
                             <i class="fas fa-cogs"></i>
@@ -191,7 +201,7 @@
 
                             <div class="meta-item">
                                 <span class="meta-label">Difficulty</span>
-                                <span class="difficulty-badge 
+                                <span class="difficulty-badge
                                     {%- if skill.difficulty == 'Beginner' %} difficulty-beginner
                                     {%- elseif skill.difficulty == 'Intermediate' %} difficulty-intermediate
                                     {%- elseif skill.difficulty == 'Advanced' %} difficulty-advanced
@@ -355,4 +365,4 @@
             })();
         });
     </script>
-{% endblock %} 
+{% endblock %}

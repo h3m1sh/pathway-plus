@@ -3,6 +3,10 @@
 
 namespace App\Controller;
 
+use App\Repository\UserRepository;
+use App\Repository\SkillRepository;
+use App\Repository\JobRoleRepository;
+use App\Repository\MicroCredentialRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -26,13 +30,6 @@ class DashboardController extends AbstractController
     {
         $user = $this->getUser();
 
-
-//        Redirect to admin dashboard if user is admin
-
-//        if ($user->isAdmin()) {
-//            return $this->redirectToRoute('admin_dashboard');
-//        }
-
         return $this->render('dashboard/index.html.twig', [
             'user' => $user,
         ]);
@@ -40,10 +37,61 @@ class DashboardController extends AbstractController
 
     #[Route('/admin', name: 'admin_dashboard')]
     #[IsGranted('ROLE_ADMIN')]
-    public function adminDashboard(): Response
-    {
-        return $this->render('admin/skill.html.twig', [
+    public function adminDashboard(
+        UserRepository $userRepository,
+        SkillRepository $skillRepository,
+        JobRoleRepository $jobRoleRepository,
+        MicroCredentialRepository $microCredentialRepository
+    ): Response {
+        // Get all users and calculate role-based statistics
+        $allUsers = $userRepository->findAll();
+        $totalUsers = count($allUsers);
+
+        $totalStudents = 0;
+        $totalAdmins = 0;
+        $activeUsers = 0;
+
+        foreach ($allUsers as $user) {
+            if ($user->isAdmin()) {
+                $totalAdmins++;
+            } elseif ($user->isStudent()) {
+                $totalStudents++;
+            }
+
+            if ($user->isActive()) {
+                $activeUsers++;
+            }
+        }
+
+        $totalSkills = count($skillRepository->findAll());
+        $totalJobRoles = count($jobRoleRepository->findAll());
+        $totalMicroCredentials = count($microCredentialRepository->findAll());
+
+        // Get recent items for quick access
+        $recentUsers = $userRepository->findBy([], ['createdAt' => 'DESC'], 5);
+        $recentSkills = $skillRepository->findBy([], ['createdAt' => 'DESC'], 5);
+        $recentJobRoles = $jobRoleRepository->findBy([], ['createdAt' => 'DESC'], 5);
+        $recentMicroCredentials = $microCredentialRepository->findBy([], ['createdAt' => 'DESC'], 5);
+
+        return $this->render('admin/dashboard/index.html.twig', [
             'user' => $this->getUser(),
+            'stats' => [
+                'users' => [
+                    'total' => $totalUsers,
+                    'students' => $totalStudents,
+                    'admins' => $totalAdmins,
+                    'active' => $activeUsers,
+                ],
+                'skills' => $totalSkills,
+                'jobRoles' => $totalJobRoles,
+                'microCredentials' => $totalMicroCredentials,
+            ],
+            'recent' => [
+                'users' => $recentUsers,
+                'skills' => $recentSkills,
+                'jobRoles' => $recentJobRoles,
+                'microCredentials' => $recentMicroCredentials,
+            ],
         ]);
     }
 

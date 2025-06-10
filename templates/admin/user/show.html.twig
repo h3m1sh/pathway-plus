@@ -7,7 +7,8 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ path('app_user_index') }}" class="text-decoration-none">User Management</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('admin_dashboard') }}" class="text-decoration-none">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_admin_user_index') }}" class="text-decoration-none">User Management</a></li>
                 <li class="breadcrumb-item active" aria-current="page">{{ user.fullName }}</li>
             </ol>
         </nav>
@@ -57,7 +58,7 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
                         <i class="bi bi-trash me-1"></i>Delete
                     </button>
-                    <a href="{{ path('app_user_index') }}" class="btn btn-outline-secondary">
+                    <a href="{{ path('app_admin_user_index') }}" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-left me-1"></i>Back to List
                     </a>
                 </div>
@@ -313,7 +314,7 @@
                             const parser = new DOMParser();
                             const doc = parser.parseFromString(formHtml, 'text/html');
                             const form = doc.querySelector('form');
-                            
+
                             if (form) {
                                 document.getElementById('edit-user-form').innerHTML = form.outerHTML;
                             } else {
@@ -332,7 +333,7 @@
                     }
 
                     const formData = new FormData(form);
-                    
+
                     return fetch(form.action, {
                         method: 'POST',
                         body: formData
