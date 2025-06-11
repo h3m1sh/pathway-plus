@@ -104,7 +104,6 @@ final class UserController extends AbstractController
 
                 $this->addFlash('success', 'User updated successfully.');
                 
-                // Handle AJAX requests differently
                 if ($request->isXmlHttpRequest()) {
                     return new Response('success', Response::HTTP_OK);
                 }
@@ -113,7 +112,6 @@ final class UserController extends AbstractController
             } else {
                 $this->addFlash('error', 'Please fix the validation errors below.');
                 
-                // For AJAX requests, return the form with errors
                 if ($request->isXmlHttpRequest()) {
                     return $this->render('admin/user/edit.html.twig', [
                         'user' => $user,
