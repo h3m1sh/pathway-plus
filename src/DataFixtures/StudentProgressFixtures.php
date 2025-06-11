@@ -2,6 +2,8 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\User;
+use App\Entity\MicroCredential;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\StudentProgress;
@@ -24,7 +26,7 @@ class StudentProgressFixtures extends Fixture implements DependentFixtureInterfa
         ];
 
         for ($i = 0; $i < 25; $i++) {
-            $student = $this->getReference('student_' . $i);
+            $student = $this->getReference('student_' . $i, User::class);
             $credentialCount = $faker->numberBetween(1, 5);
 
             $availableCredentials = range(0, 30);
@@ -32,7 +34,7 @@ class StudentProgressFixtures extends Fixture implements DependentFixtureInterfa
             $selectedCredentials = array_slice($availableCredentials, 0, $credentialCount);
 
             foreach ($selectedCredentials as $credentialIndex) {
-                $credential = $this->getReference('credential_' . $credentialIndex);
+                $credential = $this->getReference('credential_' . $credentialIndex, MicroCredential::class);
 
                 $progress = new StudentProgress();
                 $progress->setStudent($student)

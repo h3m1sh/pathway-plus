@@ -86,7 +86,7 @@ class JobRoleInterestFixtures extends Fixture implements DependentFixtureInterfa
         
 
         for ($i = 0; $i < 25; $i++) {
-            $student = $this->getReference('student_' . $i);
+            $student = $this->getReference('student_' . $i, User::class);
             
             
             $personaKeys = array_keys($studentPersonas);
