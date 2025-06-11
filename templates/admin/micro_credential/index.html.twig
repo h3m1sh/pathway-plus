@@ -24,7 +24,8 @@
                             <i class="bi bi-search"></i>
                         </span>
                             <input type="text" id="microCredentialSearch" class="form-control border-start-0"
-                                   placeholder="Search by name, category or level..."
+                                   value="{{ search }}"
+                                   placeholder="Search by name, category or description..."
                                    aria-label="Search micro-credentials">
                         </div>
                     </div>
@@ -149,7 +150,7 @@
                                     <ul class="pagination pagination-sm justify-content-center mb-0">
                                         <!-- Previous Button -->
                                         <li class="page-item {{ currentPage <= 1 ? 'disabled' : '' }}">
-                                            <a class="page-link" href="{{ currentPage > 1 ? path('app_admin_micro_credential_index', {'page': currentPage - 1}) : '#' }}" aria-label="Previous">
+                                            <a class="page-link" href="{{ currentPage > 1 ? path('app_admin_micro_credential_index', {'page': currentPage - 1, 'search': search}) : '#' }}" aria-label="Previous">
                                                 <i class="bi bi-chevron-left"></i>
                                             </a>
                                         </li>
@@ -160,7 +161,7 @@
 
                                         {% if startPage > 1 %}
                                             <li class="page-item">
-                                                <a class="page-link" href="{{ path('app_admin_micro_credential_index', {'page': 1}) }}">1</a>
+                                                <a class="page-link" href="{{ path('app_admin_micro_credential_index', {'page': 1, 'search': search}) }}">1</a>
                                             </li>
                                             {% if startPage > 2 %}
                                                 <li class="page-item disabled">
@@ -174,7 +175,7 @@
                                                 {% if page == currentPage %}
                                                     <span class="page-link">{{ page }}</span>
                                                 {% else %}
-                                                    <a class="page-link" href="{{ path('app_admin_micro_credential_index', {'page': page}) }}">{{ page }}</a>
+                                                    <a class="page-link" href="{{ path('app_admin_micro_credential_index', {'page': page, 'search': search}) }}">{{ page }}</a>
                                                 {% endif %}
                                             </li>
                                         {% endfor %}
@@ -186,13 +187,13 @@
                                                 </li>
                                             {% endif %}
                                             <li class="page-item">
-                                                <a class="page-link" href="{{ path('app_admin_micro_credential_index', {'page': totalPages}) }}">{{ totalPages }}</a>
+                                                <a class="page-link" href="{{ path('app_admin_micro_credential_index', {'page': totalPages, 'search': search}) }}">{{ totalPages }}</a>
                                             </li>
                                         {% endif %}
 
                                         <!-- Next Button -->
                                         <li class="page-item {{ currentPage >= totalPages ? 'disabled' : '' }}">
-                                            <a class="page-link" href="{{ currentPage < totalPages ? path('app_admin_micro_credential_index', {'page': currentPage + 1}) : '#' }}" aria-label="Next">
+                                            <a class="page-link" href="{{ currentPage < totalPages ? path('app_admin_micro_credential_index', {'page': currentPage + 1, 'search': search}) : '#' }}" aria-label="Next">
                                                 <i class="bi bi-chevron-right"></i>
                                             </a>
                                         </li>
@@ -212,30 +213,25 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('microCredentialSearch');
-            const table = document.getElementById('microCredentialsTable');
-            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            let searchTimeout;
 
-            searchInput.addEventListener('keyup', function() {
-                const searchTerm = searchInput.value.toLowerCase();
-
-                for (let i = 0; i < rows.length; i++) {
-                    const row = rows[i];
-                    if (row.cells.length < 6) continue; // Skip "no micro-credentials found" row
-
-                    const name = row.cells[1].textContent.toLowerCase();
-                    const description = row.cells[2].textContent.toLowerCase();
-                    const category = row.cells[3].textContent.toLowerCase();
-                    const level = row.cells[4].textContent.toLowerCase();
-
-                    if (name.includes(searchTerm) ||
-                        description.includes(searchTerm) ||
-                        category.includes(searchTerm) ||
-                        level.includes(searchTerm)) {
-                        row.style.display = '';
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                
+                searchTimeout = setTimeout(() => {
+                    const searchTerm = searchInput.value.trim();
+                    const currentUrl = new URL(window.location);
+                    
+                    if (searchTerm) {
+                        currentUrl.searchParams.set('search', searchTerm);
                     } else {
-                        row.style.display = 'none';
+                        currentUrl.searchParams.delete('search');
                     }
-                }
+                    
+                    currentUrl.searchParams.set('page', '1');
+                    window.location.href = currentUrl.toString();
+                    
+                }, 300);
             });
         });
     </script>

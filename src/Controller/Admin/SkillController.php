@@ -29,7 +29,6 @@ final class SkillController extends AbstractController
             'totalPages' => $skills->getNbPages(),
             'totalItems' => $skills->getNbResults(),
             'itemsPerPage' => $itemsPerPage,
-            'page' => $page,
             'search' => $search,
         ]);
     }

@@ -18,15 +18,22 @@ class MicroCredentialRepository extends ServiceEntityRepository
         parent::__construct($registry, MicroCredential::class);
     }
 
-    public function findPaginatedByCategory(int $page = 1, int $maxPerPage = 10, ?string $category = null): Pagerfanta
+    /**
+     * Get paginated micro-credentials with optional search filter
+     *
+     * @param int $page Current page number (1-based)
+     * @param int $maxPerPage Number of items per page
+     * @param string|null $search Optional search query
+     * @return Pagerfanta
+     */
+    public function findPaginated(int $page = 1, int $maxPerPage = 10, ?string $search = null): Pagerfanta
     {
-        $qb = $this->createQueryBuilder('s')
-            ->orderBy('s.name', 'ASC');
+        $qb = $this->createQueryBuilder('m')
+            ->orderBy('m.name', 'ASC');
 
-
-        if ($category) {
-            $qb->andWhere('s.category = :category')
-                ->setParameter('category', $category);
+        if ($search) {
+            $qb->andWhere('m.name LIKE :search OR m.description LIKE :search OR m.category LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
         }
 
         $adapter = new QueryAdapter($qb);

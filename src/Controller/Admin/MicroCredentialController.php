@@ -19,9 +19,10 @@ final class MicroCredentialController extends AbstractController
     public function index(MicroCredentialRepository $repository, Request $request): Response
     {
         $page = $request->query->getInt('page', 1);
+        $search = $request->query->getString('search');
         $itemsPerPage = 25;
 
-        $microCredentials = $repository->findPaginatedByCategory($page, $itemsPerPage);
+        $microCredentials = $repository->findPaginated($page, $itemsPerPage, $search);
 
         return $this->render('admin/micro_credential/index.html.twig', [
             'micro_credentials' => $microCredentials->getCurrentPageResults(),
@@ -29,6 +30,7 @@ final class MicroCredentialController extends AbstractController
             'totalPages' => $microCredentials->getNbPages(),
             'totalItemsPerPage' => $microCredentials->getNbResults(),
             'itemsPerPage' => $itemsPerPage,
+            'search' => $search,
         ]);
     }
 
