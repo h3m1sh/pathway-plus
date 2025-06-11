@@ -20,6 +20,9 @@ class UserFixtures extends Fixture
         $this->passwordHasher = $passwordHasher;
     }
 
+    /**
+     * @throws \DateMalformedStringException
+     */
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('en_NZ');
@@ -32,35 +35,37 @@ class UserFixtures extends Fixture
             ->setIsActive(true)
             ->setStudentId(null);
 
-        $hasherPassword = $this->passwordHasher->hashPassword($admin, 'admin123');
-        $admin->setPassword($hasherPassword);
+        $hashedPassword = $this->passwordHasher->hashPassword($admin, 'admin123');
+        $admin->setPassword($hashedPassword);
 
         $manager->persist($admin);
 
-        for ($i = 0; $i < 25; $i++){
+        for ($i = 0; $i < 25; $i++) {
             $student = new User();
             $student->setEmail($faker->unique()->safeEmail())
                 ->setFirstName($faker->firstName())
                 ->setLastName($faker->lastName())
                 ->setRoles(['ROLE_STUDENT'])
                 ->setIsActive($faker->boolean(95))
-                ->setStudentId($faker->regexify('STU[0-9]{6}'))
-                ->setPassword($hasherPassword)
-                ->setAvatarUrl($faker->optional(0.7)->imageUrl(150, 150, 'people'));
+                ->setStudentId($faker->regexify('STU[0-9]{6}'));
+
+          
+            $avatarUrl = $faker->optional(0.7)->imageUrl(150, 150, 'people');
+            if ($avatarUrl) {
+                $student->setAvatarUrl($avatarUrl);
+            }
+
+            if ($faker->boolean(60)) {
+                $student->setLastLoginAt(new \DateTimeImmutable($faker->dateTimeBetween('-30 days', 'now')->format('Y-m-d H:i:s')));
+            }
+
+            $hashedPassword = $this->passwordHasher->hashPassword($student, 'student123');
+            $student->setPassword($hashedPassword);
+
+            $manager->persist($student);
+            
+            $this->addReference('student_' . $i, $student);
         }
-
-
-        if ($faker->boolean(60)) {
-            $student->setLastLoginAt($faker->dateTimeBetween('-30 days', 'now'));
-        }
-
-        $hasherPassword = $this->passwordHasher->hashPassword($student, 'student123');
-        $student->setPassword($hasherPassword);
-
-        $manager->persist($student);
-
-
-        $this->addReference('student_' . $i, $student);
 
         $manager->flush();
     }

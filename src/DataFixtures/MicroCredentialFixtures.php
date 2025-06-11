@@ -53,11 +53,13 @@ class MicroCredentialFixtures extends Fixture
                 ->setCategory($data['category'])
                 ->setLevel($data['level'])
                 ->setDescription($faker->paragraph(3))
+                ->setIsVisible(true)
                 ->setBadgeUrl(null);
 
             $manager->persist($credential);
             $this->addReference('credential_' . $index, $credential);
         }
-            $manager->flush();
+
+        $manager->flush();
     }
 }

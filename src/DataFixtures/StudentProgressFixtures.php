@@ -23,19 +23,21 @@ class StudentProgressFixtures extends Fixture implements DependentFixtureInterfa
             'Industry Certification Board'
         ];
 
-        for ($i = 1; $i <= 25; $i++) {
-            $student = $this->getReference('student' . $i);
-
+        for ($i = 0; $i < 25; $i++) {
+            $student = $this->getReference('student_' . $i);
             $credentialCount = $faker->numberBetween(1, 5);
 
-            for ($j = 0; $j <= $credentialCount; $j++) {
-                $credentialIndex = $faker->numberBetween(1, 49);
+            $availableCredentials = range(0, 30);
+            shuffle($availableCredentials);
+            $selectedCredentials = array_slice($availableCredentials, 0, $credentialCount);
+
+            foreach ($selectedCredentials as $credentialIndex) {
                 $credential = $this->getReference('credential_' . $credentialIndex);
 
                 $progress = new StudentProgress();
                 $progress->setStudent($student)
                     ->setMicroCredential($credential)
-                    ->setDateEarned($faker->dateTimeBetween('-1 year', 'now'))
+                    ->setDateEarned(new \DateTimeImmutable($faker->dateTimeBetween('-1 year', 'now')->format('Y-m-d H:i:s')))
                     ->setStatus($faker->randomElement($statuses))
                     ->setVerifiedBy($faker->randomElement($verifiers))
                     ->setNote($faker->optional(0.4)->sentence());
