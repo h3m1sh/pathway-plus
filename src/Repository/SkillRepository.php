@@ -24,22 +24,21 @@ class SkillRepository extends ServiceEntityRepository
      */
 
     /**
-     * Get paginated skills with optional category filter
+     * Get paginated skills with optional search filter
      *
      * @param int $page Current page number (1-based)
      * @param int $maxPerPage Number of items per page
-     * @param string|null $category Optional category filter
+     * @param string|null $search Optional search query
      * @return Pagerfanta
      */
-    public function findPaginatedByCategory(int $page = 1, int $maxPerPage = 10, ?string $category = null): Pagerfanta
+    public function findPaginated(int $page = 1, int $maxPerPage = 10, ?string $search = null): Pagerfanta
     {
         $qb = $this->createQueryBuilder('s')
             ->orderBy('s.name', 'ASC');
 
-
-        if ($category) {
-            $qb->andWhere('s.category = :category')
-               ->setParameter('category', $category);
+        if ($search) {
+            $qb->andWhere('s.name LIKE :search OR s.description LIKE :search OR s.category LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
         }
 
         $adapter = new QueryAdapter($qb);

@@ -18,9 +18,10 @@ final class SkillController extends AbstractController
     public function index(SkillRepository $repository, Request $request): Response
     {
         $page = $request->query->getInt('page', 1);
+        $search = $request->query->getString('search');
         $itemsPerPage = 25;
 
-        $skills = $repository->findPaginatedByCategory($page, $itemsPerPage);
+        $skills = $repository->findPaginated($page, $itemsPerPage, $search);
 
         return $this->render('admin/skill/index.html.twig', [
             'skills' => $skills->getCurrentPageResults(),
@@ -28,6 +29,8 @@ final class SkillController extends AbstractController
             'totalPages' => $skills->getNbPages(),
             'totalItems' => $skills->getNbResults(),
             'itemsPerPage' => $itemsPerPage,
+            'page' => $page,
+            'search' => $search,
         ]);
     }
 
