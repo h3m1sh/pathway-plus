@@ -24,6 +24,7 @@
                                 <i class="bi bi-search"></i>
                             </span>
                             <input type="text" id="jobRoleSearch" class="form-control border-start-0"
+                                   value="{{ search }}"
                                    placeholder="Search by title, industry or job code..."
                                    aria-label="Search job roles">
                         </div>
@@ -177,7 +178,7 @@
                                     <!-- Previous page -->
                                     {% if currentPage > 1 %}
                                         <li class="page-item">
-                                            <a class="page-link" href="{{ path('app_admin_job_role_index', {'page': currentPage - 1}) }}">
+                                            <a class="page-link" href="{{ path('app_admin_job_role_index', {'page': page, 'search': search}) }}">
                                                 <i class="bi bi-chevron-left"></i>
                                             </a>
                                         </li>
@@ -195,7 +196,7 @@
                                             </li>
                                         {% elseif page <= 3 or page > totalPages - 3 or (page >= currentPage - 2 and page <= currentPage + 2) %}
                                             <li class="page-item">
-                                                <a class="page-link" href="{{ path('app_admin_job_role_index', {'page': page}) }}">{{ page }}</a>
+                                                <a class="page-link" href="{{ path('app_admin_job_role_index', {'page': page, 'search': search}) }}">{{ page }}</a>
                                             </li>
                                         {% elseif page == 4 or page == totalPages - 3 %}
                                             <li class="page-item disabled">
@@ -207,7 +208,7 @@
                                     <!-- Next page -->
                                     {% if currentPage < totalPages %}
                                         <li class="page-item">
-                                            <a class="page-link" href="{{ path('app_admin_job_role_index', {'page': currentPage + 1}) }}">
+                                            <a class="page-link" href="{{ path('app_admin_job_role_index', {'page': page, 'search': search}) }}">
                                                 <i class="bi bi-chevron-right"></i>
                                             </a>
                                         </li>
@@ -229,42 +230,32 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('jobRoleSearch');
-            const table = document.getElementById('jobRolesTable');
-            const tbody = table.querySelector('tbody');
-            const rows = Array.from(tbody.querySelectorAll('tr:not(.modal)'));
+            let searchTimeout;
 
             searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase().trim();
-
-                rows.forEach(row => {
-                    // Skip empty state row or rows that don't have job data
-                    if (row.cells.length <= 1 || row.querySelector('.modal')) return;
-
-                    // Get text content from specific cells, avoiding nested modals
-                    const titleCell = row.cells[1];
-                    const jobCodeCell = row.cells[2];
-                    const industryCell = row.cells[3];
-
-                    if (!titleCell || !jobCodeCell || !industryCell) return;
-
-                    // Get only the direct text content, not from nested elements
-                    const title = titleCell.querySelector('.fw-semibold')?.textContent.toLowerCase() || '';
-                    const jobCode = jobCodeCell.querySelector('code')?.textContent.toLowerCase() || '';
-                    const industry = industryCell.querySelector('.badge')?.textContent.toLowerCase() ||
-                                   (industryCell.textContent.includes('N/A') ? '' : industryCell.textContent.toLowerCase());
-
-                    const matches = title.includes(searchTerm) ||
-                                    jobCode.includes(searchTerm) ||
-                                    industry.includes(searchTerm);
-
-                    row.style.display = matches ? '' : 'none';
-
-                    // Also hide/show associated modals
-                    const associatedModal = document.querySelector(`#deleteModal${row.cells[0].textContent.trim()}`);
-                    if (associatedModal) {
-                        associatedModal.style.display = matches ? '' : 'none';
+                
+                clearTimeout(searchTimeout);
+                
+               
+                searchTimeout = setTimeout(() => {
+                    const searchTerm = searchInput.value.trim();
+                    
+                    
+                    const currentUrl = new URL(window.location);
+                    
+                    if (searchTerm) {
+                        currentUrl.searchParams.set('search', searchTerm);
+                    } else {
+                        currentUrl.searchParams.delete('search');
                     }
-                });
+                    
+                    
+                    currentUrl.searchParams.set('page', '1');
+                    
+                    
+                    window.location.href = currentUrl.toString();
+                    
+                }, 400); 
             });
         });
     </script>

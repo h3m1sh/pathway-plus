@@ -20,9 +20,10 @@ final class JobRoleController extends AbstractController
     public function index(JobRoleRepository $repository, Request $request): Response
     {
         $page = $request->query->getInt('page', 1);
+        $search = $request->query->getString('search', '');
         $itemsPerPage = 25;
 
-        $jobRoles = $repository->findPaginatedByIndustry($page, $itemsPerPage);
+        $jobRoles = $repository->findPaginated($page, $itemsPerPage, $search);
 
         return $this->render('admin/job_role/index.html.twig', [
             'job_roles' => $jobRoles->getCurrentPageResults(),
@@ -30,6 +31,8 @@ final class JobRoleController extends AbstractController
             'totalPages' => $jobRoles->getNbPages(),
             'totalItems' => $jobRoles->getNbResults(),
             'itemsPerPage' => $itemsPerPage,
+            'page' => $page,
+            'search' => $search,
         ]);
     }
 
