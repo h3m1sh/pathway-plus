@@ -38,6 +38,9 @@ class StudentProgress
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $completedAt = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -143,5 +146,38 @@ class StudentProgress
         $this->updatedAt = $updatedAt;
 
         return $this;
+    }
+
+    public function getCompletedAt(): ?\DateTimeImmutable
+    {
+        return $this->completedAt;
+    }
+
+    public function setCompletedAt(?\DateTimeImmutable $completedAt): static
+    {
+        $this->completedAt = $completedAt;
+
+        return $this;
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->completedAt !== null || 
+               in_array($this->status, ['Completed', 'Verified']);
+    }
+
+    public function getProgressPercentage(): int
+    {
+        if ($this->isCompleted()) {
+            return 100;
+        }
+
+        return match($this->status) {
+            'Completed' => 100,
+            'Verified' => 100,
+            'In Progress' => 75,
+            'Under Review' => 50,
+            default => 0
+        };
     }
 }

@@ -62,6 +62,7 @@ class SkillFormType extends AbstractType
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Skill Description',
+                'required' => false,
                 'attr' => [
                     'class' => 'form-control'
                 ]
