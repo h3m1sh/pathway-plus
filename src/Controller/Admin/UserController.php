@@ -103,9 +103,23 @@ final class UserController extends AbstractController
                 $entityManager->flush();
 
                 $this->addFlash('success', 'User updated successfully.');
+                
+                // Handle AJAX requests differently
+                if ($request->isXmlHttpRequest()) {
+                    return new Response('success', Response::HTTP_OK);
+                }
+                
                 return $this->redirectToRoute('app_admin_user_index', [], Response::HTTP_SEE_OTHER);
             } else {
                 $this->addFlash('error', 'Please fix the validation errors below.');
+                
+                // For AJAX requests, return the form with errors
+                if ($request->isXmlHttpRequest()) {
+                    return $this->render('admin/user/edit.html.twig', [
+                        'user' => $user,
+                        'form' => $form,
+                    ], new Response('', Response::HTTP_BAD_REQUEST));
+                }
             }
         }
 

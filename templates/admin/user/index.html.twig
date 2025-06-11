@@ -340,7 +340,10 @@
                                     const form = doc.querySelector('form');
 
                                     if (form) {
+                                        // Set the correct action URL to ensure proper form submission
+                                        form.action = `{{ path('app_admin_user_edit', {'id': '__ID__'}) }}`.replace('__ID__', userId);
                                         document.getElementById('edit-user-form').innerHTML = form.outerHTML;
+                                        console.log('Form loaded with action:', form.action);
                                     } else {
                                         document.getElementById('edit-user-form').innerHTML = '<p class="text-danger">Error loading form</p>';
                                     }
@@ -357,8 +360,13 @@
                             }
 
                             const formData = new FormData(form);
+                            
+                            // Ensure we're using the correct edit URL
+                            const editUrl = `{{ path('app_admin_user_edit', {'id': '__ID__'}) }}`.replace('__ID__', userId);
+                            console.log('Form action:', form.action);
+                            console.log('Edit URL:', editUrl);
 
-                            return fetch(form.action, {
+                            return fetch(editUrl, {
                                 method: 'POST',
                                 body: formData,
                                 headers: {
@@ -366,19 +374,30 @@
                                 }
                             })
                             .then(response => {
-                                if (response.redirected) {
-                                    // If response was redirected (successful), that's good
-                                    return response;
-                                } else if (!response.ok) {
-                                    throw new Error('Failed to update user');
+                                console.log('Response status:', response.status);
+                                console.log('Response URL:', response.url);
+                                
+                                // Check if response is successful (200)
+                                if (response.status === 200) {
+                                    return response.text().then(text => {
+                                        console.log('Response text:', text.substring(0, 200));
+                                        if (text === 'success') {
+                                            return { success: true };
+                                        } else {
+                                            // Check if response contains form errors
+                                            if (text.includes('alert-danger') || text.includes('form-error') || text.includes('Please fix the validation errors')) {
+                                                console.log('Validation errors found in response');
+                                                throw new Error('Validation errors occurred');
+                                            }
+                                            return { success: true };
+                                        }
+                                    });
+                                } else if (response.status === 400) {
+                                    // Bad request - validation errors
+                                    throw new Error('Validation errors occurred');
+                                } else {
+                                    throw new Error(`Server error: ${response.status}`);
                                 }
-                                return response.text().then(html => {
-                                    // Check if response contains form errors
-                                    if (html.includes('alert-danger') || html.includes('form-error')) {
-                                        throw new Error('Validation errors occurred');
-                                    }
-                                    return response;
-                                });
                             })
                             .catch(error => {
                                 Swal.showValidationMessage('Error: ' + error.message);
