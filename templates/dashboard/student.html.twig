@@ -234,7 +234,7 @@
                         </div>
                         {% if recentProgress|length > 5 %}
                             <div class="text-center">
-                                <button class="btn btn-outline-secondary btn-sm">
+                                <button class="btn btn-outline-secondary btn-sm" onclick="showAllActivity()">
                                     View All Recent Activity
                                 </button>
                             </div>
@@ -308,41 +308,121 @@
 </style>
 
 <script>
-    // Widget interaction functions
+    // Scroll to widget function
     function scrollToWidget(widgetId) {
-        document.getElementById(widgetId).scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-        });
+        const widget = document.getElementById(widgetId);
+        if (widget) {
+            widget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     }
 
+    // Show all credentials function
     function showAllCredentials() {
-        // TODO: Implement modal or separate page for all credentials
-        alert('Full credential view coming soon!');
+        const modal = new bootstrap.Modal(document.getElementById('allCredentialsModal'));
+        modal.show();
     }
 
-    // View toggle for skill passport
-    document.querySelectorAll('[data-view]').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('[data-view]').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
+    // Browse available credentials
+    document.querySelector('button.btn-primary').addEventListener('click', function() {
+        window.location.href = '{{ path("app_skill_passport") }}';
+    });
 
-            const view = this.dataset.view;
-            const grid = document.getElementById('credentialGrid');
-
-            if (view === 'list') {
-                grid.className = 'list-view';
-                // TODO: Implement list view layout
-            } else {
-                grid.className = 'row';
+    // View all recent activity
+    function showAllActivity() {
+        Swal.fire({
+            title: 'Recent Activity',
+            html: `
+                <div class="text-start">
+                    <p>This feature is coming soon! For now, you can view your complete activity history in your Skill Passport.</p>
+                </div>
+            `,
+            icon: 'info',
+            confirmButtonText: 'View Skill Passport',
+            showCancelButton: true,
+            cancelButtonText: 'Close'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '{{ path("app_skill_passport") }}';
             }
         });
+    }
+
+    // Initialize drag and drop for widget customization
+    document.addEventListener('DOMContentLoaded', function() {
+        const widgetGrid = document.getElementById('widgetGrid');
+        if (widgetGrid) {
+            const widgets = widgetGrid.querySelectorAll('[data-widget]');
+            
+            widgets.forEach(widget => {
+                widget.addEventListener('dragstart', handleDragStart);
+                widget.addEventListener('dragend', handleDragEnd);
+                widget.addEventListener('dragover', handleDragOver);
+                widget.addEventListener('drop', handleDrop);
+            });
+        }
     });
 
-    // Customize layout button (placeholder)
-    document.getElementById('customizeLayout')?.addEventListener('click', function() {
-        alert('Widget customization coming soon');
-    });
+    // Drag and drop handlers
+    function handleDragStart(e) {
+        this.classList.add('dragging');
+        e.dataTransfer.setData('text/plain', this.dataset.widget);
+    }
+
+    function handleDragEnd(e) {
+        this.classList.remove('dragging');
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        const widgetId = e.dataTransfer.getData('text/plain');
+        const draggedWidget = document.querySelector(`[data-widget="${widgetId}"]`);
+        const dropTarget = this;
+
+        if (draggedWidget !== dropTarget) {
+            const allWidgets = [...widgetGrid.querySelectorAll('[data-widget]')];
+            const draggedIndex = allWidgets.indexOf(draggedWidget);
+            const dropIndex = allWidgets.indexOf(dropTarget);
+
+            if (draggedIndex < dropIndex) {
+                dropTarget.parentNode.insertBefore(draggedWidget, dropTarget.nextSibling);
+            } else {
+                dropTarget.parentNode.insertBefore(draggedWidget, dropTarget);
+            }
+
+            saveWidgetLayout();
+        }
+    }
+
+    // Save widget layout to localStorage
+    function saveWidgetLayout() {
+        const widgetGrid = document.getElementById('widgetGrid');
+        const widgets = widgetGrid.querySelectorAll('[data-widget]');
+        const layout = Array.from(widgets).map(widget => widget.dataset.widget);
+        localStorage.setItem('widgetLayout', JSON.stringify(layout));
+    }
+
+    // Load saved widget layout
+    function loadWidgetLayout() {
+        const savedLayout = localStorage.getItem('widgetLayout');
+        if (savedLayout) {
+            const layout = JSON.parse(savedLayout);
+            const widgetGrid = document.getElementById('widgetGrid');
+            layout.forEach(widgetId => {
+                const widget = widgetGrid.querySelector(`[data-widget="${widgetId}"]`);
+                if (widget) {
+                    widgetGrid.appendChild(widget);
+                }
+            });
+        }
+    }
+
+    // Load saved layout when page loads
+    document.addEventListener('DOMContentLoaded', loadWidgetLayout);
 </script>
 
 {% endblock %}
