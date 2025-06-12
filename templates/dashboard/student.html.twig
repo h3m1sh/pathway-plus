@@ -83,10 +83,10 @@
                 <div class="widget-body">
                     <div class="text-center mb-3">
                         {% if user.avatarUrl %}
-                            <img src="{{ user.avatarUrl }}" alt="{{ user.fullName }}" 
+                            <img src="{{ user.avatarUrl }}" alt="{{ user.fullName }}"
                                  class="rounded-circle mb-2" style="width: 80px; height: 80px; object-fit: cover;">
                         {% else %}
-                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" 
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2"
                                  style="width: 80px; height: 80px; font-size: 2rem;">
                                 {{ user.firstName|slice(0,1) }}{{ user.lastName|slice(0,1) }}
                             </div>
@@ -96,7 +96,7 @@
                             <small class="text-muted">ID: {{ user.studentId }}</small>
                         {% endif %}
                     </div>
-                    
+
                     <div class="row text-center">
                         <div class="col-4">
                             <div class="fw-bold text-primary">{{ stats.totalCredentials }}</div>
@@ -115,16 +115,11 @@
                     {% if careerInterests|length > 0 %}
                         <hr>
                         <h6 class="text-muted mb-2">Career Interests</h6>
-                        {% for interest in careerInterests|slice(0, 2) %}
+                        {% for interest in careerInterests|slice(0, 3) %}
                             <div class="badge bg-light text-dark border mb-1 me-1">
                                 {{ interest.title }}
                             </div>
                         {% endfor %}
-                        {% if careerInterests|length > 2 %}
-                            <div class="badge bg-light text-muted border">
-                                +{{ careerInterests|length - 2 }} more
-                            </div>
-                        {% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -153,8 +148,8 @@
                                     <div class="card border-0 bg-light h-100">
                                         <div class="card-body text-center p-3">
                                             {% if progress.microCredential.badgeUrl %}
-                                                <img src="{{ progress.microCredential.badgeUrl }}" 
-                                                     alt="{{ progress.microCredential.name }}" 
+                                                <img src="{{ progress.microCredential.badgeUrl }}"
+                                                     alt="{{ progress.microCredential.name }}"
                                                      class="mb-2" style="width: 40px; height: 40px; object-fit: cover;">
                                             {% else %}
                                                 <i class="bi bi-award-fill text-primary mb-2" style="font-size: 2rem;"></i>
@@ -214,7 +209,7 @@
                         <div class="timeline">
                             {% for progress in recentProgress|slice(0, 5) %}
                                 <div class="timeline-item d-flex align-items-center mb-3">
-                                    <div class="timeline-marker bg-success rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                    <div class="timeline-marker bg-success rounded-circle d-flex align-items-center justify-content-center me-3"
                                          style="width: 40px; height: 40px; min-width: 40px;">
                                         <i class="bi bi-check-lg text-white"></i>
                                     </div>
@@ -296,7 +291,7 @@
     .timeline-marker {
         box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
     }
-    
+
     .timeline-item:not(:last-child)::after {
         content: '';
         position: absolute;
@@ -306,7 +301,7 @@
         height: 20px;
         background-color: #dee2e6;
     }
-    
+
     .timeline-item {
         position: relative;
     }
@@ -315,9 +310,9 @@
 <script>
     // Widget interaction functions
     function scrollToWidget(widgetId) {
-        document.getElementById(widgetId).scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'center' 
+        document.getElementById(widgetId).scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
         });
     }
 
@@ -331,10 +326,10 @@
         btn.addEventListener('click', function() {
             document.querySelectorAll('[data-view]').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            
+
             const view = this.dataset.view;
             const grid = document.getElementById('credentialGrid');
-            
+
             if (view === 'list') {
                 grid.className = 'list-view';
                 // TODO: Implement list view layout

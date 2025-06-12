@@ -25,7 +25,7 @@ final class JobRoleController extends AbstractController
 
         $jobRoles = $repository->findPaginated($page, $itemsPerPage, $search);
 
-        return $this->render('admin/job_role/student.html.twig', [
+        return $this->render('admin/job_role/index.html.twig', [
             'job_roles' => $jobRoles->getCurrentPageResults(),
             'currentPage' => $jobRoles->getCurrentPage(),
             'totalPages' => $jobRoles->getNbPages(),

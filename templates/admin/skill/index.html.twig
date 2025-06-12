@@ -206,26 +206,26 @@
             searchInput.addEventListener('input', function() {
                 // Clear any existing timeout
                 clearTimeout(searchTimeout);
-                
+
                 // Set a new timeout
                 searchTimeout = setTimeout(() => {
                     const searchTerm = searchInput.value.trim();
-                    
+
                     // Build the URL with current search term
                     const currentUrl = new URL(window.location);
-                    
+
                     if (searchTerm) {
                         currentUrl.searchParams.set('search', searchTerm);
                     } else {
                         currentUrl.searchParams.delete('search');
                     }
-                    
+
                     // Reset to page 1 when searching
                     currentUrl.searchParams.set('page', '1');
-                    
+
                     // Redirect to the new URL
                     window.location.href = currentUrl.toString();
-                    
+
                 }, 300); // Wait 300ms after user stops typing
             });
         });
