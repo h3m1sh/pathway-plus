@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\StudentProgress;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -15,6 +16,26 @@ class StudentProgressRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, StudentProgress::class);
     }
+
+
+    /*
+     * Find recent progress for a student within specified days
+     * */
+
+    public function findRecentProgress(User $student, int $days = 30): array
+{
+    $since = new \DateTimeImmutable("-{$days} days");
+
+    return $this->createQueryBuilder('sp')
+        ->andWhere('sp.student = :student')
+        ->andWhere('sp.dateEarned >= :since')
+        ->setParameter('student', $student)
+        ->setParameter('since', $since)
+        ->orderBy('sp.dateEarned', 'ASC')
+        ->getQuery()
+        ->getResult();
+        
+}
 
     //    /**
     //     * @return StudentProgress[] Returns an array of StudentProgress objects
