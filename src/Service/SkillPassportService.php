@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\StudentProgress;
 use App\Entity\User;
 Use App\Repository\StudentProgressRepository;
 Use App\Repository\MicroCredentialRepository;
@@ -120,5 +121,13 @@ class SkillPassportService
             'categoryStats' => $categoryStats,
             'statusStats' => $statusStats,
         ];
+    }
+
+    public function getCredentialDetail(User $student, int $progressId): ?StudentProgress
+    {
+           return $this->studentProgressRepository->findOneBy([
+            'id' => $progressId,
+            'student' => $student
+        ]);
     }
 }
