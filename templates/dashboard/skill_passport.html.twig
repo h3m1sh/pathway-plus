@@ -1,0 +1,355 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Skill Passport - Pathway+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .filter-card {
+            background: linear-gradient(135deg, var(--cool-white) 0%, #ffffff 100%);
+            border: 1px solid var(--slate-gray);
+            border-radius: 12px;
+        }
+
+        .credential-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-radius: 12px;
+        }
+
+        .credential-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(30, 42, 56, 0.15);
+        }
+
+        .badge-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid var(--electric-blue);
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, var(--electric-blue) 0%, var(--sky-blue) 100%);
+            color: white;
+            border-radius: 12px;
+        }
+
+        .list-view .credential-card {
+            margin-bottom: 1rem;
+        }
+
+        .list-view .credential-card .card-body {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .list-view .badge-image {
+            width: 50px;
+            height: 50px;
+            margin-right: 1rem;
+        }
+
+        .credential-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .progress-ring {
+            width: 80px;
+            height: 80px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="mb-2">
+                    <i class="bi bi-award me-2 text-primary"></i>Skill Passport
+                </h1>
+                <p class="text-muted">Your complete collection of earned micro-credentials and achievements</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary" onclick="exportCredentials('csv')">
+                        <i class="bi bi-download me-1"></i>Export CSV
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" onclick="exportCredentials('pdf')">
+                        <i class="bi bi-file-pdf me-1"></i>Export PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card">
+                    <div class="card-body text-center">
+                        <h3 class="mb-1">{{ passportData.totalCredentials }}</h3>
+                        <small>Total Credentials</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h3 class="mb-1">{{ passportData.completedCredentials }}</h3>
+                        <small>Completed</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <h3 class="mb-1">{{ passportData.statusCounts['In Progress'] ?? 0 }}</h3>
+                        <small>In Progress</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h3 class="mb-1">{{ passportData.categories|length }}</h3>
+                        <small>Categories</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card filter-card">
+                    <div class="card-body">
+                        <form id="filterForm">
+                            <div class="row align-items-end">
+                                <div class="col-md-3 mb-2">
+                                    <label class="form-label">Search</label>
+                                    <input type="text" class="form-control" id="searchInput"
+                                           placeholder="Search credentials...">
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-select" id="categoryFilter">
+                                        <option value="">All Categories</option>
+                                        {% for category in passportData.allCategories %}
+                                            <option value="{{ category }}">{{ category }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-select" id="statusFilter">
+                                        <option value="">All Statuses</option>
+                                        <option value="Completed">Completed</option>
+                                        <option value="Verified">Verified</option>
+                                        <option value="In Progress">In Progress</option>
+                                        <option value="Under Review">Under Review</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Sort By</label>
+                                    <select class="form-select" id="sortBy">
+                                        <option value="dateEarned">Date Earned</option>
+                                        <option value="name">Name</option>
+                                        <option value="category">Category</option>
+                                        <option value="status">Status</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-1 mb-2">
+                                    <label class="form-label">Order</label>
+                                    <select class="form-select" id="sortOrder">
+                                        <option value="DESC">Newest</option>
+                                        <option value="ASC">Oldest</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">View</label>
+                                    <div class="btn-group w-100" role="group">
+                                        <button type="button" class="btn btn-outline-secondary active"
+                                                data-view="grid" id="gridView">
+                                            <i class="bi bi-grid"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary"
+                                                data-view="list" id="listView">
+                                            <i class="bi bi-list"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Count -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted" id="resultsCount">
+                    Showing {{ passportData.totalCredentials }} credentials
+                </span>
+                    <div class="spinner-border spinner-border-sm text-primary d-none" id="loadingSpinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Credentials Grid -->
+        <div id="credentialsContainer">
+            {% include 'dashboard/partials/_credential_grid.html.twig' with {
+                'credentials': passportData.allprogress,
+                'viewType': 'grid'
+            } %}
+        </div>
+    </div>
+
+    <!-- Credential Detail Modal -->
+    <div class="modal fade" id="credentialModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" id="credentialModalContent">
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        let currentFilters = {
+            search: '',
+            category: '',
+            status: '',
+            sortBy: 'dateEarned',
+            sortOrder: 'DESC',
+            viewType: 'grid',
+        };
+
+        document.addEventListener('DOMContentLoaded', function(){
+            document.getElementById('searchInput').addEventListener('input', debounce(applyFilters, 300));
+            document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+            document.getElementById('statusFilter').addEventListener('change', applyFilters);
+            document.getElementById('sortBy').addEventListener('change', applyFilters);
+            document.getElementById('sortOrder').addEventListener('change', applyFilters);
+
+            document.querySelectorAll('[data-view]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('[data-view]').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilters.viewType = this.dataset.viewType;
+                });
+            });
+
+            attachCredentialClickHandlers();
+        });
+
+        function applyFilters(){
+            currentFilters.search = document.getElementById('searchInput').value;
+            currentFilters.search = document.getElementById('categoryFilter').value;
+            currentFilters.search = document.getElementById('statusFilter').value;
+            currentFilters.search = document.getElementById('sortBy').value;
+            currentFilters.search = document.getElementById('sortOrder').value;
+
+            document.getElementById('loadingSpinner').classList.remove('d-none');
+
+            fetch('{{ path('app_skill_passport_filter') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencode',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new URLSearchParams(currentFilters)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('credentialsContainer').innerHTML = data.html;
+                        document.getElementById('resultsCount').textContent = `Showing ${data.count} credentials`;
+
+                        attachCredentialCLickHandlers();
+
+                        if(Object.values(currentFilters).some(val => val && val !== 'dateEarned' && val !== 'DESC' && val !== 'grid')) {
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'success',
+                                title: `Found ${data.count} credentials`,
+                                showConfirmButton: false,
+                                timer: 2000
+                            });
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Filter error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Filter error',
+                        text: 'There was am error applying filters. Please try again.',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                })
+                .finally(() => {
+                    document.getElementById('loadingSpinner').classList.add('d-none');
+                });
+        }
+
+        function exportCredentials(format) {
+            Sawl.fire({
+                title: 'Export Credentials',
+                text: `Export your skill passport as ${format.toUpperCase()}?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: 'var(--electric-blue)',
+                cancelButtonColor: 'var(--slate-gray)',
+                confirmButtonText: `Yes, export ${format.toUpperCase()}!`
+            }).then((result) => {
+                if(result.isConfirmed) {
+                    Sawl.fire({
+                        title: 'Preparing Export...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    window.location.href = `{{ path('app_skill_passport_export', {'format': '__FORMAT__'}) }}`.replace('__FORMAT__', format);
+
+                    setTimeout(() => {
+                        Swal.close();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Export Started!',
+                            text: 'Your download should begin shortly.',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                    }, 1000);
+                }
+            });
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function excutedFuction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    </script>
+{% endblock %}
