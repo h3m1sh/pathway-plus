@@ -4,7 +4,7 @@
 
 {% block body %}
 
-{# Header #}
+<!-- Dashboard Header -->
 <div class="dashboard-header">
     <div class="container">
         <div class="row align-items-center">
@@ -14,7 +14,7 @@
                     Good {% if date().format('H') < 12 %}morning{% elseif date().format('H') < 17 %}afternoon{% else %}evening{% endif %}, {{ user.firstName }}!
                 </h1>
                 <p class="mb-0 opacity-90">
-                    Ready to continue your learning journey? Here's your progress overview
+                    Ready to continue your learning journey? Here's your progress overview.
                 </p>
             </div>
             <div class="col-md-4 text-md-end">
@@ -37,8 +37,8 @@
     </div>
 </div>
 
-{# Quick Actions#}
 <div class="container">
+    <!-- Quick Actions Bar -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card widget-card">
@@ -69,220 +69,223 @@
             </div>
         </div>
     </div>
-</div>
 
-{#  Widget Grid  #}
-
-<div class="row" id="widgetGrid">
-{#  Profile + Skill Passport  #}
-    <div class="col-lg-4 col-md-6 mb-4" data-widget="profile">
-        <div class="card widget-card" id="profileWidget">
-            <div class="widget-header">
-                <h5 class="widget-title">
-                    <i class="bi bi-person-badge me-2"></i>Profile Overview
-                </h5>
-            </div>
-            <div class="widget-body">
-                <div class="text-center mb-3">
-                    {% if user.avatarUrl %}
-                        <img src="{{ user.avatarUrl }}" alt="{{ user.fullName }}"
-                            class="rounded-circle mb-2" style="width: 80px; height: 80px; object-fit: cover">
-                    {% else %}
-                        <div class="bg-primary text-white rounded-circle d-flex align-items justify-content-center mx-auto mb-2"
-                            style="width: 80px; height: 80px; font-size: 2rem">
-                            {{ user.firstName|slice(0.1) }}{{ user.lastName|slice(0.1) }}
-                        </div>
-                    {% endif %}
-                    <h6 class="mb-1">{{ user.fullName }}</h6>
-                    {% if user.studentId %}
-                        <small class="text-muted">ID: {{ user.studentId }}</small>
-                    {% endif %}
+    <!-- Widget Grid -->
+    <div class="row" id="widgetGrid">
+        <!-- Profile + Skill Passport -->
+        <div class="col-lg-4 col-md-6 mb-4" data-widget="profile">
+            <div class="card widget-card" id="profileWidget">
+                <div class="widget-header">
+                    <h5 class="widget-title">
+                        <i class="bi bi-person-badge me-2"></i>Profile Overview
+                    </h5>
                 </div>
-
-                <div class="row text-center">
-                    <div class="col-4">
-                        <div class="fw-bold text-primary">{{ stats.totalCredentials }}</div>
-                        <small class="text-muted">Total</small>
+                <div class="widget-body">
+                    <div class="text-center mb-3">
+                        {% if user.avatarUrl %}
+                            <img src="{{ user.avatarUrl }}" alt="{{ user.fullName }}" 
+                                 class="rounded-circle mb-2" style="width: 80px; height: 80px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" 
+                                 style="width: 80px; height: 80px; font-size: 2rem;">
+                                {{ user.firstName|slice(0,1) }}{{ user.lastName|slice(0,1) }}
+                            </div>
+                        {% endif %}
+                        <h6 class="mb-1">{{ user.fullName }}</h6>
+                        {% if user.studentId %}
+                            <small class="text-muted">ID: {{ user.studentId }}</small>
+                        {% endif %}
                     </div>
-                    <div class="col-4">
-                        <div class="fw-bold text-success">{{ stats.completedCredentials }}</div>
-                        <small class="text-muted">Earned</small>
-                    </div>
-                    <div class="col-4">
-                        <div class="fw-bold text-warning">{{ stats.careerGoals }}</div>
-                        <small class="text-muted">Goals</small>
-                    </div>
-                </div>
-
-                {% if careerInterests|length > 0 %}
-                    <hr>
-                    <h6 class="text-muted mb-2">Career Interests</h6>
-                    {% for interest in careerInterests|slice(0, 3) %}
-                        <div class="badge bg-light text-dark border mb-1 me-1">
-                            {{ interest.title }}
-                        </div>
-                    {% endfor %}
                     
-                {% endif %}
-            </div>
-        </div>
-    </div>
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="fw-bold text-primary">{{ stats.totalCredentials }}</div>
+                            <small class="text-muted">Total</small>
+                        </div>
+                        <div class="col-4">
+                            <div class="fw-bold text-success">{{ stats.completedCredentials }}</div>
+                            <small class="text-muted">Earned</small>
+                        </div>
+                        <div class="col-4">
+                            <div class="fw-bold text-warning">{{ stats.careerGoals }}</div>
+                            <small class="text-muted">Goals</small>
+                        </div>
+                    </div>
 
-    <div class="col-lg-8 col-md-6 mb-4" data-widget="skillPassport">
-        <div class="card widget-card" id="skillPassport">
-            <div class="widget-header d-flex justify-content-between align-items-center">
-                <h5 class="widget-title">
-                    <i class="bi bi-award me-2"></i>Skill Passport
-                </h5>
-                <div class="btn-group btn-group-sm" role="group">
-                    <button type="button" class="btn btn-outline-secondary active" data-view="grid">
-                        <i class="bi bi-grid"></i>
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary" data-view="list">
-                        <i class="bi bi-list"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="widget-body">
-                {% if studentProgress|length > 0 %}
-                    <div class="row" id="credentialGrid">
-                        {% for progress in studentProgress|slice(0, 6) %}
-                            <div class="col-md-4 col-sm-6 mb-3">
-                                <div class="card border-0 bg-light h-100">
-                                    <div class="card-body text-center p-3">
-                                        {% if progress.microCredential.badgeUrl %}
-                                            <img src="{{ progress.microCredential.badgeUrl }}"
-                                                 alt="{{ progress.microCredential.name }}"
-                                                 class="mb-2" style="width: 40px; height: 40px; object-fit: cover;">
-                                        {% else %}
-                                            <i class="bi bi-award-fill text-primary mb-2" style="font-size: 2rem;"></i>
-                                        {% endif %}
-                                        <h6 class="card-title mb-1" style="font-size: 0.9rem;">
-                                            {{ progress.microCredential.name }}
-                                        </h6>
-                                        <small class="text-muted">
-                                            {{ progress.dateEarned.format('M Y') }}
-                                        </small>
-                                        <div class="mt-2">
-                                            {% if progress.status == 'Completed' or progress.status == 'Verified' %}
-                                                <span class="badge bg-success">{{ progress.status }}</span>
-                                            {% elseif progress.status == 'In Progress' %}
-                                                <span class="badge bg-warning">{{ progress.status }}</span>
-                                            {% else %}
-                                                <span class="badge bg-secondary">{{ progress.status }}</span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
+                    {% if careerInterests|length > 0 %}
+                        <hr>
+                        <h6 class="text-muted mb-2">Career Interests</h6>
+                        {% for interest in careerInterests|slice(0, 2) %}
+                            <div class="badge bg-light text-dark border mb-1 me-1">
+                                {{ interest.title }}
                             </div>
                         {% endfor %}
-                    </div>
-                    {% if studentProgress|length > 6 %}
-                        <div class="text-center mt-3">
-                            <button class="btn btn-outline-primary btn-sm" onclick="showAllCredentials()">
-                                View All {{ studentProgress|length }} Credentials
-                            </button>
-                        </div>
+                        {% if careerInterests|length > 2 %}
+                            <div class="badge bg-light text-muted border">
+                                +{{ careerInterests|length - 2 }} more
+                            </div>
+                        {% endif %}
                     {% endif %}
-                {% else %}
-                    <div class="text-center py-4">
-                        <i class="bi bi-award text-muted" style="font-size: 3rem;"></i>
-                        <h6 class="text-muted mt-2">No credentials yet</h6>
-                        <p class="text-muted mb-3">Start your learning journey to earn your first micro-credential!</p>
-                        <button class="btn btn-primary btn-sm">
-                            <i class="bi bi-search me-1"></i>Browse Available Credentials
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8 col-md-6 mb-4" data-widget="skillPassport">
+            <div class="card widget-card" id="skillPassport">
+                <div class="widget-header d-flex justify-content-between align-items-center">
+                    <h5 class="widget-title">
+                        <i class="bi bi-award me-2"></i>Skill Passport
+                    </h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-secondary active" data-view="grid">
+                            <i class="bi bi-grid"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" data-view="list">
+                            <i class="bi bi-list"></i>
                         </button>
                     </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <!-- Recently Earned Timeline -->
-    <div class="col-12 mb-4" data-widget="recentActivity">
-        <div class="card widget-card" id="recentActivity">
-            <div class="widget-header">
-                <h5 class="widget-title">
-                    <i class="bi bi-clock-history me-2"></i>Recent Activity
-                    <small class="text-muted">(Last 30 days)</small>
-                </h5>
-            </div>
-            <div class="widget-body">
-                {% if recentProgress|length > 0 %}
-                    <div class="timeline">
-                        {% for progress in recentProgress|slice(0, 5) %}
-                            <div class="timeline-item d-flex align-items-center mb-3">
-                                <div class="timeline-marker bg-success rounded-circle d-flex align-items-center justify-content-center me-3"
-                                     style="width: 40px; height: 40px; min-width: 40px;">
-                                    <i class="bi bi-check-lg text-white"></i>
-                                </div>
-                                <div class="timeline-content flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <h6 class="mb-1">{{ progress.microCredential.name }}</h6>
-                                            <p class="text-muted mb-0">
-                                                Earned {{ progress.microCredential.category }} credential
-                                                {% if progress.verifiedBy %}
-                                                    • Verified by {{ progress.verifiedBy }}
+                </div>
+                <div class="widget-body">
+                    {% if studentProgress|length > 0 %}
+                        <div class="row" id="credentialGrid">
+                            {% for progress in studentProgress|slice(0, 6) %}
+                                <div class="col-md-4 col-sm-6 mb-3">
+                                    <div class="card border-0 bg-light h-100">
+                                        <div class="card-body text-center p-3">
+                                            {% if progress.microCredential.badgeUrl %}
+                                                <img src="{{ progress.microCredential.badgeUrl }}" 
+                                                     alt="{{ progress.microCredential.name }}" 
+                                                     class="mb-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                            {% else %}
+                                                <i class="bi bi-award-fill text-primary mb-2" style="font-size: 2rem;"></i>
+                                            {% endif %}
+                                            <h6 class="card-title mb-1" style="font-size: 0.9rem;">
+                                                {{ progress.microCredential.name }}
+                                            </h6>
+                                            <small class="text-muted">
+                                                {{ progress.dateEarned.format('M Y') }}
+                                            </small>
+                                            <div class="mt-2">
+                                                {% if progress.status == 'Completed' or progress.status == 'Verified' %}
+                                                    <span class="badge bg-success">{{ progress.status }}</span>
+                                                {% elseif progress.status == 'In Progress' %}
+                                                    <span class="badge bg-warning">{{ progress.status }}</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">{{ progress.status }}</span>
                                                 {% endif %}
-                                            </p>
+                                            </div>
                                         </div>
-                                        <small class="text-muted">
-                                            {{ progress.dateEarned.format('M j') }}
-                                        </small>
                                     </div>
                                 </div>
+                            {% endfor %}
+                        </div>
+                        {% if studentProgress|length > 6 %}
+                            <div class="text-center mt-3">
+                                <button class="btn btn-outline-primary btn-sm" onclick="showAllCredentials()">
+                                    View All {{ studentProgress|length }} Credentials
+                                </button>
                             </div>
-                        {% endfor %}
-                    </div>
-                    {% if recentProgress|length > 5 %}
-                        <div class="text-center">
-                            <button class="btn btn-outline-secondary btn-sm">
-                                View All Recent Activity
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-award text-muted" style="font-size: 3rem;"></i>
+                            <h6 class="text-muted mt-2">No credentials yet</h6>
+                            <p class="text-muted mb-3">Start your learning journey to earn your first micro-credential!</p>
+                            <button class="btn btn-primary btn-sm">
+                                <i class="bi bi-search me-1"></i>Browse Available Credentials
                             </button>
                         </div>
                     {% endif %}
-                {% else %}
-                    <div class="text-center py-4">
-                        <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
-                        <h6 class="text-muted mt-2">No recent activity</h6>
-                        <p class="text-muted">Complete a micro-credential to see your progress here!</p>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <!--  Career Path + Suggestions (Placeholders for now) -->
-    <div class="col-lg-8 mb-4" data-widget="careerPath">
-        <div class="card widget-card" id="careerPath">
-            <div class="widget-header">
-                <h5 class="widget-title">
-                    <i class="bi bi-map me-2"></i>Career Roadmap
-                </h5>
-            </div>
-            <div class="widget-body">
-                <div class="text-center py-4">
-                    <i class="bi bi-tools text-muted" style="font-size: 3rem;"></i>
-                    <h6 class="text-muted mt-2">Coming Soon</h6>
-                    <p class="text-muted">Visual career roadmap and gap analysis will be available here.</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-lg-4 mb-4" data-widget="suggestions">
-        <div class="card widget-card" id="suggestions">
-            <div class="widget-header">
-                <h5 class="widget-title">
-                    <i class="bi bi-lightbulb me-2"></i>AI Suggestions
-                </h5>
+        <!-- Recently Earned Timeline -->
+        <div class="col-12 mb-4" data-widget="recentActivity">
+            <div class="card widget-card" id="recentActivity">
+                <div class="widget-header">
+                    <h5 class="widget-title">
+                        <i class="bi bi-clock-history me-2"></i>Recent Activity
+                        <small class="text-muted">(Last 30 days)</small>
+                    </h5>
+                </div>
+                <div class="widget-body">
+                    {% if recentProgress|length > 0 %}
+                        <div class="timeline">
+                            {% for progress in recentProgress|slice(0, 5) %}
+                                <div class="timeline-item d-flex align-items-center mb-3">
+                                    <div class="timeline-marker bg-success rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                         style="width: 40px; height: 40px; min-width: 40px;">
+                                        <i class="bi bi-check-lg text-white"></i>
+                                    </div>
+                                    <div class="timeline-content flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h6 class="mb-1">{{ progress.microCredential.name }}</h6>
+                                                <p class="text-muted mb-0">
+                                                    Earned {{ progress.microCredential.category }} credential
+                                                    {% if progress.verifiedBy %}
+                                                        • Verified by {{ progress.verifiedBy }}
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+                                            <small class="text-muted">
+                                                {{ progress.dateEarned.format('M j') }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% if recentProgress|length > 5 %}
+                            <div class="text-center">
+                                <button class="btn btn-outline-secondary btn-sm">
+                                    View All Recent Activity
+                                </button>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
+                            <h6 class="text-muted mt-2">No recent activity</h6>
+                            <p class="text-muted">Complete a micro-credential to see your progress here!</p>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-            <div class="widget-body">
-                <div class="text-center py-4">
-                    <i class="bi bi-robot text-muted" style="font-size: 3rem;"></i>
-                    <h6 class="text-muted mt-2">Coming Soon</h6>
-                    <p class="text-muted">Personalized AI recommendations will appear here.</p>
+        </div>
+
+        <!-- Career Path + Suggestions (Placeholders for now) -->
+        <div class="col-lg-8 mb-4" data-widget="careerPath">
+            <div class="card widget-card" id="careerPath">
+                <div class="widget-header">
+                    <h5 class="widget-title">
+                        <i class="bi bi-map me-2"></i>Career Roadmap
+                    </h5>
+                </div>
+                <div class="widget-body">
+                    <div class="text-center py-4">
+                        <i class="bi bi-tools text-muted" style="font-size: 3rem;"></i>
+                        <h6 class="text-muted mt-2">Coming Soon</h6>
+                        <p class="text-muted">Visual career roadmap and gap analysis will be available here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4" data-widget="suggestions">
+            <div class="card widget-card" id="suggestions">
+                <div class="widget-header">
+                    <h5 class="widget-title">
+                        <i class="bi bi-lightbulb me-2"></i>AI Suggestions
+                    </h5>
+                </div>
+                <div class="widget-body">
+                    <div class="text-center py-4">
+                        <i class="bi bi-robot text-muted" style="font-size: 3rem;"></i>
+                        <h6 class="text-muted mt-2">Coming Soon</h6>
+                        <p class="text-muted">Personalized AI recommendations will appear here.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -293,7 +296,7 @@
     .timeline-marker {
         box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
     }
-
+    
     .timeline-item:not(:last-child)::after {
         content: '';
         position: absolute;
@@ -303,18 +306,18 @@
         height: 20px;
         background-color: #dee2e6;
     }
-
+    
     .timeline-item {
         position: relative;
     }
 </style>
 
 <script>
-
+    // Widget interaction functions
     function scrollToWidget(widgetId) {
-        document.getElementById(widgetId).scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
+        document.getElementById(widgetId).scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
         });
     }
 
@@ -328,10 +331,10 @@
         btn.addEventListener('click', function() {
             document.querySelectorAll('[data-view]').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-
+            
             const view = this.dataset.view;
             const grid = document.getElementById('credentialGrid');
-
+            
             if (view === 'list') {
                 grid.className = 'list-view';
                 // TODO: Implement list view layout

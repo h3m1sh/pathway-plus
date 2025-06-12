@@ -17,25 +17,76 @@ class StudentProgressRepository extends ServiceEntityRepository
         parent::__construct($registry, StudentProgress::class);
     }
 
-
-    /*
+    /**
      * Find recent progress for a student within specified days
-     * */
-
+     */
     public function findRecentProgress(User $student, int $days = 30): array
-{
-    $since = new \DateTimeImmutable("-{$days} days");
+    {
+        $since = new \DateTimeImmutable("-{$days} days");
+        
+        return $this->createQueryBuilder('sp')
+            ->leftJoin('sp.microCredential', 'mc')
+            ->andWhere('sp.student = :student')
+            ->andWhere('sp.dateEarned >= :since')
+            ->setParameter('student', $student)
+            ->setParameter('since', $since)
+            ->orderBy('sp.dateEarned', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 
-    return $this->createQueryBuilder('sp')
-        ->andWhere('sp.student = :student')
-        ->andWhere('sp.dateEarned >= :since')
-        ->setParameter('student', $student)
-        ->setParameter('since', $since)
-        ->orderBy('sp.dateEarned', 'ASC')
-        ->getQuery()
-        ->getResult();
+    /**
+     * Get completion statistics for a student
+     */
+    public function getStudentStats(User $student): array
+    {
+        $qb = $this->createQueryBuilder('sp')
+            ->select('COUNT(sp.id) as total')
+            ->addSelect('COUNT(CASE WHEN sp.status IN (:completed_statuses) THEN 1 END) as completed')
+            ->andWhere('sp.student = :student')
+            ->setParameter('student', $student)
+            ->setParameter('completed_statuses', ['Completed', 'Verified'])
+            ->getQuery()
+            ->getSingleResult();
 
-}
+        return [
+            'total' => (int) $qb['total'],
+            'completed' => (int) $qb['completed'],
+            'completion_rate' => $qb['total'] > 0 ? round(($qb['completed'] / $qb['total']) * 100) : 0
+        ];
+    }
+
+    /**
+     * Find credentials by category for a student
+     */
+    public function findByCategory(User $student, string $category): array
+    {
+        return $this->createQueryBuilder('sp')
+            ->leftJoin('sp.microCredential', 'mc')
+            ->andWhere('sp.student = :student')
+            ->andWhere('mc.category = :category')
+            ->setParameter('student', $student)
+            ->setParameter('category', $category)
+            ->orderBy('sp.dateEarned', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Find credentials by status for a student
+     */
+    public function findByStatus(User $student, string $status): array
+    {
+        return $this->createQueryBuilder('sp')
+            ->leftJoin('sp.microCredential', 'mc')
+            ->andWhere('sp.student = :student')
+            ->andWhere('sp.status = :status')
+            ->setParameter('student', $student)
+            ->setParameter('status', $status)
+            ->orderBy('sp.dateEarned', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 
     //    /**
     //     * @return StudentProgress[] Returns an array of StudentProgress objects
