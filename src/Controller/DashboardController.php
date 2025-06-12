@@ -8,7 +8,6 @@ use App\Repository\UserRepository;
 use App\Repository\SkillRepository;
 use App\Repository\JobRoleRepository;
 use App\Repository\MicroCredentialRepository;
-use App\Entity\StudentProgress;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -34,10 +33,10 @@ class DashboardController extends AbstractController
         $user = $this->getUser();
 
         if ($user->isAdmin()) {
-            return $this->redirectToRoute('app_admin_dashboard');
+            return $this->redirectToRoute('admin_dashboard');
         }
 
-        $studentProgress = $studentProgressRepository->findBy(['student' => $user], ['dataEarned' => 'DESC']);
+        $studentProgress = $studentProgressRepository->findBy(['student' => $user], ['dateEarned' => 'DESC']);
         $recentProgress = $studentProgressRepository->findRecentProgress($user, 30);
         $careerInterests = $user->getJobRoleInterests();
 

@@ -24,7 +24,7 @@ final class MicroCredentialController extends AbstractController
 
         $microCredentials = $repository->findPaginated($page, $itemsPerPage, $search);
 
-        return $this->render('admin/micro_credential/index.html.twig', [
+        return $this->render('admin/micro_credential/student.html.twig', [
             'micro_credentials' => $microCredentials->getCurrentPageResults(),
             'currentPage' => $microCredentials->getCurrentPage(),
             'totalPages' => $microCredentials->getNbPages(),

@@ -23,7 +23,7 @@ final class SkillController extends AbstractController
 
         $skills = $repository->findPaginated($page, $itemsPerPage, $search);
 
-        return $this->render('admin/skill/index.html.twig', [
+        return $this->render('admin/skill/student.html.twig', [
             'skills' => $skills->getCurrentPageResults(),
             'currentPage' => $skills->getCurrentPage(),
             'totalPages' => $skills->getNbPages(),

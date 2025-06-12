@@ -34,7 +34,7 @@ class StudentProgressRepository extends ServiceEntityRepository
         ->orderBy('sp.dateEarned', 'ASC')
         ->getQuery()
         ->getResult();
-        
+
 }
 
     //    /**
