@@ -28,13 +28,15 @@ class DashboardController extends AbstractController
 
     #[Route('/dashboard', name: 'app_dashboard')]
     #[IsGranted('ROLE_USER')]
-    public function dashboard(StudentProgressRepository $studentProgressRepository,
+    public function index(
+        StudentProgressRepository $studentProgressRepository,
         SkillRepository $skillRepository,
-        UserRepository $userRepository): Response
-    {
+        UserRepository $userRepository
+    ): Response {
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
-        if ($user->isAdmin()) {
+        if (in_array('ROLE_ADMIN', $user->getRoles())) {
             return $this->redirectToRoute('admin_dashboard');
         }
 
@@ -45,11 +47,50 @@ class DashboardController extends AbstractController
             'goals' => $userRepository->findRecentCareerGoals($user, 30),
         ];
 
+        // Convert objects to arrays and add type information
         $allActivities = array_merge(
-            array_map(fn($p) => array_merge($p, ['type' => 'credential']), $recentActivites['credentials']),
-            array_map(fn($s) => array_merge($s, ['type' => 'skill']), $recentActivites['skills']),
-            array_map(fn($u) => array_merge($u, ['type' => 'profile']), $recentActivites['profile']),
-            array_map(fn($g) => array_merge($g, ['type' => 'goal']), $recentActivites['goals']),
+            array_map(function($p) {
+                return [
+                    'id' => $p->getId(),
+                    'type' => 'credential',
+                    'name' => $p->getMicroCredential()->getName(),
+                    'dateEarned' => $p->getDateEarned(),
+                    'status' => $p->getStatus(),
+                    'badgeUrl' => $p->getMicroCredential()->getBadgeUrl(),
+                    'microCredential' => [
+                        'name' => $p->getMicroCredential()->getName(),
+                        'category' => $p->getMicroCredential()->getCategory(),
+                    ],
+                    'verifiedBy' => $p->getVerifiedBy(),
+                ];
+            }, $recentActivites['credentials']),
+            array_map(function($s) {
+                return [
+                    'id' => $s->getId(),
+                    'type' => 'skill',
+                    'name' => $s->getName(),
+                    'dateEarned' => $s->getCreatedAt(),
+                    'category' => $s->getCategory(),
+                ];
+            }, $recentActivites['skills']),
+            array_map(function($u) use ($user) {
+                return [
+                    'id' => $user->getId(),
+                    'type' => 'profile',
+                    'name' => 'Profile Update',
+                    'dateEarned' => $u['dateEarned'],
+                    'updateDescription' => $u['updateDescription'] ?? 'Profile updated',
+                ];
+            }, $recentActivites['profile']),
+            array_map(function($g) use ($user) {
+                return [
+                    'id' => $user->getId(),
+                    'type' => 'goal',
+                    'name' => 'Career Goal Update',
+                    'dateEarned' => $g['dateEarned'],
+                    'goalDescription' => $g['goalDescription'] ?? 'Career goal updated',
+                ];
+            }, $recentActivites['goals'])
         );
 
         usort($allActivities, fn($a, $b) => $b['dateEarned'] <=> $a['dateEarned']);
