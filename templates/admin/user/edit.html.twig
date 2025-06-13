@@ -136,6 +136,82 @@
                             </div>
                         </div>
 
+                        <!-- Career Progress Section -->
+                        {% if form.skills is defined or form.microCredentials is defined or form.jobRoleInterests is defined %}
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-white">
+                                        <h5 class="card-title mb-0">
+                                            <i class="bi bi-graph-up me-2"></i>Career Progress
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Skills Section -->
+                                        {% if form.skills is defined %}
+                                        <div class="mb-4">
+                                            <h6 class="text-muted mb-3">
+                                                <i class="bi bi-list-check me-1"></i>Skills
+                                            </h6>
+                                            <div class="skills-container">
+                                                {{ form_widget(form.skills, {
+                                                    'attr': {
+                                                        'class': 'form-select',
+                                                        'data-placeholder': 'Select skills...',
+                                                        'multiple': 'multiple'
+                                                    }
+                                                }) }}
+                                                {{ form_errors(form.skills) }}
+                                                <small class="form-text text-muted">Select the skills this user has acquired</small>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        <!-- Micro-Credentials Section -->
+                                        {% if form.microCredentials is defined %}
+                                        <div class="mb-4">
+                                            <h6 class="text-muted mb-3">
+                                                <i class="bi bi-award me-1"></i>Micro-Credentials
+                                            </h6>
+                                            <div class="micro-credentials-container">
+                                                {{ form_widget(form.microCredentials, {
+                                                    'attr': {
+                                                        'class': 'form-select',
+                                                        'data-placeholder': 'Select micro-credentials...',
+                                                        'multiple': 'multiple'
+                                                    }
+                                                }) }}
+                                                {{ form_errors(form.microCredentials) }}
+                                                <small class="form-text text-muted">Select the micro-credentials this user has earned</small>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        <!-- Job Roles Section -->
+                                        {% if form.jobRoleInterests is defined %}
+                                        <div class="mb-4">
+                                            <h6 class="text-muted mb-3">
+                                                <i class="bi bi-briefcase me-1"></i>Career Interests
+                                            </h6>
+                                            <div class="job-roles-container">
+                                                {{ form_widget(form.jobRoleInterests, {
+                                                    'attr': {
+                                                        'class': 'form-select',
+                                                        'data-placeholder': 'Select job roles...',
+                                                        'multiple': 'multiple'
+                                                    }
+                                                }) }}
+                                                {{ form_errors(form.jobRoleInterests) }}
+                                                <small class="form-text text-muted">Select the job roles this user is interested in</small>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
                         <!-- Current User Info -->
                         <div class="row mt-4">
                             <div class="col-12">
@@ -229,40 +305,58 @@
                 });
             });
 
-            // Avatar URL preview
-            const avatarUrlInput = document.querySelector('input[name*="[avatarUrl]"]');
-            if (avatarUrlInput) {
-                avatarUrlInput.addEventListener('blur', function() {
-                    const url = this.value.trim();
-                    if (url) {
-                        // Simple URL validation
-                        try {
-                            new URL(url);
-                            this.classList.remove('is-invalid');
-                            this.classList.add('is-valid');
-                        } catch {
-                            this.classList.remove('is-valid');
-                            this.classList.add('is-invalid');
-                        }
-                    } else {
-                        this.classList.remove('is-valid', 'is-invalid');
-                    }
-                });
-            }
+            // Initialize TomSelect for career progress fields
+            const initializeTomSelect = (selector, options = {}) => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(element => {
+                    new TomSelect(element, {
+                        plugins: ['remove_button', 'clear_button'],
+                        maxItems: null,
+                        valueField: 'id',
+                        labelField: 'text',
+                        searchField: ['text'],
+                        placeholder: element.dataset.placeholder || 'Select...',
+                        render: {
+                            option: function(item, escape) {
+                                const option = item.text;
+                                const category = item.category;
+                                const difficulty = item.difficulty;
+                                const level = item.level;
 
-            // Role selection feedback
-            const roleCheckboxes = document.querySelectorAll('input[name*="[roles]"]');
-            roleCheckboxes.forEach(function(checkbox) {
-                checkbox.addEventListener('change', function() {
-                    const checkedRoles = document.querySelectorAll('input[name*="[roles]"]:checked');
-                    if (checkedRoles.length === 0) {
-                        // Automatically select ROLE_STUDENT if no roles selected
-                        const studentRole = document.querySelector('input[value="ROLE_STUDENT"]');
-                        if (studentRole) {
-                            studentRole.checked = true;
-                        }
-                    }
+                                let badges = '';
+                                if (category) {
+                                    badges += `<span class="badge bg-secondary me-1">${escape(category)}</span>`;
+                                }
+                                if (difficulty) {
+                                    const difficultyClass = difficulty === 'Beginner' ? 'bg-success' : 
+                                                          difficulty === 'Intermediate' ? 'bg-warning' : 
+                                                          'bg-danger';
+                                    badges += `<span class="badge ${difficultyClass} me-1">${escape(difficulty)}</span>`;
+                                }
+                                if (level) {
+                                    badges += `<span class="badge bg-info me-1">${escape(level)}</span>`;
+                                }
+
+                                return `<div class="d-flex justify-content-between align-items-center">
+                                    <span>${escape(option)}</span>
+                                    <div class="ms-2">${badges}</div>
+                                </div>`;
+                            }
+                        },
+                        ...options
+                    });
                 });
+            };
+
+            // Initialize TomSelect for each career progress field
+            initializeTomSelect('.skills-container select');
+            initializeTomSelect('.micro-credentials-container select');
+            initializeTomSelect('.job-roles-container select');
+
+            // Add tooltips for career progress items
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
             });
         });
     </script>
@@ -296,6 +390,107 @@
 
         .user-edit-form .is-valid {
             border-color: #198754;
+        }
+
+        /* Career Progress Section Styles */
+        .career-progress-section .card {
+            border: 1px solid #e9ecef;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
+        .career-progress-section .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .career-progress-section .card-header h5 {
+            color: #1E2A38;
+            font-weight: 600;
+        }
+
+        .career-progress-section .form-select {
+            border-color: #ced4da;
+        }
+
+        .career-progress-section .form-select:focus {
+            border-color: #007BFF;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .career-progress-section .ts-wrapper {
+            border-color: #ced4da;
+        }
+
+        .career-progress-section .ts-wrapper.focus {
+            border-color: #007BFF;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .career-progress-section .ts-dropdown {
+            border-color: #ced4da;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .career-progress-section .ts-dropdown .active {
+            background-color: #007BFF;
+            color: #fff;
+        }
+
+        .career-progress-section .badge {
+            font-weight: 500;
+            padding: 0.35em 0.65em;
+        }
+
+        .career-progress-section .form-text {
+            color: #6C757D;
+            font-size: 0.875rem;
+        }
+
+        /* TomSelect Custom Styles */
+        .ts-wrapper.multi .ts-control {
+            background-color: #fff;
+            border-radius: 0.375rem;
+            padding: 0.375rem 0.75rem;
+        }
+
+        .ts-wrapper.multi .ts-control > div {
+            background-color: #007BFF;
+            color: #fff;
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            margin: 0.125rem;
+        }
+
+        .ts-wrapper.multi .ts-control > div.active {
+            background-color: #0056b3;
+        }
+
+        .ts-wrapper.multi .ts-control > div .remove {
+            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            margin-left: 0.5rem;
+            padding-left: 0.5rem;
+        }
+
+        .ts-wrapper.multi .ts-control > div .remove:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .ts-dropdown .option {
+            padding: 0.5rem 0.75rem;
+        }
+
+        .ts-dropdown .option:hover {
+            background-color: #f8f9fa;
+        }
+
+        .ts-dropdown .option.active {
+            background-color: #007BFF;
+            color: #fff;
+        }
+
+        .ts-dropdown .option.active .badge {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
         }
     </style>
 {% endblock %}

@@ -70,6 +70,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinTable(name: 'user_job_role_interests')]
     private Collection $jobRoleInterests;
 
+    /**
+     * @var Collection<int, Skill>
+     */
+    #[ORM\ManyToMany(targetEntity: Skill::class)]
+    #[ORM\JoinTable(name: 'user_skills')]
+    private Collection $skills;
+
+    /**
+     * @var Collection<int, MicroCredential>
+     */
+    #[ORM\ManyToMany(targetEntity: MicroCredential::class)]
+    #[ORM\JoinTable(name: 'user_micro_credentials')]
+    private Collection $microCredentials;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $avatarUrl = null;
 
@@ -91,6 +105,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->studentProgress = new ArrayCollection();
         $this->updatedAt = new \DateTimeImmutable();
         $this->jobRoleInterests = new ArrayCollection();
+        $this->skills = new ArrayCollection();
+        $this->microCredentials = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -316,6 +332,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if (!$this->jobRoleInterests->contains($jobRole)) {
             $this->jobRoleInterests->add($jobRole);
         }
+        return $this;
     }
 
     public function removeJobRoleInterest(JobRole $jobRole): static
@@ -351,5 +368,53 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getCareerGoalUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->careerGoalUpdatedAt;
+    }
+
+    /**
+     * @return Collection<int, Skill>
+     */
+    public function getSkills(): Collection
+    {
+        return $this->skills;
+    }
+
+    public function addSkill(Skill $skill): static
+    {
+        if (!$this->skills->contains($skill)) {
+            $this->skills->add($skill);
+        }
+
+        return $this;
+    }
+
+    public function removeSkill(Skill $skill): static
+    {
+        $this->skills->removeElement($skill);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MicroCredential>
+     */
+    public function getMicroCredentials(): Collection
+    {
+        return $this->microCredentials;
+    }
+
+    public function addMicroCredential(MicroCredential $microCredential): static
+    {
+        if (!$this->microCredentials->contains($microCredential)) {
+            $this->microCredentials->add($microCredential);
+        }
+
+        return $this;
+    }
+
+    public function removeMicroCredential(MicroCredential $microCredential): static
+    {
+        $this->microCredentials->removeElement($microCredential);
+
+        return $this;
     }
 }
