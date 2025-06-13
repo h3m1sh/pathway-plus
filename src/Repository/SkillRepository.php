@@ -72,7 +72,7 @@ class SkillRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('s')
             ->join('s.microCredentials', 'mc')
             ->join('mc.studentProgress', 'p')
-            ->andWhere('s.student = :user')
+            ->andWhere('p.student = :user')
             ->andWhere('p.dateEarned >= :date')
             ->setParameter('user', $user)
             ->setParameter('date', $date)

@@ -27,7 +27,7 @@ class DashboardController extends AbstractController
     }
 
     #[Route('/dashboard', name: 'app_dashboard')]
-    #[IsGranted('ROLE_STUDENT')]
+    #[IsGranted('ROLE_USER')]
     public function dashboard(StudentProgressRepository $studentProgressRepository,
         SkillRepository $skillRepository,
         UserRepository $userRepository): Response

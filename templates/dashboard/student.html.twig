@@ -208,25 +208,72 @@
                     {% if recentProgress|length > 0 %}
                         <div class="timeline">
                             {% for progress in recentProgress|slice(0, 5) %}
-                                <div class="timeline-item d-flex align-items-center mb-3">
-                                    <div class="timeline-marker bg-success rounded-circle d-flex align-items-center justify-content-center me-3"
-                                         style="width: 40px; height: 40px; min-width: 40px;">
-                                        <i class="bi bi-check-lg text-white"></i>
+                                <div class="timeline-item d-flex align-items-start mb-4">
+                                    <div class="timeline-marker rounded-circle d-flex align-items-center justify-content-center me-3"
+                                         style="width: 40px; height: 40px; min-width: 40px; background: linear-gradient(135deg, var(--electric-blue) 0%, var(--sky-blue) 100%);">
+                                        {% if progress.type == 'credential' %}
+                                            <i class="bi bi-award text-white"></i>
+                                        {% elseif progress.type == 'skill' %}
+                                            <i class="bi bi-star text-white"></i>
+                                        {% elseif progress.type == 'profile' %}
+                                            <i class="bi bi-person text-white"></i>
+                                        {% else %}
+                                            <i class="bi bi-flag text-white"></i>
+                                        {% endif %}
                                     </div>
                                     <div class="timeline-content flex-grow-1">
                                         <div class="d-flex justify-content-between align-items-start">
                                             <div>
-                                                <h6 class="mb-1">{{ progress.microCredential.name }}</h6>
-                                                <p class="text-muted mb-0">
-                                                    Earned {{ progress.microCredential.category }} credential
-                                                    {% if progress.verifiedBy %}
-                                                        • Verified by {{ progress.verifiedBy }}
+                                                {% if progress.type == 'credential' %}
+                                                    <h6 class="mb-1">{{ progress.microCredential.name }}</h6>
+                                                    <p class="text-muted mb-1">
+                                                        Earned {{ progress.microCredential.category }} credential
+                                                        {% if progress.verifiedBy %}
+                                                            • Verified by {{ progress.verifiedBy }}
+                                                        {% endif %}
+                                                    </p>
+                                                    {% if progress.dateEarned|date('Y-m-d') == "now"|date('Y-m-d') %}
+                                                        <div class="alert alert-success py-2 px-3 mb-2" style="font-size: 0.9rem;">
+                                                            <i class="bi bi-trophy me-1"></i>Congratulations on earning this credential!
+                                                        </div>
                                                     {% endif %}
-                                                </p>
+                                                {% elseif progress.type == 'skill' %}
+                                                    <h6 class="mb-1">New Skill: {{ progress.name }}</h6>
+                                                    <p class="text-muted mb-1">
+                                                        Added to your skill set
+                                                        {% if progress.category %}
+                                                            • {{ progress.category }}
+                                                        {% endif %}
+                                                    </p>
+                                                {% elseif progress.type == 'profile' %}
+                                                    <h6 class="mb-1">Profile Updated</h6>
+                                                    <p class="text-muted mb-1">
+                                                        {{ progress.updateDescription }}
+                                                    </p>
+                                                {% else %}
+                                                    <h6 class="mb-1">New Career Goal</h6>
+                                                    <p class="text-muted mb-1">
+                                                        Set goal: {{ progress.goalDescription }}
+                                                    </p>
+                                                {% endif %}
+                                                
+                                                {% if progress.type == 'credential' or progress.type == 'skill' %}
+                                                    <div class="d-flex gap-2 mt-2">
+                                                        <button class="btn btn-sm btn-outline-primary" onclick="shareAchievement('{{ progress.id }}', '{{ progress.type }}')">
+                                                            <i class="bi bi-share me-1"></i>Share
+                                                        </button>
+                                                        {% if progress.type == 'credential' %}
+                                                            <button class="btn btn-sm btn-outline-secondary" onclick="viewCredentialDetails('{{ progress.id }}')">
+                                                                <i class="bi bi-eye me-1"></i>View Details
+                                                            </button>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
                                             </div>
-                                            <small class="text-muted">
-                                                {{ progress.dateEarned.format('M j') }}
-                                            </small>
+                                            <div class="text-end">
+                                                <small class="text-muted d-block">{{ progress.dateEarned|date('M j') }}</small>
+                                                <small class="text-muted">{{ progress.dateEarned|date('g:i A') }}</small>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -289,7 +336,7 @@
 
 <style>
     .timeline-marker {
-        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+        box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
     }
 
     .timeline-item:not(:last-child)::after {
@@ -298,12 +345,24 @@
         left: 19px;
         top: 50px;
         width: 2px;
-        height: 20px;
-        background-color: #dee2e6;
+        height: calc(100% - 50px);
+        background: linear-gradient(to bottom, var(--electric-blue), var(--sky-blue));
+        opacity: 0.3;
     }
 
     .timeline-item {
         position: relative;
+    }
+
+    .timeline-item:hover .timeline-marker {
+        transform: scale(1.1);
+        transition: transform 0.2s ease;
+    }
+
+    .alert-success {
+        background-color: rgba(40, 167, 69, 0.1);
+        border: 1px solid rgba(40, 167, 69, 0.2);
+        color: var(--soft-green);
     }
 </style>
 
@@ -423,6 +482,84 @@
 
     // Load saved layout when page loads
     document.addEventListener('DOMContentLoaded', loadWidgetLayout);
+
+    function shareAchievement(id, type) {
+        const shareUrl = type === 'credential' 
+            ? `${window.location.origin}/dashboard/skill-passport/credential/${id}`
+            : `${window.location.origin}/dashboard/skill-passport/skill/${id}`;
+        
+        Swal.fire({
+            title: 'Share Achievement',
+            html: `
+                <div class="text-start">
+                    <p>Share your achievement on social media or copy the link:</p>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" value="${shareUrl}" readonly>
+                        <button class="btn btn-outline-secondary" type="button" onclick="copyShareLink('${shareUrl}')">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button class="btn btn-outline-primary" onclick="shareOnLinkedIn('${shareUrl}')">
+                            <i class="bi bi-linkedin"></i> LinkedIn
+                        </button>
+                        <button class="btn btn-outline-info" onclick="shareOnTwitter('${shareUrl}')">
+                            <i class="bi bi-twitter"></i> Twitter
+                        </button>
+                    </div>
+                </div>
+            `,
+            showConfirmButton: false,
+            showCloseButton: true
+        });
+    }
+
+    function copyShareLink(url) {
+        navigator.clipboard.writeText(url).then(() => {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Link copied to clipboard!',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        });
+    }
+
+    function shareOnLinkedIn(url) {
+        const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+        window.open(linkedInUrl, '_blank');
+    }
+
+    function shareOnTwitter(url) {
+        const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=I just earned a new credential on Pathway+!`;
+        window.open(twitterUrl, '_blank');
+    }
+
+    function viewCredentialDetails(id) {
+        fetch(`/dashboard/skill-passport/credential/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('credentialModalContent').innerHTML = data.html;
+                    const modal = new bootstrap.Modal(document.getElementById('credentialModal'));
+                    modal.show();
+                }
+            })
+            .catch(error => {
+                console.error('Error loading credential details:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Could not load credential details. Please try again.',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            });
+    }
 </script>
 
 {% endblock %}
