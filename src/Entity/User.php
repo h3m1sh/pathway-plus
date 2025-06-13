@@ -76,6 +76,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $lastProfileUpdate = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $careerGoal = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $careerGoalUpdatedAt = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -313,5 +322,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->jobRoleInterests->removeElement($jobRole);
         return $this;
+    }
+
+    public function getLastProfileUpdate(): ?string
+    {
+        return $this->lastProfileUpdate;
+    }
+
+    public function setLastProfileUpdate(?string $lastProfileUpdate): static
+    {
+        $this->lastProfileUpdate = $lastProfileUpdate;
+        $this->updatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getCareerGoal(): ?string
+    {
+        return $this->careerGoal;
+    }
+
+    public function setCareerGoal(?string $careerGoal): static
+    {
+        $this->careerGoal = $careerGoal;
+        $this->careerGoalUpdatedAt = new \DateTimeImmutable();
+        return $this;
+    }
+
+    public function getCareerGoalUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->careerGoalUpdatedAt;
     }
 }

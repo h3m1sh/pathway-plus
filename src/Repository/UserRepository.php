@@ -36,11 +36,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function findRecentProfileUpdates(User $user, int $days): array
     {
         $date = new \DateTimeImmutable("-{$days} days");
-
+        
         return $this->createQueryBuilder('u')
             ->select('u.updatedAt as dateEarned, u.lastProfileUpdate as updateDescription')
             ->andWhere('u.id = :user')
             ->andWhere('u.updatedAt >= :date')
+            ->andWhere('u.lastProfileUpdate IS NOT NULL')
             ->setParameter('user', $user)
             ->setParameter('date', $date)
             ->orderBy('u.updatedAt', 'DESC')
@@ -51,11 +52,12 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function findRecentCareerGoals(User $user, int $days): array
     {
         $date = new \DateTimeImmutable("-{$days} days");
-
+        
         return $this->createQueryBuilder('u')
             ->select('u.careerGoalUpdatedAt as dateEarned, u.careerGoal as goalDescription')
             ->andWhere('u.id = :user')
             ->andWhere('u.careerGoalUpdatedAt >= :date')
+            ->andWhere('u.careerGoal IS NOT NULL')
             ->setParameter('user', $user)
             ->setParameter('date', $date)
             ->orderBy('u.careerGoalUpdatedAt', 'DESC')
