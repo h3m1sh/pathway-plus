@@ -15,9 +15,23 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use App\Entity\Skill;
+use App\Entity\MicroCredential;
+use App\Entity\JobRole;
+use App\Repository\SkillRepository;
+use App\Repository\MicroCredentialRepository;
+use App\Repository\JobRoleRepository;
 
 class UserFormType extends AbstractType
 {
+    public function __construct(
+        private SkillRepository $skillRepository,
+        private MicroCredentialRepository $microCredentialRepository,
+        private JobRoleRepository $jobRoleRepository
+    ) {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -55,6 +69,55 @@ class UserFormType extends AbstractType
                 'label' => 'Avatar URL',
                 'required' => false,
                 'default_protocol' => 'https',
+            ])
+            ->add('skills', EntityType::class, [
+                'class' => Skill::class,
+                'choice_label' => 'name',
+                'multiple' => true,
+                'expanded' => false,
+                'required' => false,
+                'label' => 'Skills',
+                'attr' => [
+                    'class' => 'form-select',
+                    'data-placeholder' => 'Select skills...'
+                ],
+                'query_builder' => function (SkillRepository $sr) {
+                    return $sr->createQueryBuilder('s')
+                        ->orderBy('s.name', 'ASC');
+                }
+            ])
+            ->add('microCredentials', EntityType::class, [
+                'class' => MicroCredential::class,
+                'choice_label' => 'name',
+                'multiple' => true,
+                'expanded' => false,
+                'required' => false,
+                'label' => 'Micro-Credentials',
+                'attr' => [
+                    'class' => 'form-select',
+                    'data-placeholder' => 'Select micro-credentials...'
+                ],
+                'query_builder' => function (MicroCredentialRepository $mcr) {
+                    return $mcr->createQueryBuilder('mc')
+                        ->orderBy('mc.name', 'ASC');
+                }
+            ])
+            ->add('jobRoleInterests', EntityType::class, [
+                'class' => JobRole::class,
+                'choice_label' => 'title',
+                'multiple' => true,
+                'expanded' => false,
+                'required' => false,
+                'label' => 'Career Interests',
+                'attr' => [
+                    'class' => 'form-select',
+                    'data-placeholder' => 'Select job roles...'
+                ],
+                'query_builder' => function (JobRoleRepository $jrr) {
+                    return $jrr->createQueryBuilder('jr')
+                        ->where('jr.isArchived = false')
+                        ->orderBy('jr.title', 'ASC');
+                }
             ])
         ;
 
