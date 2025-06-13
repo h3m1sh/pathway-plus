@@ -3,6 +3,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Repository\StudentProgressRepository;
 use App\Repository\UserRepository;
 use App\Repository\SkillRepository;
@@ -26,9 +27,10 @@ class DashboardController extends AbstractController
     }
 
     #[Route('/dashboard', name: 'app_dashboard')]
-    #[IsGranted('ROLE_USER')]
+    #[IsGranted('ROLE_STUDENT')]
     public function dashboard(StudentProgressRepository $studentProgressRepository,
-        JobRoleRepository $jobRoleRepository): Response
+        SkillRepository $skillRepository,
+        UserRepository $userRepository): Response
     {
         $user = $this->getUser();
 
@@ -36,19 +38,33 @@ class DashboardController extends AbstractController
             return $this->redirectToRoute('admin_dashboard');
         }
 
+        $recentActivites = [
+            'credentials' => $studentProgressRepository->findRecentProgress($user, 30),
+            'skills' => $skillRepository->findRecentSkills($user, 30),
+            'profile' => $userRepository->findRecentProfileUpdates($user, 30),
+            'goals' => $userRepository->findRecentCareerGoals($user, 30),
+        ];
+
+        $allActivities = array_merge(
+            array_map(fn($p) => array_merge($p, ['type' => 'credential']), $recentActivites['credentials']),
+            array_map(fn($s) => array_merge($s, ['type' => 'skill']), $recentActivites['skills']),
+            array_map(fn($u) => array_merge($u, ['type' => 'profile']), $recentActivites['profile']),
+            array_map(fn($g) => array_merge($g, ['type' => 'goal']), $recentActivites['goals']),
+        );
+
+        usort($allActivities, fn($a, $b) => $b['dateEarned'] <=> $a['dateEarned']);
+
         $studentProgress = $studentProgressRepository->findBy(['student' => $user], ['dateEarned' => 'DESC']);
-        $recentProgress = $studentProgressRepository->findRecentProgress($user, 30);
         $careerInterests = $user->getJobRoleInterests();
 
         $totalCredentials = count($studentProgress);
         $completedCredentials = count(array_filter($studentProgress, fn($p) => $p->isCompleted()));
         $completionRate = $totalCredentials > 0 ? round(($completedCredentials / $totalCredentials) * 100) : 0;
 
-
         return $this->render('dashboard/student.html.twig', [
             'user' => $user,
+            'recentProgress' => $allActivities,
             'studentProgress' => $studentProgress,
-            'recentProgress' => $recentProgress,
             'careerInterests' => $careerInterests,
             'stats' => [
                 'totalCredentials' => $totalCredentials,

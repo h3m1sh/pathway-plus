@@ -70,13 +70,13 @@ class SkillRepository extends ServiceEntityRepository
         $date = new \DateTimeImmutable("-{$days} days");
 
         return $this->createQueryBuilder('s')
-            ->join('s.microCrdentials', 'mc')
+            ->join('s.microCredentials', 'mc')
             ->join('mc.studentProgress', 'p')
             ->andWhere('s.student = :user')
             ->andWhere('p.dateEarned >= :date')
             ->setParameter('user', $user)
             ->setParameter('date', $date)
-            ->orderBy('s.dateEarned', 'DESC')
+            ->orderBy('p.dateEarned', 'DESC')
             ->getQuery()
             ->getResult();
     }
