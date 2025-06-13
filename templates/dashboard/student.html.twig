@@ -299,7 +299,7 @@
             </div>
         </div>
 
-        <!-- Career Path + Suggestions (Placeholders for now) -->
+        <!-- Career Path + Suggestions -->
         <div class="col-lg-8 mb-4" data-widget="careerPath">
             <div class="card widget-card" id="careerPath">
                 <div class="widget-header">
@@ -308,11 +308,89 @@
                     </h5>
                 </div>
                 <div class="widget-body">
-                    <div class="text-center py-4">
-                        <i class="bi bi-tools text-muted" style="font-size: 3rem;"></i>
-                        <h6 class="text-muted mt-2">Coming Soon</h6>
-                        <p class="text-muted">Visual career roadmap and gap analysis will be available here.</p>
-                    </div>
+                    {% if careerPaths|length > 0 %}
+                        {% for path in careerPaths %}
+                            <div class="career-path-card mb-4">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h6 class="mb-1">{{ path.jobRole.title }}</h6>
+                                        <div class="text-muted small">
+                                            {% if path.industry %}
+                                                <span class="badge bg-info me-2">{{ path.industry }}</span>
+                                            {% endif %}
+                                            {% if path.salaryRange %}
+                                                <span class="text-success">{{ path.salaryRange }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="h4 mb-0 text-primary">{{ path.completionPercentage }}%</div>
+                                        <small class="text-muted">Complete</small>
+                                    </div>
+                                </div>
+
+                                <!-- Progress Bar -->
+                                <div class="progress mb-3" style="height: 8px;">
+                                    <div class="progress-bar bg-primary" role="progressbar" 
+                                         style="width: {{ path.completionPercentage }}%"
+                                         aria-valuenow="{{ path.completionPercentage }}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+
+                                <!-- Skills Overview -->
+                                <div class="skills-overview mb-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <small class="text-muted">Required Skills</small>
+                                        <small class="text-muted">{{ path.completedSkills }}/{{ path.totalSkills }}</small>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        {% for skill in path.jobRole.skills %}
+                                            <span class="badge {% if skill in path.missingSkills %}bg-light text-dark border{% else %}bg-success{% endif %}">
+                                                {{ skill.name }}
+                                            </span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <!-- Missing Skills -->
+                                {% if path.missingSkills|length > 0 %}
+                                    <div class="missing-skills">
+                                        <h6 class="text-muted mb-2">Skills to Develop</h6>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            {% for skill in path.missingSkills %}
+                                                <span class="badge bg-light text-dark border">
+                                                    {{ skill.name }}
+                                                    {% if skill.category %}
+                                                        <small class="text-muted">({{ skill.category }})</small>
+                                                    {% endif %}
+                                                </span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <!-- Career Details -->
+                                {% if path.yearsOfTraining %}
+                                    <div class="mt-3 pt-3 border-top">
+                                        <small class="text-muted">
+                                            <i class="bi bi-clock me-1"></i>Typical Training: {{ path.yearsOfTraining }} years
+                                        </small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-map text-muted" style="font-size: 3rem;"></i>
+                            <h6 class="text-muted mt-2">No Career Goals Set</h6>
+                            <p class="text-muted mb-3">Set your career goals to see your progress roadmap!</p>
+                            <button class="btn btn-primary btn-sm" onclick="scrollToWidget('careerExplorer')">
+                                <i class="bi bi-search me-1"></i>Explore Careers
+                            </button>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -365,6 +443,44 @@
         background-color: rgba(40, 167, 69, 0.1);
         border: 1px solid rgba(40, 167, 69, 0.2);
         color: var(--soft-green);
+    }
+
+    .career-path-card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .career-path-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .progress {
+        background-color: #f0f0f0;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        background: linear-gradient(90deg, var(--electric-blue) 0%, var(--sky-blue) 100%);
+        transition: width 0.6s ease;
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 0.5em 0.8em;
+    }
+
+    .badge.bg-success {
+        background: linear-gradient(135deg, var(--soft-green) 0%, #34c759 100%) !important;
+    }
+
+    .badge.bg-light {
+        background: #f8f9fa !important;
+        border: 1px solid #dee2e6;
     }
 </style>
 

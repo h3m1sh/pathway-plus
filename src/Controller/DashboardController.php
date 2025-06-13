@@ -102,11 +102,47 @@ class DashboardController extends AbstractController
         $completedCredentials = count(array_filter($studentProgress, fn($p) => $p->isCompleted()));
         $completionRate = $totalCredentials > 0 ? round(($completedCredentials / $totalCredentials) * 100) : 0;
 
+        $careerPaths = [];
+        foreach ($careerInterests as $jobRole) {
+            $requiredSkills = $jobRole->getSkills();
+            $totalSkills = count($requiredSkills);
+
+            $earnedSkills = [];
+            foreach ($studentProgress as $progress) {
+                if ($progress->isCompleted()) {
+                    foreach ($progress->getMicroCredential()->getSkills() as $skill) {
+                        $earnedSkills[$skill->getId()] = true;
+                    }
+                }
+            }
+            $completedSkills = array_filter($requiredSkills->toArray(), function($skill) use ($earnedSkills) {
+                return isset($earnedSkills[$skill->getId()]);
+            });
+
+            $completionPercentage = $totalSkills > 0 ? round((count($completedSkills) / $totalSkills) * 100) : 0;
+
+            $missingSkills = array_filter($requiredSkills->toArray(), function($skill) use ($earnedSkills) {
+                return !isset($earnedSkills[$skill->getId()]);
+            });
+
+            $careerPaths[] = [
+                'jobRole' => $jobRole,
+                'totalSkills' => $totalSkills,
+                'completedSkills' => count($completedSkills),
+                'completionPercentage' => $completionPercentage,
+                'missingSkills' => $missingSkills,
+                'industry' => $jobRole->getIndustry(),
+                'salaryRange' => $jobRole->getSalaryRange(),
+                'yearsOfTraining' => $jobRole->getYearsOfTraining(),
+            ];
+        }
+
         return $this->render('dashboard/student.html.twig', [
             'user' => $user,
             'recentProgress' => $allActivities,
             'studentProgress' => $studentProgress,
             'careerInterests' => $careerInterests,
+            'careerPaths' => $careerPaths,
             'stats' => [
                 'totalCredentials' => $totalCredentials,
                 'completedCredentials' => $completedCredentials,
