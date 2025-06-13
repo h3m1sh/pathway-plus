@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Skill;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
@@ -62,6 +63,22 @@ class SkillRepository extends ServiceEntityRepository
 
         // Extract just the category values from the result array
         return array_column($result, 'category');
+    }
+
+    public function findRecentSkills(User $user, int $days): array
+    {
+        $date = new \DateTimeImmutable("-{$days} days");
+
+        return $this->createQueryBuilder('s')
+            ->join('s.microCrdentials', 'mc')
+            ->join('mc.studentProgress', 'p')
+            ->andWhere('s.student = :user')
+            ->andWhere('p.dateEarned >= :date')
+            ->setParameter('user', $user)
+            ->setParameter('date', $date)
+            ->orderBy('s.dateEarned', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 
     //    /**

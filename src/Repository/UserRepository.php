@@ -33,28 +33,33 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
-    //    /**
-    //     * @return User[] Returns an array of User objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('u.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findRecentProfileUpdates(User $user, int $days): array
+    {
+        $date = new \DateTimeImmutable("-{$days} days");
 
-    //    public function findOneBySomeField($value): ?User
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $this->createQueryBuilder('u')
+            ->select('u.updatedAt as dateEarned, u.lastProfileUpdate as updateDescription')
+            ->andWhere('u.id = :user')
+            ->andWhere('u.updatedAt >= :date')
+            ->setParameter('user', $user)
+            ->setParameter('date', $date)
+            ->orderBy('u.updatedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findRecentCareerGoals(User $user, int $days): array
+    {
+        $date = new \DateTimeImmutable("-{$days} days");
+
+        return $this->createQueryBuilder('u')
+            ->select('u.careerGoalUpdatedAt as dateEarned, u.careerGoal as goalDescription')
+            ->andWhere('u.id = :user')
+            ->andWhere('u.careerGoalUpdatedAt >= :date')
+            ->setParameter('user', $user)
+            ->setParameter('date', $date)
+            ->orderBy('u.careerGoalUpdatedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

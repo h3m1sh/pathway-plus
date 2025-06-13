@@ -20,16 +20,15 @@ class StudentProgressRepository extends ServiceEntityRepository
     /**
      * Find recent progress for a student within specified days
      */
-    public function findRecentProgress(User $student, int $days = 30): array
+    public function findRecentProgress(User $user, int $days): array
     {
-        $since = new \DateTimeImmutable("-{$days} days");
-        
+        $date = new \DateTimeImmutable("-{$days} days");
+
         return $this->createQueryBuilder('sp')
-            ->leftJoin('sp.microCredential', 'mc')
-            ->andWhere('sp.student = :student')
-            ->andWhere('sp.dateEarned >= :since')
-            ->setParameter('student', $student)
-            ->setParameter('since', $since)
+            ->andWhere('sp.student = :user')
+            ->andWhere('sp.dateEarned >= :date')
+            ->setParameter('user', $user)
+            ->setParameter('date', $date)
             ->orderBy('sp.dateEarned', 'DESC')
             ->getQuery()
             ->getResult();
