@@ -26,7 +26,7 @@ class JobController extends AbstractController
     {
         $page = max(1, (int) $request->query->get('page', 1));
         $search = $request->query->get('search');
-        $maxPerPage = 10;
+        $maxPerPage = 12;
 
         $pagerfanta = $this->jobRoleRepository->findPaginated($page, $maxPerPage, $search);
 
