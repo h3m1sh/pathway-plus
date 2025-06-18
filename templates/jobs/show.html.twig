@@ -29,31 +29,31 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card widget-card">
-                <div class="card-body">
+                <div class="card-body py-3">
                     <div class="row align-items-center">
                         <div class="col-md-8">
-                            <h1 class="display-6 text-primary mb-3">{{ job.title }}</h1>
-                            <div class="d-flex flex-wrap gap-2 mb-3">
+                            <h1 class="h2 text-primary mb-2">{{ job.title }}</h1>
+                            <div class="d-flex flex-wrap gap-2 mb-2">
                                 {% if job.industry %}
-                                    <span class="badge bg-secondary fs-6">{{ job.industry }}</span>
+                                    <span class="badge bg-secondary">{{ job.industry }}</span>
                                 {% endif %}
                                 {% if job.salaryRange %}
-                                    <span class="badge bg-success fs-6">{{ job.salaryRange }}</span>
+                                    <span class="badge bg-success">{{ job.salaryRange }}</span>
                                 {% endif %}
                                 {% if job.jobCode %}
-                                    <span class="badge bg-info fs-6">Code: {{ job.jobCode }}</span>
+                                    <span class="badge bg-info">Code: {{ job.jobCode }}</span>
                                 {% endif %}
                             </div>
-                            <p class="text-muted mb-0">
+                            <p class="text-muted mb-0 small">
                                 <i class="bi bi-calendar me-1"></i>Last updated: {{ job.updatedAt|date('M d, Y') }}
                             </p>
                         </div>
                         <div class="col-md-4 text-md-end">
                             <div class="d-grid gap-2">
-                                <button type="button" class="btn btn-primary" onclick="addToInterests({{ job.id }})">
+                                <button type="button" class="btn btn-primary btn-sm" onclick="addToInterests({{ job.id }})">
                                     <i class="bi bi-heart me-1"></i>Add to Interests
                                 </button>
-                                <button type="button" class="btn btn-outline-primary" onclick="shareJob()">
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="shareJob()">
                                     <i class="bi bi-share me-1"></i>Share Job
                                 </button>
                             </div>
@@ -69,9 +69,9 @@
         <div class="col-lg-8">
             <!-- Job Description -->
             {% if job.description %}
-                <div class="card widget-card mb-4">
-                    <div class="card-body">
-                        <h3 class="h4 text-primary mb-3">
+                <div class="card widget-card mb-3">
+                    <div class="card-body py-3">
+                        <h3 class="h5 text-primary mb-2">
                             <i class="bi bi-file-text me-2"></i>Job Description
                         </h3>
                         <div class="job-content">
@@ -83,9 +83,9 @@
 
             <!-- Entry Requirements -->
             {% if job.entryRequirements %}
-                <div class="card widget-card mb-4">
-                    <div class="card-body">
-                        <h3 class="h4 text-primary mb-3">
+                <div class="card widget-card mb-3">
+                    <div class="card-body py-3">
+                        <h3 class="h5 text-primary mb-2">
                             <i class="bi bi-list-check me-2"></i>Entry Requirements
                         </h3>
                         <div class="job-content">
@@ -97,13 +97,13 @@
 
             <!-- Job Opportunities -->
             {% if job.jobOpportunities %}
-                <div class="card widget-card mb-4">
-                    <div class="card-body">
-                        <h3 class="h4 text-primary mb-3">
+                <div class="card widget-card mb-3">
+                    <div class="card-body py-3">
+                        <h3 class="h5 text-primary mb-2">
                             <i class="bi bi-graph-up me-2"></i>Job Opportunities
                         </h3>
                         {% if job.jobOpportunitiesCaption %}
-                            <p class="text-muted mb-3"><em>{{ job.jobOpportunitiesCaption|striptags|raw }}</em></p>
+                            <p class="text-muted mb-2 small"><em>{{ job.jobOpportunitiesCaption|striptags|raw }}</em></p>
                         {% endif %}
                         <div class="job-content">
                             {{ job.jobOpportunities|striptags|raw|nl2br }}
@@ -117,14 +117,14 @@
         <div class="col-lg-4">
             <!-- Required Skills -->
             {% if job.skills|length > 0 %}
-                <div class="card widget-card mb-4">
-                    <div class="card-body">
-                        <h4 class="text-primary mb-3">
+                <div class="card widget-card mb-3">
+                    <div class="card-body py-3">
+                        <h4 class="h6 text-primary mb-2">
                             <i class="bi bi-tags me-2"></i>Required Skills
                         </h4>
-                        <div class="d-flex flex-wrap gap-2">
+                        <div class="d-flex flex-wrap gap-1">
                             {% for skill in job.skills %}
-                                <span class="badge bg-primary fs-6">{{ skill.name }}</span>
+                                <span class="badge bg-primary">{{ skill.name }}</span>
                             {% endfor %}
                         </div>
                     </div>
@@ -132,19 +132,19 @@
             {% endif %}
 
             <!-- Job Details -->
-            <div class="card widget-card mb-4">
-                <div class="card-body">
-                    <h4 class="text-primary mb-3">
+            <div class="card widget-card mb-3">
+                <div class="card-body py-3">
+                    <h4 class="h6 text-primary mb-2">
                         <i class="bi bi-info-circle me-2"></i>Job Details
                     </h4>
-                    <div class="row g-3">
+                    <div class="row g-2">
                         {% if job.yearsOfTraining %}
                             <div class="col-12">
-                                <div class="d-flex align-items-center p-3 bg-light rounded">
-                                    <i class="bi bi-clock text-primary me-3 fs-4"></i>
+                                <div class="d-flex align-items-center p-2 bg-light rounded">
+                                    <i class="bi bi-clock text-primary me-2"></i>
                                     <div>
-                                        <strong>Training Duration</strong><br>
-                                        <span class="text-muted">{{ job.yearsOfTraining }}</span>
+                                        <strong class="small">Training Duration</strong><br>
+                                        <span class="text-muted small">{{ job.yearsOfTraining }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -152,11 +152,11 @@
 
                         {% if job.anzsco %}
                             <div class="col-12">
-                                <div class="d-flex align-items-center p-3 bg-light rounded">
-                                    <i class="bi bi-hash text-primary me-3 fs-4"></i>
+                                <div class="d-flex align-items-center p-2 bg-light rounded">
+                                    <i class="bi bi-hash text-primary me-2"></i>
                                     <div>
-                                        <strong>ANZSCO Code</strong><br>
-                                        <span class="text-muted">{{ job.anzsco }}</span>
+                                        <strong class="small">ANZSCO Code</strong><br>
+                                        <span class="text-muted small">{{ job.anzsco }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -164,22 +164,22 @@
 
                         {% if job.source %}
                             <div class="col-12">
-                                <div class="d-flex align-items-center p-3 bg-light rounded">
-                                    <i class="bi bi-link-45deg text-primary me-3 fs-4"></i>
+                                <div class="d-flex align-items-center p-2 bg-light rounded">
+                                    <i class="bi bi-link-45deg text-primary me-2"></i>
                                     <div>
-                                        <strong>Source</strong><br>
-                                        <span class="text-muted">{{ job.source }}</span>
+                                        <strong class="small">Source</strong><br>
+                                        <span class="text-muted small">{{ job.source }}</span>
                                     </div>
                                 </div>
                             </div>
                         {% endif %}
 
                         <div class="col-12">
-                            <div class="d-flex align-items-center p-3 bg-light rounded">
-                                <i class="bi bi-calendar-event text-primary me-3 fs-4"></i>
+                            <div class="d-flex align-items-center p-2 bg-light rounded">
+                                <i class="bi bi-calendar-event text-primary me-2"></i>
                                 <div>
-                                    <strong>Created</strong><br>
-                                    <span class="text-muted">{{ job.createdAt|date('M d, Y') }}</span>
+                                    <strong class="small">Created</strong><br>
+                                    <span class="text-muted small">{{ job.createdAt|date('M d, Y') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -189,15 +189,15 @@
 
             <!-- Quick Actions -->
             <div class="card widget-card">
-                <div class="card-body">
-                    <h4 class="text-primary mb-3">
+                <div class="card-body py-3">
+                    <h4 class="h6 text-primary mb-2">
                         <i class="bi bi-lightning me-2"></i>Quick Actions
                     </h4>
                     <div class="d-grid gap-2">
-                        <a href="{{ path('app_jobs_browse') }}" class="btn btn-outline-secondary">
+                        <a href="{{ path('app_jobs_browse') }}" class="btn btn-outline-secondary btn-sm">
                             <i class="bi bi-arrow-left me-1"></i>Back to Browse
                         </a>
-                        <a href="{{ path('app_dashboard') }}" class="btn btn-outline-primary">
+                        <a href="{{ path('app_dashboard') }}" class="btn btn-outline-primary btn-sm">
                             <i class="bi bi-speedometer2 me-1"></i>Go to Dashboard
                         </a>
                     </div>
@@ -209,22 +209,22 @@
 
 <style>
 .job-content {
-    line-height: 1.8;
+    line-height: 1.6;
     color: var(--dark-charcoal);
-    font-size: 1.1rem;
+    font-size: 0.95rem;
 }
 
 .job-content p {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .job-content ul, .job-content ol {
     padding-left: 1.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .job-content li {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
 }
 
 .bg-light {
@@ -233,29 +233,39 @@
 }
 
 .card.widget-card {
-    border-radius: 12px;
+    border-radius: 8px;
     border: none;
-    box-shadow: 0 2px 12px rgba(30, 42, 56, 0.08);
+    box-shadow: 0 2px 8px rgba(30, 42, 56, 0.08);
     transition: all 0.3s ease;
 }
 
 .card.widget-card:hover {
-    box-shadow: 0 6px 20px rgba(30, 42, 56, 0.15);
-    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(30, 42, 56, 0.12);
+    transform: translateY(-1px);
 }
 
-.display-6 {
-    font-size: 2.5rem;
+.h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+.h5 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.h6 {
+    font-size: 1rem;
     font-weight: 600;
 }
 
 @media (max-width: 768px) {
-    .display-6 {
-        font-size: 2rem;
+    .h2 {
+        font-size: 1.5rem;
     }
     
     .job-content {
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
 }
 </style>
