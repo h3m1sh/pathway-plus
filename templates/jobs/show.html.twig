@@ -29,8 +29,8 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="card widget-card">
-                <div class="card-body py-3">
-                    <div class="row align-items-center">
+                <div class="card-body">
+                    <div class="row align-items-start">
                         <div class="col-md-8">
                             <h1 class="h2 text-primary mb-2">{{ job.title }}</h1>
                             <div class="d-flex flex-wrap gap-2 mb-2">
@@ -70,8 +70,8 @@
             <!-- Job Description -->
             {% if job.description %}
                 <div class="card widget-card mb-3">
-                    <div class="card-body py-3">
-                        <h3 class="h5 text-primary mb-2">
+                    <div class="card-body">
+                        <h3 class="h5 text-primary mb-3">
                             <i class="bi bi-file-text me-2"></i>Job Description
                         </h3>
                         <div class="job-content">
@@ -84,8 +84,8 @@
             <!-- Entry Requirements -->
             {% if job.entryRequirements %}
                 <div class="card widget-card mb-3">
-                    <div class="card-body py-3">
-                        <h3 class="h5 text-primary mb-2">
+                    <div class="card-body">
+                        <h3 class="h5 text-primary mb-3">
                             <i class="bi bi-list-check me-2"></i>Entry Requirements
                         </h3>
                         <div class="job-content">
@@ -98,12 +98,12 @@
             <!-- Job Opportunities -->
             {% if job.jobOpportunities %}
                 <div class="card widget-card mb-3">
-                    <div class="card-body py-3">
-                        <h3 class="h5 text-primary mb-2">
+                    <div class="card-body">
+                        <h3 class="h5 text-primary mb-3">
                             <i class="bi bi-graph-up me-2"></i>Job Opportunities
                         </h3>
                         {% if job.jobOpportunitiesCaption %}
-                            <p class="text-muted mb-2 small"><em>{{ job.jobOpportunitiesCaption|striptags|raw }}</em></p>
+                            <p class="text-muted mb-3"><em>{{ job.jobOpportunitiesCaption|striptags|raw }}</em></p>
                         {% endif %}
                         <div class="job-content">
                             {{ job.jobOpportunities|striptags|raw|nl2br }}
@@ -118,8 +118,8 @@
             <!-- Required Skills -->
             {% if job.skills|length > 0 %}
                 <div class="card widget-card mb-3">
-                    <div class="card-body py-3">
-                        <h4 class="h6 text-primary mb-2">
+                    <div class="card-body">
+                        <h4 class="h6 text-primary mb-3">
                             <i class="bi bi-tags me-2"></i>Required Skills
                         </h4>
                         <div class="d-flex flex-wrap gap-1">
@@ -133,55 +133,39 @@
 
             <!-- Job Details -->
             <div class="card widget-card mb-3">
-                <div class="card-body py-3">
-                    <h4 class="h6 text-primary mb-2">
+                <div class="card-body">
+                    <h4 class="h6 text-primary mb-3">
                         <i class="bi bi-info-circle me-2"></i>Job Details
                     </h4>
-                    <div class="row g-2">
+                    <div class="job-details-list">
                         {% if job.yearsOfTraining %}
-                            <div class="col-12">
-                                <div class="d-flex align-items-center p-2 bg-light rounded">
-                                    <i class="bi bi-clock text-primary me-2"></i>
-                                    <div>
-                                        <strong class="small">Training Duration</strong><br>
-                                        <span class="text-muted small">{{ job.yearsOfTraining }}</span>
-                                    </div>
-                                </div>
+                            <div class="detail-item">
+                                <i class="bi bi-clock text-primary me-2"></i>
+                                <span class="detail-label">Training Duration:</span>
+                                <span class="detail-value">{{ job.yearsOfTraining }} {{ job.yearsOfTraining == '1' ? 'year' : 'years' }}</span>
                             </div>
                         {% endif %}
 
                         {% if job.anzsco %}
-                            <div class="col-12">
-                                <div class="d-flex align-items-center p-2 bg-light rounded">
-                                    <i class="bi bi-hash text-primary me-2"></i>
-                                    <div>
-                                        <strong class="small">ANZSCO Code</strong><br>
-                                        <span class="text-muted small">{{ job.anzsco }}</span>
-                                    </div>
-                                </div>
+                            <div class="detail-item">
+                                <i class="bi bi-hash text-primary me-2"></i>
+                                <span class="detail-label">ANZSCO Code:</span>
+                                <span class="detail-value">{{ job.anzsco }}</span>
                             </div>
                         {% endif %}
 
                         {% if job.source %}
-                            <div class="col-12">
-                                <div class="d-flex align-items-center p-2 bg-light rounded">
-                                    <i class="bi bi-link-45deg text-primary me-2"></i>
-                                    <div>
-                                        <strong class="small">Source</strong><br>
-                                        <span class="text-muted small">{{ job.source }}</span>
-                                    </div>
-                                </div>
+                            <div class="detail-item">
+                                <i class="bi bi-link-45deg text-primary me-2"></i>
+                                <span class="detail-label">Source:</span>
+                                <span class="detail-value">{{ job.source }}</span>
                             </div>
                         {% endif %}
 
-                        <div class="col-12">
-                            <div class="d-flex align-items-center p-2 bg-light rounded">
-                                <i class="bi bi-calendar-event text-primary me-2"></i>
-                                <div>
-                                    <strong class="small">Created</strong><br>
-                                    <span class="text-muted small">{{ job.createdAt|date('M d, Y') }}</span>
-                                </div>
-                            </div>
+                        <div class="detail-item">
+                            <i class="bi bi-calendar-event text-primary me-2"></i>
+                            <span class="detail-label">Created:</span>
+                            <span class="detail-value">{{ job.createdAt|date('M d, Y') }}</span>
                         </div>
                     </div>
                 </div>
@@ -189,8 +173,8 @@
 
             <!-- Quick Actions -->
             <div class="card widget-card">
-                <div class="card-body py-3">
-                    <h4 class="h6 text-primary mb-2">
+                <div class="card-body">
+                    <h4 class="h6 text-primary mb-3">
                         <i class="bi bi-lightning me-2"></i>Quick Actions
                     </h4>
                     <div class="d-grid gap-2">
@@ -227,9 +211,31 @@
     margin-bottom: 0.5rem;
 }
 
-.bg-light {
-    background-color: var(--cool-white) !important;
+.job-details-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    background-color: var(--cool-white);
+    border-radius: 6px;
     border: 1px solid rgba(108, 117, 125, 0.1);
+}
+
+.detail-label {
+    font-weight: 600;
+    color: var(--dark-charcoal);
+    margin-right: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.detail-value {
+    color: var(--muted-gray);
+    font-size: 0.9rem;
 }
 
 .card.widget-card {
@@ -266,6 +272,12 @@
     
     .job-content {
         font-size: 0.9rem;
+    }
+    
+    .detail-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
     }
 }
 </style>
