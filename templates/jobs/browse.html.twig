@@ -173,13 +173,38 @@
                                         </li>
                                     {% endif %}
 
-                                    {% for page in jobs.currentPageResults %}
+                                    {% set startPage = max(1, jobs.currentPage - 2) %}
+                                    {% set endPage = min(jobs.nbPages, jobs.currentPage + 2) %}
+                                    
+                                    {% if startPage > 1 %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ path('app_jobs_browse', {page: 1, search: search}) }}">1</a>
+                                        </li>
+                                        {% if startPage > 2 %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">...</span>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+
+                                    {% for page in startPage..endPage %}
                                         <li class="page-item {{ page == jobs.currentPage ? 'active' : '' }}">
                                             <a class="page-link" href="{{ path('app_jobs_browse', {page: page, search: search}) }}">
                                                 {{ page }}
                                             </a>
                                         </li>
                                     {% endfor %}
+
+                                    {% if endPage < jobs.nbPages %}
+                                        {% if endPage < jobs.nbPages - 1 %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">...</span>
+                                            </li>
+                                        {% endif %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ path('app_jobs_browse', {page: jobs.nbPages, search: search}) }}">{{ jobs.nbPages }}</a>
+                                        </li>
+                                    {% endif %}
 
                                     {% if jobs.hasNextPage %}
                                         <li class="page-item">
