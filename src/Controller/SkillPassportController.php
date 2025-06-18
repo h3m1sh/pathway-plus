@@ -35,7 +35,7 @@ class SkillPassportController extends AbstractController
         ]);
     }
 
-    #[Route('/dashboard/skill-passport', name: 'app_skill_passport_filter', methods: ['POST'])]
+    #[Route('/filter', name: 'app_skill_passport_filter', methods: ['POST'])]
     public function filter(Request $request): Response
     {
         $user = $this->getUser();

@@ -107,7 +107,7 @@
             <div class="col-md-3 mb-3">
                 <div class="card bg-warning text-white">
                     <div class="card-body text-center">
-                        <h3 class="mb-1">{{ passportData.statusCounts['In Progress'] ?? 0 }}</h3>
+                        <h3 class="mb-1">{{ passportData.statusCounts['In Progress'] ?? passportData.statusCounts['InProgress'] ?? 0 }}</h3>
                         <small>In Progress</small>
                     </div>
                 </div>
@@ -251,17 +251,17 @@
 
         function applyFilters(){
             currentFilters.search = document.getElementById('searchInput').value;
-            currentFilters.search = document.getElementById('categoryFilter').value;
-            currentFilters.search = document.getElementById('statusFilter').value;
-            currentFilters.search = document.getElementById('sortBy').value;
-            currentFilters.search = document.getElementById('sortOrder').value;
+            currentFilters.category = document.getElementById('categoryFilter').value;
+            currentFilters.status = document.getElementById('statusFilter').value;
+            currentFilters.sortBy = document.getElementById('sortBy').value;
+            currentFilters.sortOrder = document.getElementById('sortOrder').value;
 
             document.getElementById('loadingSpinner').classList.remove('d-none');
 
             fetch('{{ path('app_skill_passport_filter') }}', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencode',
+                    'Content-Type': 'application/x-www-form-urlencoded',
                     'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: new URLSearchParams(currentFilters)
@@ -272,7 +272,7 @@
                         document.getElementById('credentialsContainer').innerHTML = data.html;
                         document.getElementById('resultsCount').textContent = `Showing ${data.count} credentials`;
 
-                        attachCredentialCLickHandlers();
+                        attachCredentialClickHandlers();
 
                         if(Object.values(currentFilters).some(val => val && val !== 'dateEarned' && val !== 'DESC' && val !== 'grid')) {
                             Swal.fire({
@@ -291,7 +291,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'Filter error',
-                        text: 'There was am error applying filters. Please try again.',
+                        text: 'There was an error applying filters. Please try again.',
                         toast: true,
                         position: 'top-end',
                         showConfirmButton: false,
@@ -304,7 +304,7 @@
         }
 
         function exportCredentials(format) {
-            Sawl.fire({
+            Swal.fire({
                 title: 'Export Credentials',
                 text: `Export your skill passport as ${format.toUpperCase()}?`,
                 icon: 'question',
@@ -314,7 +314,7 @@
                 confirmButtonText: `Yes, export ${format.toUpperCase()}!`
             }).then((result) => {
                 if(result.isConfirmed) {
-                    Sawl.fire({
+                    Swal.fire({
                         title: 'Preparing Export...',
                         allowOutsideClick: false,
                         didOpen: () => {
@@ -350,6 +350,36 @@
                 clearTimeout(timeout);
                 timeout = setTimeout(later, wait);
             };
+        }
+
+        function attachCredentialClickHandlers() {
+            document.querySelectorAll('.credential-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const progressId = this.dataset.progressId;
+                    if (progressId) {
+                        fetch(`{{ path('app_credential_detial', {'id': '__ID__'}) }}`.replace('__ID__', progressId))
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    document.getElementById('credentialModalContent').innerHTML = data.html;
+                                    new bootstrap.Modal(document.getElementById('credentialModal')).show();
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error loading credential details:', error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Could not load credential details.',
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 3000
+                                });
+                            });
+                    }
+                });
+            });
         }
     </script>
 {% endblock %}

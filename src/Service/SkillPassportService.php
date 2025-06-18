@@ -19,7 +19,7 @@ class SkillPassportService
         $allProgress = $this->studentProgressRepository->findBy(['student' => $student], ['dateEarned' => 'DESC']);
 
         $categories = [];
-        $statusCounts = ['Completed' => 0, 'InProgress' => 0, 'Verified' => 0, 'Under Review' => 0];
+        $statusCounts = ['Completed' => 0, 'In Progress' => 0, 'Verified' => 0, 'Under Review' => 0];
 
         foreach ($allProgress as $progress) {
             $category = $progress->getMicroCredential()->getCategory() ?? 'Other';
@@ -28,8 +28,14 @@ class SkillPassportService
             }
             $categories[$category][] = $progress;
 
-            if (isset($statusCounts[$progress->getStatus()])) {
-                $statusCounts[$progress->getStatus()]++;
+            $status = $progress->getStatus();
+            // Handle both "In Progress" and "InProgress" statuses
+            if ($status === 'InProgress') {
+                $status = 'In Progress';
+            }
+            
+            if (isset($statusCounts[$status])) {
+                $statusCounts[$status]++;
             }
         }
 

@@ -428,7 +428,7 @@ class JobRoleSyncService
         foreach ($existingJobs as $job) {
             if (!in_array($job->getJobCode(), $currentJobCodes)) {
                 $job->setIsArchived(true);
-                $job->setLastSyncedAt(new \DateTime());
+                $job->setLastSyncedAt(new \DateTimeImmutable());
                 $archivedCount++;
             }
         }
