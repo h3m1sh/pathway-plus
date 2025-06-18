@@ -92,17 +92,10 @@ class SkillPassportController extends AbstractController
         }
     }
 
-    private function exportPdf(array $data, $user): Response
-    {
-//        TODO: Implement PDF export using a libaary
-        return new Response('soon', 200, [
-            'Content-Type' => 'application/pdf',
-        ]);
-    }
-
     private function exportCsv(array $data, $user): Response
     {
         $filename = sprintf('skill_passport_%s_%s.csv',
+            $user->getEmail(),
             date('Y-m-d')
         );
 
@@ -122,24 +115,45 @@ class SkillPassportController extends AbstractController
             'Notes'
         ]);
 
-
-        foreach ($data['allProgress'] as $progress) {
+        foreach ($data['allprogress'] as $progress) {
             fputcsv($output, [
                 $progress->getMicroCredential()->getName(),
-                $progress->getMicroCredential()->getCategory(),
-                $progress->getMicroCredential()->getLevel(),
+                $progress->getMicroCredential()->getCategory() ?? 'General',
+                $progress->getMicroCredential()->getLevel() ?? 'N/A',
                 $progress->getStatus(),
                 $progress->getDateEarned()->format('Y-m-d'),
-                $progress->getVerifiedBy(),
-                $progress->getNote(),
+                $progress->getVerifiedBy() ?? 'N/A',
+                $progress->getNote() ?? '',
             ]);
         }
 
         rewind($output);
         $response->setContent(stream_get_contents($output));
+        fclose($output);
 
         return $response;
     }
 
+    private function exportPdf(array $data, $user): Response
+    {
+        $filename = sprintf('skill_passport_%s_%s.pdf',
+            $user->getEmail(),
+            date('Y-m-d')
+        );
+
+        // Generate HTML content for PDF
+        $html = $this->renderView('dashboard/export/skill_passport_pdf.html.twig', [
+            'user' => $user,
+            'passportData' => $data,
+        ]);
+
+        // For now, we'll return HTML that can be printed to PDF
+        // In a production environment, you'd use a library like Dompdf, mPDF, or wkhtmltopdf
+        $response = new Response($html);
+        $response->headers->set('Content-Type', 'text/html');
+        $response->headers->set('Content-Disposition', 'attachment; filename="' . $filename . '"');
+
+        return $response;
+    }
 
 }

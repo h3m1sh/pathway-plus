@@ -313,29 +313,37 @@
                 cancelButtonColor: 'var(--slate-gray)',
                 confirmButtonText: `Yes, export ${format.toUpperCase()}!`
             }).then((result) => {
-                if(result.isConfirmed) {
+                if (result.isConfirmed) {
                     Swal.fire({
                         title: 'Preparing Export...',
+                        text: 'Please wait while we generate your file...',
                         allowOutsideClick: false,
                         didOpen: () => {
                             Swal.showLoading();
                         }
                     });
 
-                    window.location.href = `{{ path('app_skill_passport_export', {'format': '__FORMAT__'}) }}`.replace('__FORMAT__', format);
+                    // Create a temporary link to trigger download
+                    const link = document.createElement('a');
+                    link.href = `{{ path('app_skill_passport_export', {'format': '__FORMAT__'}) }}`.replace('__FORMAT__', format);
+                    link.download = '';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
 
+                    // Close loading dialog and show success message
                     setTimeout(() => {
                         Swal.close();
                         Swal.fire({
                             icon: 'success',
-                            title: 'Export Started!',
-                            text: 'Your download should begin shortly.',
+                            title: 'Export Complete!',
+                            text: `Your ${format.toUpperCase()} file has been downloaded.`,
                             toast: true,
                             position: 'top-end',
                             showConfirmButton: false,
                             timer: 3000
                         });
-                    }, 1000);
+                    }, 1500);
                 }
             });
         }
