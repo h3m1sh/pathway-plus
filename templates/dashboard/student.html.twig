@@ -62,9 +62,55 @@
                             <i class="bi bi-person-gear me-1"></i>Edit Profile
                         </a>
                         <div class="ms-auto">
-                            <button class="btn btn-link btn-sm text-muted" id="customizeLayout" title="Customize Layout">
-                                <i class="bi bi-grid-3x3-gap"></i>
+                            <button class="btn btn-outline-primary btn-sm" id="customizeLayout" title="Customize Dashboard">
+                                <i class="bi bi-grid-3x3-gap me-1"></i>Customize
                             </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customization Controls (Hidden by default) -->
+    <div class="row mb-4" id="customizationControls" style="display: none;">
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">
+                        <i class="bi bi-gear me-2"></i>Dashboard Customization
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <p class="mb-2 text-muted">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Drag widgets to reorder them. Use the controls below to show/hide widgets.
+                            </p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <div class="btn-group" role="group">
+                                <button class="btn btn-outline-success btn-sm" onclick="saveCustomization()">
+                                    <i class="bi bi-check me-1"></i>Save Layout
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm" onclick="resetCustomization()">
+                                    <i class="bi bi-arrow-clockwise me-1"></i>Reset
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="exitCustomization()">
+                                    <i class="bi bi-x me-1"></i>Exit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Widget Visibility Controls -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-2">Widget Visibility:</h6>
+                            <div class="d-flex flex-wrap gap-2" id="widgetControls">
+                                <!-- Widget controls will be populated by JavaScript -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -75,12 +121,17 @@
     <!-- Widget Grid -->
     <div class="row" id="widgetGrid">
         <!-- Profile + Skill Passport -->
-        <div class="col-lg-4 col-md-6 mb-4" data-widget="profile">
+        <div class="col-lg-4 col-md-6 mb-4 widget-item" data-widget="profile" draggable="true">
             <div class="card widget-card" id="profileWidget">
                 <div class="widget-header">
                     <h5 class="widget-title">
                         <i class="bi bi-person-badge me-2"></i>Profile Overview
                     </h5>
+                    <div class="widget-controls" style="display: none;">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('profile')" title="Hide Widget">
+                            <i class="bi bi-eye-slash"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="widget-body">
                     <div class="text-center mb-3">
@@ -127,19 +178,26 @@
             </div>
         </div>
 
-        <div class="col-lg-8 col-md-6 mb-4" data-widget="skillPassport">
+        <div class="col-lg-8 col-md-6 mb-4 widget-item" data-widget="skillPassport" draggable="true">
             <div class="card widget-card" id="skillPassport">
                 <div class="widget-header d-flex justify-content-between align-items-center">
                     <h5 class="widget-title">
                         <i class="bi bi-award me-2"></i>Skill Passport
                     </h5>
-                    <div class="btn-group btn-group-sm" role="group">
-                        <button type="button" class="btn btn-outline-secondary active" data-view="grid">
-                            <i class="bi bi-grid"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary" data-view="list">
-                            <i class="bi bi-list"></i>
-                        </button>
+                    <div class="d-flex align-items-center">
+                        <div class="btn-group btn-group-sm me-2" role="group">
+                            <button type="button" class="btn btn-outline-secondary active" data-view="grid">
+                                <i class="bi bi-grid"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" data-view="list">
+                                <i class="bi bi-list"></i>
+                            </button>
+                        </div>
+                        <div class="widget-controls" style="display: none;">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('skillPassport')" title="Hide Widget">
+                                <i class="bi bi-eye-slash"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="widget-body">
@@ -198,13 +256,18 @@
         </div>
 
         <!-- Recently Earned Timeline -->
-        <div class="col-12 mb-4" data-widget="recentActivity">
+        <div class="col-12 mb-4 widget-item" data-widget="recentActivity" draggable="true">
             <div class="card widget-card" id="recentActivity">
                 <div class="widget-header">
                     <h5 class="widget-title">
                         <i class="bi bi-clock-history me-2"></i>Recent Activity
                         <small class="text-muted">(Last 30 days)</small>
                     </h5>
+                    <div class="widget-controls" style="display: none;">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('recentActivity')" title="Hide Widget">
+                            <i class="bi bi-eye-slash"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="widget-body">
                     {% if recentProgress|length > 0 %}
@@ -300,12 +363,17 @@
         </div>
 
         <!-- Career Path + Suggestions -->
-        <div class="col-lg-8 mb-4" data-widget="careerPath">
+        <div class="col-lg-8 mb-4 widget-item" data-widget="careerPath" draggable="true">
             <div class="card widget-card" id="careerPath">
                 <div class="widget-header">
                     <h5 class="widget-title">
                         <i class="bi bi-map me-2"></i>Career Roadmap
                     </h5>
+                    <div class="widget-controls" style="display: none;">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('careerPath')" title="Hide Widget">
+                            <i class="bi bi-eye-slash"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="widget-body">
                     {% if careerPaths|length > 0 %}
@@ -395,12 +463,17 @@
             </div>
         </div>
 
-        <div class="col-lg-4 mb-4" data-widget="suggestions">
+        <div class="col-lg-4 mb-4 widget-item" data-widget="suggestions" draggable="true">
             <div class="card widget-card" id="suggestions">
                 <div class="widget-header">
                     <h5 class="widget-title">
                         <i class="bi bi-lightbulb me-2"></i>AI Suggestions
                     </h5>
+                    <div class="widget-controls" style="display: none;">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('suggestions')" title="Hide Widget">
+                            <i class="bi bi-eye-slash"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="widget-body">
                     <div class="text-center py-4">
@@ -482,9 +555,431 @@
         background: #f8f9fa !important;
         border: 1px solid #dee2e6;
     }
+
+    /* Customization Styles */
+    .widget-item {
+        transition: all 0.3s ease;
+        cursor: grab;
+    }
+
+    .widget-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .widget-item.dragging {
+        opacity: 0.5;
+        transform: rotate(5deg);
+        cursor: grabbing;
+    }
+
+    .widget-item.drag-over {
+        border: 2px dashed var(--electric-blue);
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    .customization-mode .widget-item {
+        border: 2px solid transparent;
+        border-radius: 8px;
+        padding: 8px;
+        margin: -8px;
+    }
+
+    .customization-mode .widget-item:hover {
+        border-color: var(--electric-blue);
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    .widget-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .widget-controls {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .customization-mode .widget-controls {
+        opacity: 1;
+    }
+
+    .widget-toggle-btn {
+        transition: all 0.2s ease;
+    }
+
+    .widget-toggle-btn.hidden {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: white;
+    }
+
+    .widget-toggle-btn.hidden:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+    }
+
+    .drop-zone {
+        min-height: 100px;
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+        transition: all 0.2s ease;
+    }
+
+    .drop-zone.drag-over {
+        border-color: var(--electric-blue);
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    .drop-zone-text {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
 </style>
 
 <script>
+    // Widget configuration
+    const widgetConfig = {
+        profile: { name: 'Profile Overview', icon: 'bi-person-badge' },
+        skillPassport: { name: 'Skill Passport', icon: 'bi-award' },
+        recentActivity: { name: 'Recent Activity', icon: 'bi-clock-history' },
+        careerPath: { name: 'Career Roadmap', icon: 'bi-map' },
+        suggestions: { name: 'AI Suggestions', icon: 'bi-lightbulb' }
+    };
+
+    let isCustomizationMode = false;
+    let draggedElement = null;
+
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeDashboard();
+        loadUserPreferences();
+    });
+
+    function initializeDashboard() {
+        // Initialize customization button
+        document.getElementById('customizeLayout').addEventListener('click', toggleCustomizationMode);
+        
+        // Initialize drag and drop
+        initializeDragAndDrop();
+        
+        // Initialize widget controls
+        populateWidgetControls();
+    }
+
+    function toggleCustomizationMode() {
+        isCustomizationMode = !isCustomizationMode;
+        const controls = document.getElementById('customizationControls');
+        const customizeBtn = document.getElementById('customizeLayout');
+        const widgetGrid = document.getElementById('widgetGrid');
+        
+        if (isCustomizationMode) {
+            controls.style.display = 'block';
+            customizeBtn.innerHTML = '<i class="bi bi-check me-1"></i>Exit Customization';
+            customizeBtn.classList.remove('btn-outline-primary');
+            customizeBtn.classList.add('btn-success');
+            widgetGrid.classList.add('customization-mode');
+            showWidgetControls();
+        } else {
+            controls.style.display = 'none';
+            customizeBtn.innerHTML = '<i class="bi bi-grid-3x3-gap me-1"></i>Customize';
+            customizeBtn.classList.remove('btn-success');
+            customizeBtn.classList.add('btn-outline-primary');
+            widgetGrid.classList.remove('customization-mode');
+            hideWidgetControls();
+        }
+    }
+
+    function initializeDragAndDrop() {
+        const widgetGrid = document.getElementById('widgetGrid');
+        const widgets = widgetGrid.querySelectorAll('.widget-item');
+        
+        widgets.forEach(widget => {
+            widget.addEventListener('dragstart', handleDragStart);
+            widget.addEventListener('dragend', handleDragEnd);
+            widget.addEventListener('dragover', handleDragOver);
+            widget.addEventListener('dragenter', handleDragEnter);
+            widget.addEventListener('dragleave', handleDragLeave);
+            widget.addEventListener('drop', handleDrop);
+        });
+    }
+
+    function handleDragStart(e) {
+        if (!isCustomizationMode) return;
+        
+        draggedElement = this;
+        this.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', this.outerHTML);
+    }
+
+    function handleDragEnd(e) {
+        if (!isCustomizationMode) return;
+        
+        this.classList.remove('dragging');
+        draggedElement = null;
+        
+        // Remove drag-over styling from all widgets
+        document.querySelectorAll('.widget-item').forEach(widget => {
+            widget.classList.remove('drag-over');
+        });
+    }
+
+    function handleDragOver(e) {
+        if (!isCustomizationMode) return;
+        
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    }
+
+    function handleDragEnter(e) {
+        if (!isCustomizationMode) return;
+        
+        e.preventDefault();
+        this.classList.add('drag-over');
+    }
+
+    function handleDragLeave(e) {
+        if (!isCustomizationMode) return;
+        
+        // Only remove if we're leaving the widget entirely
+        if (!this.contains(e.relatedTarget)) {
+            this.classList.remove('drag-over');
+        }
+    }
+
+    function handleDrop(e) {
+        if (!isCustomizationMode) return;
+        
+        e.preventDefault();
+        this.classList.remove('drag-over');
+        
+        if (draggedElement && draggedElement !== this) {
+            const allWidgets = Array.from(document.querySelectorAll('.widget-item'));
+            const draggedIndex = allWidgets.indexOf(draggedElement);
+            const dropIndex = allWidgets.indexOf(this);
+            
+            if (draggedIndex < dropIndex) {
+                this.parentNode.insertBefore(draggedElement, this.nextSibling);
+            } else {
+                this.parentNode.insertBefore(draggedElement, this);
+            }
+            
+            saveUserPreferences();
+        }
+    }
+
+    function populateWidgetControls() {
+        const controlsContainer = document.getElementById('widgetControls');
+        controlsContainer.innerHTML = '';
+        
+        Object.entries(widgetConfig).forEach(([widgetId, config]) => {
+            const control = document.createElement('button');
+            control.className = 'btn btn-sm btn-outline-primary widget-toggle-btn';
+            control.setAttribute('data-widget', widgetId);
+            control.innerHTML = `<i class="bi ${config.icon} me-1"></i>${config.name}`;
+            control.onclick = () => toggleWidget(widgetId);
+            controlsContainer.appendChild(control);
+        });
+    }
+
+    function toggleWidget(widgetId) {
+        const widget = document.querySelector(`[data-widget="${widgetId}"]`);
+        const control = document.querySelector(`[data-widget="${widgetId}"].widget-toggle-btn`);
+        
+        if (widget.style.display === 'none') {
+            widget.style.display = 'block';
+            control.classList.remove('hidden');
+            control.innerHTML = `<i class="bi ${widgetConfig[widgetId].icon} me-1"></i>${widgetConfig[widgetId].name}`;
+        } else {
+            widget.style.display = 'none';
+            control.classList.add('hidden');
+            control.innerHTML = `<i class="bi bi-eye me-1"></i>Show ${widgetConfig[widgetId].name}`;
+        }
+        
+        saveUserPreferences();
+    }
+
+    function showWidgetControls() {
+        document.querySelectorAll('.widget-controls').forEach(control => {
+            control.style.display = 'block';
+        });
+    }
+
+    function hideWidgetControls() {
+        document.querySelectorAll('.widget-controls').forEach(control => {
+            control.style.display = 'none';
+        });
+    }
+
+    function saveUserPreferences() {
+        const preferences = {
+            layout: getWidgetOrder(),
+            visibility: getWidgetVisibility(),
+            timestamp: new Date().toISOString()
+        };
+        
+        // Save to localStorage for immediate access
+        localStorage.setItem('dashboardPreferences', JSON.stringify(preferences));
+        
+        // Also save to server for persistence across sessions
+        fetch('{{ path("app_dashboard_save_preferences") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(preferences)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show save confirmation
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Layout saved!',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            } else {
+                console.error('Failed to save preferences:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error saving preferences:', error);
+            // Still show success for localStorage save
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Layout saved locally!',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        });
+    }
+
+    function getWidgetOrder() {
+        const widgets = document.querySelectorAll('.widget-item');
+        return Array.from(widgets).map(widget => widget.dataset.widget);
+    }
+
+    function getWidgetVisibility() {
+        const visibility = {};
+        Object.keys(widgetConfig).forEach(widgetId => {
+            const widget = document.querySelector(`[data-widget="${widgetId}"]`);
+            visibility[widgetId] = widget.style.display !== 'none';
+        });
+        return visibility;
+    }
+
+    function loadUserPreferences() {
+        // Try to load from server first
+        fetch('{{ path("app_dashboard_load_preferences") }}', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.preferences) {
+                // Apply server preferences
+                applyPreferences(data.preferences);
+            } else {
+                // Fall back to localStorage
+                loadFromLocalStorage();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading server preferences:', error);
+            // Fall back to localStorage
+            loadFromLocalStorage();
+        });
+    }
+
+    function loadFromLocalStorage() {
+        const saved = localStorage.getItem('dashboardPreferences');
+        if (saved) {
+            try {
+                const preferences = JSON.parse(saved);
+                applyPreferences(preferences);
+            } catch (error) {
+                console.error('Error loading localStorage preferences:', error);
+            }
+        }
+    }
+
+    function applyPreferences(preferences) {
+        // Apply layout order
+        if (preferences.layout) {
+            applyWidgetOrder(preferences.layout);
+        }
+        
+        // Apply visibility settings
+        if (preferences.visibility) {
+            applyWidgetVisibility(preferences.visibility);
+        }
+    }
+
+    function applyWidgetOrder(order) {
+        const widgetGrid = document.getElementById('widgetGrid');
+        order.forEach(widgetId => {
+            const widget = widgetGrid.querySelector(`[data-widget="${widgetId}"]`);
+            if (widget) {
+                widgetGrid.appendChild(widget);
+            }
+        });
+    }
+
+    function applyWidgetVisibility(visibility) {
+        Object.entries(visibility).forEach(([widgetId, isVisible]) => {
+            const widget = document.querySelector(`[data-widget="${widgetId}"]`);
+            const control = document.querySelector(`[data-widget="${widgetId}"].widget-toggle-btn`);
+            
+            if (widget && control) {
+                if (!isVisible) {
+                    widget.style.display = 'none';
+                    control.classList.add('hidden');
+                    control.innerHTML = `<i class="bi bi-eye me-1"></i>Show ${widgetConfig[widgetId].name}`;
+                }
+            }
+        });
+    }
+
+    function saveCustomization() {
+        saveUserPreferences();
+    }
+
+    function resetCustomization() {
+        Swal.fire({
+            title: 'Reset Dashboard Layout?',
+            text: 'This will restore the default layout and visibility settings.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, reset it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                localStorage.removeItem('dashboardPreferences');
+                location.reload();
+            }
+        });
+    }
+
+    function exitCustomization() {
+        toggleCustomizationMode();
+    }
+
     // Scroll to widget function
     function scrollToWidget(widgetId) {
         const widget = document.getElementById(widgetId);
@@ -523,83 +1018,6 @@
             }
         });
     }
-
-    // Initialize drag and drop for widget customization
-    document.addEventListener('DOMContentLoaded', function() {
-        const widgetGrid = document.getElementById('widgetGrid');
-        if (widgetGrid) {
-            const widgets = widgetGrid.querySelectorAll('[data-widget]');
-            
-            widgets.forEach(widget => {
-                widget.addEventListener('dragstart', handleDragStart);
-                widget.addEventListener('dragend', handleDragEnd);
-                widget.addEventListener('dragover', handleDragOver);
-                widget.addEventListener('drop', handleDrop);
-            });
-        }
-    });
-
-    // Drag and drop handlers
-    function handleDragStart(e) {
-        this.classList.add('dragging');
-        e.dataTransfer.setData('text/plain', this.dataset.widget);
-    }
-
-    function handleDragEnd(e) {
-        this.classList.remove('dragging');
-    }
-
-    function handleDragOver(e) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-    }
-
-    function handleDrop(e) {
-        e.preventDefault();
-        const widgetId = e.dataTransfer.getData('text/plain');
-        const draggedWidget = document.querySelector(`[data-widget="${widgetId}"]`);
-        const dropTarget = this;
-
-        if (draggedWidget !== dropTarget) {
-            const allWidgets = [...widgetGrid.querySelectorAll('[data-widget]')];
-            const draggedIndex = allWidgets.indexOf(draggedWidget);
-            const dropIndex = allWidgets.indexOf(dropTarget);
-
-            if (draggedIndex < dropIndex) {
-                dropTarget.parentNode.insertBefore(draggedWidget, dropTarget.nextSibling);
-            } else {
-                dropTarget.parentNode.insertBefore(draggedWidget, dropTarget);
-            }
-
-            saveWidgetLayout();
-        }
-    }
-
-    // Save widget layout to localStorage
-    function saveWidgetLayout() {
-        const widgetGrid = document.getElementById('widgetGrid');
-        const widgets = widgetGrid.querySelectorAll('[data-widget]');
-        const layout = Array.from(widgets).map(widget => widget.dataset.widget);
-        localStorage.setItem('widgetLayout', JSON.stringify(layout));
-    }
-
-    // Load saved widget layout
-    function loadWidgetLayout() {
-        const savedLayout = localStorage.getItem('widgetLayout');
-        if (savedLayout) {
-            const layout = JSON.parse(savedLayout);
-            const widgetGrid = document.getElementById('widgetGrid');
-            layout.forEach(widgetId => {
-                const widget = widgetGrid.querySelector(`[data-widget="${widgetId}"]`);
-                if (widget) {
-                    widgetGrid.appendChild(widget);
-                }
-            });
-        }
-    }
-
-    // Load saved layout when page loads
-    document.addEventListener('DOMContentLoaded', loadWidgetLayout);
 
     function shareAchievement(id, type) {
         const shareUrl = type === 'credential' 

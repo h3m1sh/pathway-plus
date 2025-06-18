@@ -11,6 +11,8 @@ use App\Repository\JobRoleRepository;
 use App\Repository\MicroCredentialRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -152,6 +154,58 @@ class DashboardController extends AbstractController
         ]);
     }
 
+    #[Route('/dashboard/preferences/save', name: 'app_dashboard_save_preferences', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function savePreferences(Request $request): JsonResponse
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        
+        $data = json_decode($request->getContent(), true);
+        
+        if (!$data) {
+            return $this->json(['success' => false, 'message' => 'Invalid data'], 400);
+        }
+        
+        try {
+            // Store preferences in user entity (you might want to add a preferences field)
+            // For now, we'll store in session
+            $request->getSession()->set('dashboard_preferences_' . $user->getId(), $data);
+            
+            return $this->json([
+                'success' => true,
+                'message' => 'Preferences saved successfully'
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Failed to save preferences'
+            ], 500);
+        }
+    }
+
+    #[Route('/dashboard/preferences/load', name: 'app_dashboard_load_preferences', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
+    public function loadPreferences(Request $request): JsonResponse
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        
+        try {
+            $preferences = $request->getSession()->get('dashboard_preferences_' . $user->getId(), null);
+            
+            return $this->json([
+                'success' => true,
+                'preferences' => $preferences
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Failed to load preferences'
+            ], 500);
+        }
+    }
+
     #[Route('/admin', name: 'admin_dashboard')]
     #[IsGranted('ROLE_ADMIN')]
     public function adminDashboard(
@@ -199,16 +253,18 @@ class DashboardController extends AbstractController
                     'admins' => $totalAdmins,
                     'active' => $activeUsers,
                 ],
-                'skills' => $totalSkills,
-                'jobRoles' => $totalJobRoles,
-                'microCredentials' => $totalMicroCredentials,
+                'content' => [
+                    'skills' => $totalSkills,
+                    'jobRoles' => $totalJobRoles,
+                    'microCredentials' => $totalMicroCredentials,
+                ]
             ],
             'recent' => [
                 'users' => $recentUsers,
                 'skills' => $recentSkills,
                 'jobRoles' => $recentJobRoles,
                 'microCredentials' => $recentMicroCredentials,
-            ],
+            ]
         ]);
     }
 
@@ -217,7 +273,7 @@ class DashboardController extends AbstractController
     public function profile(): Response
     {
         return $this->render('dashboard/profile.html.twig', [
-            'user' => $this->getUser(),
+            'user' => $this->getUser()
         ]);
     }
 }
