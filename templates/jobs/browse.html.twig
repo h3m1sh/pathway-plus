@@ -1,0 +1,231 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Browse Jobs - Pathway+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="dashboard-header">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="mb-2">
+                            <i class="bi bi-briefcase me-2"></i>Browse Jobs
+                        </h1>
+                        <p class="mb-0 opacity-75">Explore career opportunities and find your perfect role</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <div class="d-flex justify-content-md-end">
+                            <span class="badge bg-primary fs-6">
+                                <i class="bi bi-collection me-1"></i>{{ jobs.nbResults }} Jobs Available
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card widget-card">
+                <div class="card-body">
+                    <form method="GET" action="{{ path('app_jobs_browse') }}" class="row g-3">
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <span class="input-group-text bg-primary text-white">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" 
+                                       class="form-control form-control-lg" 
+                                       name="search" 
+                                       value="{{ search }}" 
+                                       placeholder="Search jobs by title, industry, or skills..."
+                                       aria-label="Search jobs">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="bi bi-search me-1"></i>Search
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex gap-2">
+                                {% if search %}
+                                    <a href="{{ path('app_jobs_browse') }}" class="btn btn-outline-secondary">
+                                        <i class="bi bi-x-circle me-1"></i>Clear
+                                    </a>
+                                {% endif %}
+                                <button type="submit" class="btn btn-primary flex-fill">
+                                    <i class="bi bi-funnel me-1"></i>Filter
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Results Info -->
+    {% if search %}
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="alert alert-info d-flex align-items-center" role="alert">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <div>
+                        <strong>Search Results:</strong> Found {{ jobs.nbResults }} job{{ jobs.nbResults != 1 ? 's' : '' }} matching "{{ search }}"
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Jobs List -->
+    <div class="row">
+        <div class="col-12">
+            {% if jobs.nbResults > 0 %}
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    {% for job in jobs %}
+                        <div class="col">
+                            <div class="card widget-card h-100">
+                                <div class="card-body d-flex flex-column">
+                                    <!-- Job Header -->
+                                    <div class="mb-3">
+                                        <h5 class="card-title text-primary mb-2">
+                                            <i class="bi bi-briefcase me-1"></i>{{ job.title }}
+                                        </h5>
+                                        {% if job.industry %}
+                                            <span class="badge bg-secondary mb-2">{{ job.industry }}</span>
+                                        {% endif %}
+                                        {% if job.salaryRange %}
+                                            <span class="badge bg-success mb-2">{{ job.salaryRange }}</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Job Description -->
+                                    <div class="mb-3 flex-grow-1">
+                                        {% if job.description %}
+                                            <p class="card-text text-muted">
+                                                {{ job.description|length > 150 ? job.description|slice(0, 150) ~ '...' : job.description }}
+                                            </p>
+                                        {% else %}
+                                            <p class="card-text text-muted">
+                                                <em>No description available</em>
+                                            </p>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Required Skills -->
+                                    {% if job.skills|length > 0 %}
+                                        <div class="mb-3">
+                                            <h6 class="text-muted mb-2">
+                                                <i class="bi bi-tags me-1"></i>Required Skills:
+                                            </h6>
+                                            <div class="d-flex flex-wrap gap-1">
+                                                {% for skill in job.skills|slice(0, 3) %}
+                                                    <span class="badge bg-light text-dark border">{{ skill.name }}</span>
+                                                {% endfor %}
+                                                {% if job.skills|length > 3 %}
+                                                    <span class="badge bg-light text-dark border">+{{ job.skills|length - 3 }} more</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                    <!-- Job Details -->
+                                    <div class="mt-auto">
+                                        <div class="row text-muted small mb-3">
+                                            {% if job.jobCode %}
+                                                <div class="col-6">
+                                                    <i class="bi bi-hash me-1"></i>Code: {{ job.jobCode }}
+                                                </div>
+                                            {% endif %}
+                                            {% if job.yearsOfTraining %}
+                                                <div class="col-6">
+                                                    <i class="bi bi-clock me-1"></i>{{ job.yearsOfTraining }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <a href="{{ path('app_jobs_show', {id: job.id}) }}" 
+                                           class="btn btn-primary w-100">
+                                            <i class="bi bi-eye me-1"></i>View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if jobs.haveToPaginate %}
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <nav aria-label="Jobs pagination">
+                                <ul class="pagination justify-content-center">
+                                    {% if jobs.hasPreviousPage %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ path('app_jobs_browse', {page: jobs.previousPage, search: search}) }}">
+                                                <i class="bi bi-chevron-left"></i> Previous
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% for page in jobs.currentPageResults %}
+                                        <li class="page-item {{ page == jobs.currentPage ? 'active' : '' }}">
+                                            <a class="page-link" href="{{ path('app_jobs_browse', {page: page, search: search}) }}">
+                                                {{ page }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+
+                                    {% if jobs.hasNextPage %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ path('app_jobs_browse', {page: jobs.nextPage, search: search}) }}">
+                                                Next <i class="bi bi-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <!-- No Results -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card widget-card">
+                            <div class="card-body text-center py-5">
+                                <i class="bi bi-search display-1 text-muted mb-3"></i>
+                                <h3 class="text-muted mb-3">
+                                    {% if search %}
+                                        No jobs found matching "{{ search }}"
+                                    {% else %}
+                                        No jobs available at the moment
+                                    {% endif %}
+                                </h3>
+                                <p class="text-muted mb-4">
+                                    {% if search %}
+                                        Try adjusting your search terms or browse all available jobs.
+                                    {% else %}
+                                        Check back later for new opportunities.
+                                    {% endif %}
+                                </p>
+                                {% if search %}
+                                    <a href="{{ path('app_jobs_browse') }}" class="btn btn-primary">
+                                        <i class="bi bi-arrow-left me-1"></i>Browse All Jobs
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

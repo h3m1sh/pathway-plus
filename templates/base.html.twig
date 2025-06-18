@@ -254,7 +254,8 @@
                         </li>
                         {% if is_granted('ROLE_STUDENT') %}
                             <li class="nav-item">
-                                <a class="nav-link" href="#" id="browseJobsLink">
+                                <a class="nav-link {{ app.request.get('_route') starts with 'app_jobs_' ? 'active' : '' }}"
+                                   href="{{ path('app_jobs_browse') }}">
                                     <i class="bi bi-briefcase me-1"></i>Browse Jobs
                                 </a>
                             </li>

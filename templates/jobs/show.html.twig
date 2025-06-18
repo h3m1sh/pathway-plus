@@ -1,0 +1,259 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ job.title }} - Pathway+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <!-- Back Navigation -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{{ path('app_dashboard') }}" class="text-decoration-none">
+                            <i class="bi bi-house me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{{ path('app_jobs_browse') }}" class="text-decoration-none">
+                            <i class="bi bi-briefcase me-1"></i>Browse Jobs
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ job.title }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Job Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="dashboard-header">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="mb-2">{{ job.title }}</h1>
+                        <div class="d-flex flex-wrap gap-2 mb-2">
+                            {% if job.industry %}
+                                <span class="badge bg-secondary fs-6">{{ job.industry }}</span>
+                            {% endif %}
+                            {% if job.salaryRange %}
+                                <span class="badge bg-success fs-6">{{ job.salaryRange }}</span>
+                            {% endif %}
+                            {% if job.jobCode %}
+                                <span class="badge bg-info fs-6">Code: {{ job.jobCode }}</span>
+                            {% endif %}
+                        </div>
+                        <p class="mb-0 opacity-75">
+                            <i class="bi bi-calendar me-1"></i>Last updated: {{ job.updatedAt|date('M d, Y') }}
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <a href="{{ path('app_jobs_browse') }}" class="btn btn-outline-light">
+                            <i class="bi bi-arrow-left me-1"></i>Back to Jobs
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Job Description -->
+            <div class="card widget-card mb-4">
+                <div class="widget-header">
+                    <h3 class="widget-title">
+                        <i class="bi bi-file-text me-2"></i>Job Description
+                    </h3>
+                </div>
+                <div class="widget-body">
+                    {% if job.description %}
+                        <div class="job-description">
+                            {{ job.description|nl2br }}
+                        </div>
+                    {% else %}
+                        <p class="text-muted"><em>No description available for this role.</em></p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Entry Requirements -->
+            {% if job.entryRequirements %}
+                <div class="card widget-card mb-4">
+                    <div class="widget-header">
+                        <h3 class="widget-title">
+                            <i class="bi bi-list-check me-2"></i>Entry Requirements
+                        </h3>
+                    </div>
+                    <div class="widget-body">
+                        <div class="entry-requirements">
+                            {{ job.entryRequirements|nl2br }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Job Opportunities -->
+            {% if job.jobOpportunities %}
+                <div class="card widget-card mb-4">
+                    <div class="widget-header">
+                        <h3 class="widget-title">
+                            <i class="bi bi-graph-up me-2"></i>Job Opportunities
+                        </h3>
+                    </div>
+                    <div class="widget-body">
+                        {% if job.jobOpportunitiesCaption %}
+                            <p class="text-muted mb-3"><em>{{ job.jobOpportunitiesCaption }}</em></p>
+                        {% endif %}
+                        <div class="job-opportunities">
+                            {{ job.jobOpportunities|nl2br }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Required Skills -->
+            {% if job.skills|length > 0 %}
+                <div class="card widget-card mb-4">
+                    <div class="widget-header">
+                        <h3 class="widget-title">
+                            <i class="bi bi-tags me-2"></i>Required Skills
+                        </h3>
+                    </div>
+                    <div class="widget-body">
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for skill in job.skills %}
+                                <span class="badge bg-primary fs-6">{{ skill.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Job Details -->
+            <div class="card widget-card mb-4">
+                <div class="widget-header">
+                    <h3 class="widget-title">
+                        <i class="bi bi-info-circle me-2"></i>Job Details
+                    </h3>
+                </div>
+                <div class="widget-body">
+                    <div class="row g-3">
+                        {% if job.yearsOfTraining %}
+                            <div class="col-12">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-clock text-primary me-2"></i>
+                                    <div>
+                                        <strong>Training Duration:</strong><br>
+                                        <span class="text-muted">{{ job.yearsOfTraining }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if job.anzsco %}
+                            <div class="col-12">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-hash text-primary me-2"></i>
+                                    <div>
+                                        <strong>ANZSCO Code:</strong><br>
+                                        <span class="text-muted">{{ job.anzsco }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if job.source %}
+                            <div class="col-12">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-link-45deg text-primary me-2"></i>
+                                    <div>
+                                        <strong>Source:</strong><br>
+                                        <span class="text-muted">{{ job.source }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="col-12">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-calendar-event text-primary me-2"></i>
+                                <div>
+                                    <strong>Created:</strong><br>
+                                    <span class="text-muted">{{ job.createdAt|date('M d, Y') }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if job.lastSyncedAt %}
+                            <div class="col-12">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-arrow-clockwise text-primary me-2"></i>
+                                    <div>
+                                        <strong>Last Synced:</strong><br>
+                                        <span class="text-muted">{{ job.lastSyncedAt|date('M d, Y H:i') }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card widget-card">
+                <div class="widget-header">
+                    <h3 class="widget-title">
+                        <i class="bi bi-gear me-2"></i>Actions
+                    </h3>
+                </div>
+                <div class="widget-body">
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-outline-primary">
+                            <i class="bi bi-heart me-1"></i>Add to Interests
+                        </button>
+                        <button type="button" class="btn btn-outline-success">
+                            <i class="bi bi-share me-1"></i>Share Job
+                        </button>
+                        <a href="{{ path('app_jobs_browse') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>Back to Browse
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.job-description,
+.entry-requirements,
+.job-opportunities {
+    line-height: 1.6;
+    color: var(--dark-charcoal);
+}
+
+.job-description p,
+.entry-requirements p,
+.job-opportunities p {
+    margin-bottom: 1rem;
+}
+
+.job-description ul,
+.entry-requirements ul,
+.job-opportunities ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.job-description li,
+.entry-requirements li,
+.job-opportunities li {
+    margin-bottom: 0.5rem;
+}
+</style>
+{% endblock %} 
