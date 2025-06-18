@@ -28,29 +28,36 @@
     <!-- Job Header -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="dashboard-header">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h1 class="mb-2">{{ job.title }}</h1>
-                        <div class="d-flex flex-wrap gap-2 mb-2">
-                            {% if job.industry %}
-                                <span class="badge bg-secondary fs-6">{{ job.industry }}</span>
-                            {% endif %}
-                            {% if job.salaryRange %}
-                                <span class="badge bg-success fs-6">{{ job.salaryRange }}</span>
-                            {% endif %}
-                            {% if job.jobCode %}
-                                <span class="badge bg-info fs-6">Code: {{ job.jobCode }}</span>
-                            {% endif %}
+            <div class="card widget-card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="display-6 text-primary mb-3">{{ job.title }}</h1>
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                {% if job.industry %}
+                                    <span class="badge bg-secondary fs-6">{{ job.industry }}</span>
+                                {% endif %}
+                                {% if job.salaryRange %}
+                                    <span class="badge bg-success fs-6">{{ job.salaryRange }}</span>
+                                {% endif %}
+                                {% if job.jobCode %}
+                                    <span class="badge bg-info fs-6">Code: {{ job.jobCode }}</span>
+                                {% endif %}
+                            </div>
+                            <p class="text-muted mb-0">
+                                <i class="bi bi-calendar me-1"></i>Last updated: {{ job.updatedAt|date('M d, Y') }}
+                            </p>
                         </div>
-                        <p class="mb-0 opacity-75">
-                            <i class="bi bi-calendar me-1"></i>Last updated: {{ job.updatedAt|date('M d, Y') }}
-                        </p>
-                    </div>
-                    <div class="col-md-4 text-md-end">
-                        <a href="{{ path('app_jobs_browse') }}" class="btn btn-outline-light">
-                            <i class="bi bi-arrow-left me-1"></i>Back to Jobs
-                        </a>
+                        <div class="col-md-4 text-md-end">
+                            <div class="d-grid gap-2">
+                                <button type="button" class="btn btn-primary" onclick="addToInterests({{ job.id }})">
+                                    <i class="bi bi-heart me-1"></i>Add to Interests
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" onclick="shareJob()">
+                                    <i class="bi bi-share me-1"></i>Share Job
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -61,34 +68,28 @@
         <!-- Main Content -->
         <div class="col-lg-8">
             <!-- Job Description -->
-            <div class="card widget-card mb-4">
-                <div class="widget-header">
-                    <h3 class="widget-title">
-                        <i class="bi bi-file-text me-2"></i>Job Description
-                    </h3>
-                </div>
-                <div class="widget-body">
-                    {% if job.description %}
-                        <div class="job-description">
-                            {{ job.description|nl2br }}
+            {% if job.description %}
+                <div class="card widget-card mb-4">
+                    <div class="card-body">
+                        <h3 class="h4 text-primary mb-3">
+                            <i class="bi bi-file-text me-2"></i>Job Description
+                        </h3>
+                        <div class="job-content">
+                            {{ job.description|striptags|raw|nl2br }}
                         </div>
-                    {% else %}
-                        <p class="text-muted"><em>No description available for this role.</em></p>
-                    {% endif %}
+                    </div>
                 </div>
-            </div>
+            {% endif %}
 
             <!-- Entry Requirements -->
             {% if job.entryRequirements %}
                 <div class="card widget-card mb-4">
-                    <div class="widget-header">
-                        <h3 class="widget-title">
+                    <div class="card-body">
+                        <h3 class="h4 text-primary mb-3">
                             <i class="bi bi-list-check me-2"></i>Entry Requirements
                         </h3>
-                    </div>
-                    <div class="widget-body">
-                        <div class="entry-requirements">
-                            {{ job.entryRequirements|nl2br }}
+                        <div class="job-content">
+                            {{ job.entryRequirements|striptags|raw|nl2br }}
                         </div>
                     </div>
                 </div>
@@ -97,17 +98,15 @@
             <!-- Job Opportunities -->
             {% if job.jobOpportunities %}
                 <div class="card widget-card mb-4">
-                    <div class="widget-header">
-                        <h3 class="widget-title">
+                    <div class="card-body">
+                        <h3 class="h4 text-primary mb-3">
                             <i class="bi bi-graph-up me-2"></i>Job Opportunities
                         </h3>
-                    </div>
-                    <div class="widget-body">
                         {% if job.jobOpportunitiesCaption %}
-                            <p class="text-muted mb-3"><em>{{ job.jobOpportunitiesCaption }}</em></p>
+                            <p class="text-muted mb-3"><em>{{ job.jobOpportunitiesCaption|striptags|raw }}</em></p>
                         {% endif %}
-                        <div class="job-opportunities">
-                            {{ job.jobOpportunities|nl2br }}
+                        <div class="job-content">
+                            {{ job.jobOpportunities|striptags|raw|nl2br }}
                         </div>
                     </div>
                 </div>
@@ -119,12 +118,10 @@
             <!-- Required Skills -->
             {% if job.skills|length > 0 %}
                 <div class="card widget-card mb-4">
-                    <div class="widget-header">
-                        <h3 class="widget-title">
+                    <div class="card-body">
+                        <h4 class="text-primary mb-3">
                             <i class="bi bi-tags me-2"></i>Required Skills
-                        </h3>
-                    </div>
-                    <div class="widget-body">
+                        </h4>
                         <div class="d-flex flex-wrap gap-2">
                             {% for skill in job.skills %}
                                 <span class="badge bg-primary fs-6">{{ skill.name }}</span>
@@ -136,19 +133,17 @@
 
             <!-- Job Details -->
             <div class="card widget-card mb-4">
-                <div class="widget-header">
-                    <h3 class="widget-title">
+                <div class="card-body">
+                    <h4 class="text-primary mb-3">
                         <i class="bi bi-info-circle me-2"></i>Job Details
-                    </h3>
-                </div>
-                <div class="widget-body">
+                    </h4>
                     <div class="row g-3">
                         {% if job.yearsOfTraining %}
                             <div class="col-12">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-clock text-primary me-2"></i>
+                                <div class="d-flex align-items-center p-3 bg-light rounded">
+                                    <i class="bi bi-clock text-primary me-3 fs-4"></i>
                                     <div>
-                                        <strong>Training Duration:</strong><br>
+                                        <strong>Training Duration</strong><br>
                                         <span class="text-muted">{{ job.yearsOfTraining }}</span>
                                     </div>
                                 </div>
@@ -157,10 +152,10 @@
 
                         {% if job.anzsco %}
                             <div class="col-12">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-hash text-primary me-2"></i>
+                                <div class="d-flex align-items-center p-3 bg-light rounded">
+                                    <i class="bi bi-hash text-primary me-3 fs-4"></i>
                                     <div>
-                                        <strong>ANZSCO Code:</strong><br>
+                                        <strong>ANZSCO Code</strong><br>
                                         <span class="text-muted">{{ job.anzsco }}</span>
                                     </div>
                                 </div>
@@ -169,10 +164,10 @@
 
                         {% if job.source %}
                             <div class="col-12">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-link-45deg text-primary me-2"></i>
+                                <div class="d-flex align-items-center p-3 bg-light rounded">
+                                    <i class="bi bi-link-45deg text-primary me-3 fs-4"></i>
                                     <div>
-                                        <strong>Source:</strong><br>
+                                        <strong>Source</strong><br>
                                         <span class="text-muted">{{ job.source }}</span>
                                     </div>
                                 </div>
@@ -180,47 +175,30 @@
                         {% endif %}
 
                         <div class="col-12">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-calendar-event text-primary me-2"></i>
+                            <div class="d-flex align-items-center p-3 bg-light rounded">
+                                <i class="bi bi-calendar-event text-primary me-3 fs-4"></i>
                                 <div>
-                                    <strong>Created:</strong><br>
+                                    <strong>Created</strong><br>
                                     <span class="text-muted">{{ job.createdAt|date('M d, Y') }}</span>
                                 </div>
                             </div>
                         </div>
-
-                        {% if job.lastSyncedAt %}
-                            <div class="col-12">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-arrow-clockwise text-primary me-2"></i>
-                                    <div>
-                                        <strong>Last Synced:</strong><br>
-                                        <span class="text-muted">{{ job.lastSyncedAt|date('M d, Y H:i') }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endif %}
                     </div>
                 </div>
             </div>
 
-            <!-- Actions -->
+            <!-- Quick Actions -->
             <div class="card widget-card">
-                <div class="widget-header">
-                    <h3 class="widget-title">
-                        <i class="bi bi-gear me-2"></i>Actions
-                    </h3>
-                </div>
-                <div class="widget-body">
+                <div class="card-body">
+                    <h4 class="text-primary mb-3">
+                        <i class="bi bi-lightning me-2"></i>Quick Actions
+                    </h4>
                     <div class="d-grid gap-2">
-                        <button type="button" class="btn btn-outline-primary">
-                            <i class="bi bi-heart me-1"></i>Add to Interests
-                        </button>
-                        <button type="button" class="btn btn-outline-success">
-                            <i class="bi bi-share me-1"></i>Share Job
-                        </button>
                         <a href="{{ path('app_jobs_browse') }}" class="btn btn-outline-secondary">
                             <i class="bi bi-arrow-left me-1"></i>Back to Browse
+                        </a>
+                        <a href="{{ path('app_dashboard') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-speedometer2 me-1"></i>Go to Dashboard
                         </a>
                     </div>
                 </div>
@@ -230,30 +208,135 @@
 </div>
 
 <style>
-.job-description,
-.entry-requirements,
-.job-opportunities {
-    line-height: 1.6;
+.job-content {
+    line-height: 1.8;
     color: var(--dark-charcoal);
+    font-size: 1.1rem;
 }
 
-.job-description p,
-.entry-requirements p,
-.job-opportunities p {
-    margin-bottom: 1rem;
+.job-content p {
+    margin-bottom: 1.5rem;
 }
 
-.job-description ul,
-.entry-requirements ul,
-.job-opportunities ul {
+.job-content ul, .job-content ol {
     padding-left: 1.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 }
 
-.job-description li,
-.entry-requirements li,
-.job-opportunities li {
-    margin-bottom: 0.5rem;
+.job-content li {
+    margin-bottom: 0.75rem;
+}
+
+.bg-light {
+    background-color: var(--cool-white) !important;
+    border: 1px solid rgba(108, 117, 125, 0.1);
+}
+
+.card.widget-card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 2px 12px rgba(30, 42, 56, 0.08);
+    transition: all 0.3s ease;
+}
+
+.card.widget-card:hover {
+    box-shadow: 0 6px 20px rgba(30, 42, 56, 0.15);
+    transform: translateY(-2px);
+}
+
+.display-6 {
+    font-size: 2.5rem;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .display-6 {
+        font-size: 2rem;
+    }
+    
+    .job-content {
+        font-size: 1rem;
+    }
 }
 </style>
+
+<script>
+function addToInterests(jobId) {
+    // Show loading state
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Adding...';
+    button.disabled = true;
+
+    // Make API call to add to interests
+    fetch(`/jobs/${jobId}/add-to-interests`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            button.innerHTML = '<i class="bi bi-heart-fill me-1"></i>Added to Interests';
+            button.classList.remove('btn-primary');
+            button.classList.add('btn-success');
+            
+            // Show success message
+            Swal.fire({
+                title: 'Added to Interests!',
+                text: data.message,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else {
+            // Handle error
+            button.innerHTML = originalText;
+            button.disabled = false;
+            
+            Swal.fire({
+                title: 'Error',
+                text: data.message || 'Failed to add job to interests',
+                icon: 'error'
+            });
+        }
+    })
+    .catch(error => {
+        // Handle network error
+        button.innerHTML = originalText;
+        button.disabled = false;
+        
+        Swal.fire({
+            title: 'Error',
+            text: 'Network error. Please try again.',
+            icon: 'error'
+        });
+    });
+}
+
+function shareJob() {
+    const jobTitle = '{{ job.title }}';
+    const jobUrl = window.location.href;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: jobTitle,
+            url: jobUrl
+        });
+    } else {
+        // Fallback for browsers that don't support Web Share API
+        navigator.clipboard.writeText(jobUrl).then(() => {
+            Swal.fire({
+                title: 'Link Copied!',
+                text: 'Job link has been copied to your clipboard.',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        });
+    }
+}
+</script>
 {% endblock %} 

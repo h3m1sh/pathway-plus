@@ -107,7 +107,7 @@
                                     <div class="mb-3 flex-grow-1">
                                         {% if job.description %}
                                             <p class="card-text text-muted">
-                                                {{ job.description|length > 150 ? job.description|slice(0, 150) ~ '...' : job.description }}
+                                                {{ (job.description|striptags|raw)|length > 150 ? (job.description|striptags|raw)|slice(0, 150) ~ '...' : (job.description|striptags|raw) }}
                                             </p>
                                         {% else %}
                                             <p class="card-text text-muted">
