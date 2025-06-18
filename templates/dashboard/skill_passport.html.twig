@@ -51,6 +51,25 @@
             margin-right: 1rem;
         }
 
+        /* Ensure list view overrides grid view styles */
+        #credentialGrid.list-view .credential-card .card-body {
+            display: flex !important;
+            align-items: center !important;
+            padding: 1rem !important;
+            text-align: left !important;
+        }
+
+        #credentialGrid.list-view .badge-image {
+            width: 50px !important;
+            height: 50px !important;
+            margin-right: 1rem !important;
+            margin-left: 0 !important;
+        }
+
+        #credentialGrid.list-view .credential-card {
+            margin-bottom: 1rem !important;
+        }
+
         .credential-status {
             position: absolute;
             top: 10px;
@@ -242,7 +261,9 @@
                 btn.addEventListener('click', function() {
                     document.querySelectorAll('[data-view]').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
-                    currentFilters.viewType = this.dataset.viewType;
+                    currentFilters.viewType = this.dataset.view;
+                    console.log('View changed to:', currentFilters.viewType);
+                    applyFilters();
                 });
             });
 
