@@ -82,14 +82,10 @@ class ProfileController extends AbstractController
             return $this->redirectToRoute('app_profile');
         }
         
-        // Get available job roles for career interests
-        $availableJobRoles = $this->jobRoleRepository->findBy(['isArchived' => false], ['title' => 'ASC']);
-        
         return $this->render('profile/index.html.twig', [
             'user' => $user,
             'profileForm' => $profileForm,
             'passwordForm' => $passwordForm,
-            'availableJobRoles' => $availableJobRoles,
         ]);
     }
     

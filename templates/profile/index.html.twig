@@ -99,22 +99,9 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="addInterest" class="form-label fw-medium">Add New Interest</label>
-                            <select id="addInterest" class="form-select">
-                                <option value="">Select a career interest...</option>
-                                {% for jobRole in availableJobRoles %}
-                                    {% if jobRole not in user.jobRoleInterests %}
-                                        <option value="{{ jobRole.id }}">{{ jobRole.title }}</option>
-                                    {% endif %}
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        <div class="d-grid">
-                            <button type="button" class="btn btn-outline-primary" onclick="saveInterests()">
-                                <i class="bi bi-save me-2"></i>Save Interests
-                            </button>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <small>You can remove interests by clicking the X button on each tag. To add new interests, please contact an administrator.</small>
                         </div>
                     </div>
                 </div>
@@ -240,15 +227,7 @@
         function removeInterest(interestId) {
             currentInterests = currentInterests.filter(id => id !== interestId);
             updateInterestsDisplay();
-            updateAddInterestOptions();
-        }
-        
-        function addInterest(interestId, interestTitle) {
-            if (!currentInterests.includes(interestId)) {
-                currentInterests.push(interestId);
-                updateInterestsDisplay();
-                updateAddInterestOptions();
-            }
+            saveInterests();
         }
         
         function updateInterestsDisplay() {
@@ -260,29 +239,21 @@
             
             container.innerHTML = '';
             currentInterests.forEach(interestId => {
-                const option = document.querySelector(`#addInterest option[value="${interestId}"]`);
-                if (option) {
+                // Find the original interest data from the user's interests
+                {% for interest in user.jobRoleInterests %}
+                if ({{ interest.id }} === interestId) {
                     const badge = document.createElement('span');
                     badge.className = 'badge bg-primary me-2 mb-2 interest-tag';
                     badge.setAttribute('data-id', interestId);
                     badge.innerHTML = `
-                        ${option.textContent}
+                        {{ interest.title }}
                         <button type="button" class="btn-close btn-close-white ms-2" 
                                 onclick="removeInterest(${interestId})" 
                                 style="font-size: 0.6em;"></button>
                     `;
                     container.appendChild(badge);
                 }
-            });
-        }
-        
-        function updateAddInterestOptions() {
-            const select = document.getElementById('addInterest');
-            const options = select.querySelectorAll('option');
-            options.forEach(option => {
-                if (option.value) {
-                    option.style.display = currentInterests.includes(parseInt(option.value)) ? 'none' : '';
-                }
+                {% endfor %}
             });
         }
         
@@ -314,13 +285,5 @@
                 console.error('Error:', error);
             });
         }
-        
-        // Handle add interest selection
-        document.getElementById('addInterest').addEventListener('change', function() {
-            if (this.value) {
-                addInterest(parseInt(this.value), this.options[this.selectedIndex].text);
-                this.value = '';
-            }
-        });
     </script>
 {% endblock %} 
