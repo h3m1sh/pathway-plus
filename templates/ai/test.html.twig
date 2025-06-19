@@ -1,0 +1,290 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}AI Test - Pathway+{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="h3 mb-4">
+                    <i class="bi bi-robot me-2"></i>AI Integration Test
+                </h1>
+            </div>
+        </div>
+
+        <!-- Connection Status -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-wifi me-2"></i>Connection Status
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if connection_success %}
+                            <div class="alert alert-success mb-0">
+                                <i class="bi bi-check-circle me-2"></i>
+                                <strong>Connected!</strong> Gemini AI is working properly.
+                            </div>
+                        {% else %}
+                            <div class="alert alert-danger mb-0">
+                                <i class="bi bi-x-circle me-2"></i>
+                                <strong>Connection Failed!</strong> {{ connection_status }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Sections -->
+        <div class="row">
+            <!-- Simple Chat Test -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-chat-dots me-2"></i>Simple Chat Test
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="chatMessage" class="form-label">Message:</label>
+                            <textarea id="chatMessage" class="form-control" rows="3" placeholder="Ask the AI something...">Hello, how can you help me with my career?</textarea>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="testChat()">
+                            <i class="bi bi-send me-2"></i>Send Message
+                        </button>
+                        <div id="chatResponse" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Career Suggestions Test -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-briefcase me-2"></i>Career Suggestions Test
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small mb-3">Test with sample data:</p>
+                        <button type="button" class="btn btn-success" onclick="testCareerSuggestions()">
+                            <i class="bi bi-play-circle me-2"></i>Generate Career Suggestions
+                        </button>
+                        <div id="careerResponse" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Skill Gap Analysis Test -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-graph-up me-2"></i>Skill Gap Analysis Test
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small mb-3">Test with sample data:</p>
+                        <button type="button" class="btn btn-warning" onclick="testSkillGaps()">
+                            <i class="bi bi-play-circle me-2"></i>Analyze Skill Gaps
+                        </button>
+                        <div id="skillGapResponse" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Recommendations Test -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-book me-2"></i>Learning Recommendations Test
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small mb-3">Test with sample data:</p>
+                        <button type="button" class="btn btn-info" onclick="testLearningRecommendations()">
+                            <i class="bi bi-play-circle me-2"></i>Generate Learning Plan
+                        </button>
+                        <div id="learningResponse" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showLoading(elementId) {
+            document.getElementById(elementId).innerHTML = `
+                <div class="alert alert-info">
+                    <i class="bi bi-hourglass-split me-2"></i>
+                    <strong>Loading...</strong> Please wait while the AI processes your request.
+                </div>
+            `;
+        }
+
+        function showError(elementId, message) {
+            document.getElementById(elementId).innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <strong>Error:</strong> ${message}
+                </div>
+            `;
+        }
+
+        function showSuccess(elementId, title, content) {
+            document.getElementById(elementId).innerHTML = `
+                <div class="alert alert-success">
+                    <h6><i class="bi bi-check-circle me-2"></i>${title}</h6>
+                    <pre class="mb-0" style="white-space: pre-wrap; font-size: 0.875rem;">${content}</pre>
+                </div>
+            `;
+        }
+
+        async function testChat() {
+            const message = document.getElementById('chatMessage').value;
+            showLoading('chatResponse');
+
+            try {
+                const response = await fetch('{{ path('app_ai_simple_chat') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showSuccess('chatResponse', 'AI Response', data.response);
+                } else {
+                    showError('chatResponse', data.error || 'Unknown error occurred');
+                }
+            } catch (error) {
+                showError('chatResponse', 'Network error: ' + error.message);
+            }
+        }
+
+        async function testCareerSuggestions() {
+            showLoading('careerResponse');
+
+            const testData = {
+                skills: [
+                    { name: 'JavaScript' },
+                    { name: 'Python' },
+                    { name: 'Database Design' }
+                ],
+                interests: [
+                    { title: 'Software Development' },
+                    { title: 'Data Analysis' }
+                ],
+                credentials: [
+                    { title: 'Web Development Certificate' }
+                ]
+            };
+
+            try {
+                const response = await fetch('{{ path('app_ai_career_suggestions') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    const formattedResponse = JSON.stringify(data.data, null, 2);
+                    showSuccess('careerResponse', 'Career Suggestions Generated', formattedResponse);
+                } else {
+                    showError('careerResponse', data.error || 'Unknown error occurred');
+                }
+            } catch (error) {
+                showError('careerResponse', 'Network error: ' + error.message);
+            }
+        }
+
+        async function testSkillGaps() {
+            showLoading('skillGapResponse');
+
+            const testData = {
+                user_skills: [
+                    { name: 'JavaScript' },
+                    { name: 'Python' },
+                    { name: 'Database Design' }
+                ],
+                target_role_skills: [
+                    { name: 'Machine Learning' },
+                    { name: 'Statistics' },
+                    { name: 'Data Visualization' }
+                ]
+            };
+
+            try {
+                const response = await fetch('{{ path('app_ai_skill_gaps') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    const formattedResponse = JSON.stringify(data.data, null, 2);
+                    showSuccess('skillGapResponse', 'Skill Gap Analysis Completed', formattedResponse);
+                } else {
+                    showError('skillGapResponse', data.error || 'Unknown error occurred');
+                }
+            } catch (error) {
+                showError('skillGapResponse', 'Network error: ' + error.message);
+            }
+        }
+
+        async function testLearningRecommendations() {
+            showLoading('learningResponse');
+
+            const testData = {
+                user_profile: {
+                    level: 'Intermediate',
+                    time_available: '10 hours per week',
+                    learning_style: 'Visual and hands-on'
+                },
+                skill_gaps: [
+                    { skill: 'Machine Learning' },
+                    { skill: 'Statistics' }
+                ]
+            };
+
+            try {
+                const response = await fetch('{{ path('app_ai_learning_recommendations') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    const formattedResponse = JSON.stringify(data.data, null, 2);
+                    showSuccess('learningResponse', 'Learning Recommendations Generated', formattedResponse);
+                } else {
+                    showError('learningResponse', data.error || 'Unknown error occurred');
+                }
+            } catch (error) {
+                showError('learningResponse', 'Network error: ' + error.message);
+            }
+        }
+    </script>
+{% endblock %} 

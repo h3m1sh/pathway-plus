@@ -180,7 +180,7 @@
             <div class="col-lg-3 col-md-6 mb-4">
                 <div class="dashboard-card stat-card skills position-relative p-4">
                     <i class="bi bi-mortarboard-fill stat-icon"></i>
-                    <div class="stat-number">{{ stats.skills }}</div>
+                    <div class="stat-number">{{ stats.content.skills }}</div>
                     <div class="stat-label">Skills</div>
                     <div class="mt-3">
                         <a href="{{ path('app_admin_skill_index') }}" class="btn btn-light btn-sm">
@@ -196,7 +196,7 @@
             <div class="col-lg-3 col-md-6 mb-4">
                 <div class="dashboard-card stat-card job-roles position-relative p-4">
                     <i class="bi bi-briefcase-fill stat-icon"></i>
-                    <div class="stat-number">{{ stats.jobRoles }}</div>
+                    <div class="stat-number">{{ stats.content.jobRoles }}</div>
                     <div class="stat-label">Job Roles</div>
                     <div class="mt-3">
                         <a href="{{ path('app_admin_job_role_index') }}" class="btn btn-light btn-sm">
@@ -212,7 +212,7 @@
             <div class="col-lg-3 col-md-6 mb-4">
                 <div class="dashboard-card stat-card micro-credentials position-relative p-4">
                     <i class="bi bi-award-fill stat-icon"></i>
-                    <div class="stat-number">{{ stats.microCredentials }}</div>
+                    <div class="stat-number">{{ stats.content.microCredentials }}</div>
                     <div class="stat-label">Micro-Credentials</div>
                     <div class="mt-3">
                         <a href="{{ path('app_admin_micro_credential_index') }}" class="btn btn-light btn-sm">
@@ -269,6 +269,13 @@
                             <div>
                                 <div class="fw-medium">API Testing</div>
                                 <small class="text-muted">Test external integrations</small>
+                            </div>
+                        </a>
+                        <a href="{{ path('app_ai_test') }}" class="admin-nav-item">
+                            <i class="bi bi-robot text-purple"></i>
+                            <div>
+                                <div class="fw-medium">AI Test</div>
+                                <small class="text-muted">Test AI integrations</small>
                             </div>
                         </a>
                     </div>
