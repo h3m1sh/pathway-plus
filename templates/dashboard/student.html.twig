@@ -122,7 +122,7 @@
     <div class="row">
         <!-- Main Dashboard Content -->
         <div class="col-lg-9">
-            <div class="row g-3">
+            <div class="row g-3" id="widgetGrid">
                 <div class="col-12">
                     <div class="card widget-card mb-3">
                         <div class="widget-item" data-widget="profile" draggable="true">
@@ -839,6 +839,45 @@
         top: 0;
         z-index: 1100;
     }
+    
+    /* Drag and Drop Styles */
+    .customization-mode .widget-item {
+        cursor: grab;
+        transition: all 0.2s ease;
+    }
+    
+    .customization-mode .widget-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+    }
+    
+    .customization-mode .widget-item.dragging {
+        cursor: grabbing;
+        opacity: 0.8;
+        transform: rotate(2deg);
+        z-index: 1000;
+    }
+    
+    .customization-mode .widget-item.drag-over {
+        border: 2px dashed #007BFF;
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    
+    .widget-item {
+        transition: all 0.2s ease;
+    }
+    
+    .widget-item.dragging {
+        cursor: grabbing;
+        opacity: 0.8;
+        transform: rotate(2deg);
+        z-index: 1000;
+    }
+    
+    .widget-item.drag-over {
+        border: 2px dashed #007BFF;
+        background-color: rgba(0, 123, 255, 0.05);
+    }
 </style>
 
 <script>
@@ -884,19 +923,51 @@
             customizeBtn.classList.remove('btn-outline-primary');
             customizeBtn.classList.add('btn-success');
             widgetGrid.classList.add('customization-mode');
+            
+            // Enable drag and drop for all widgets
+            const widgets = widgetGrid.querySelectorAll('.widget-item');
+            widgets.forEach(widget => {
+                widget.draggable = true;
+                widget.style.cursor = 'grab';
+            });
+            
             showWidgetControls();
+            
+            // Show success message
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'info',
+                title: 'Customization mode enabled! Drag widgets to reorder.',
+                showConfirmButton: false,
+                timer: 3000
+            });
         } else {
             controls.style.display = 'none';
             customizeBtn.innerHTML = '<i class="bi bi-grid-3x3-gap me-1"></i>Customize';
             customizeBtn.classList.remove('btn-success');
             customizeBtn.classList.add('btn-outline-primary');
             widgetGrid.classList.remove('customization-mode');
+            
+            // Disable drag and drop for all widgets
+            const widgets = widgetGrid.querySelectorAll('.widget-item');
+            widgets.forEach(widget => {
+                widget.draggable = false;
+                widget.style.cursor = 'default';
+                widget.classList.remove('dragging', 'drag-over');
+            });
+            
             hideWidgetControls();
         }
     }
 
     function initializeDragAndDrop() {
         const widgetGrid = document.getElementById('widgetGrid');
+        if (!widgetGrid) {
+            console.error('Widget grid not found');
+            return;
+        }
+        
         const widgets = widgetGrid.querySelectorAll('.widget-item');
         
         widgets.forEach(widget => {
@@ -916,12 +987,18 @@
         this.classList.add('dragging');
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text/html', this.outerHTML);
+        
+        // Add a small delay to make the drag effect visible
+        setTimeout(() => {
+            this.style.opacity = '0.8';
+        }, 0);
     }
 
     function handleDragEnd(e) {
         if (!isCustomizationMode) return;
         
         this.classList.remove('dragging');
+        this.style.opacity = '1';
         draggedElement = null;
         
         // Remove drag-over styling from all widgets
@@ -960,7 +1037,8 @@
         this.classList.remove('drag-over');
         
         if (draggedElement && draggedElement !== this) {
-            const allWidgets = Array.from(document.querySelectorAll('.widget-item'));
+            const widgetGrid = document.getElementById('widgetGrid');
+            const allWidgets = Array.from(widgetGrid.querySelectorAll('.widget-item'));
             const draggedIndex = allWidgets.indexOf(draggedElement);
             const dropIndex = allWidgets.indexOf(this);
             
@@ -970,6 +1048,7 @@
                 this.parentNode.insertBefore(draggedElement, this);
             }
             
+            // Save the new order
             saveUserPreferences();
         }
     }
@@ -1067,7 +1146,10 @@
     }
 
     function getWidgetOrder() {
-        const widgets = document.querySelectorAll('.widget-item');
+        const widgetGrid = document.getElementById('widgetGrid');
+        if (!widgetGrid) return [];
+        
+        const widgets = widgetGrid.querySelectorAll('.widget-item');
         return Array.from(widgets).map(widget => widget.dataset.widget);
     }
 
@@ -1075,7 +1157,9 @@
         const visibility = {};
         Object.keys(widgetConfig).forEach(widgetId => {
             const widget = document.querySelector(`[data-widget="${widgetId}"]`);
-            visibility[widgetId] = widget.style.display !== 'none';
+            if (widget) {
+                visibility[widgetId] = widget.style.display !== 'none';
+            }
         });
         return visibility;
     }
@@ -1131,10 +1215,12 @@
 
     function applyWidgetOrder(order) {
         const widgetGrid = document.getElementById('widgetGrid');
+        if (!widgetGrid) return;
+        
         order.forEach(widgetId => {
             const widget = widgetGrid.querySelector(`[data-widget="${widgetId}"]`);
             if (widget) {
-                widgetGrid.appendChild(widget);
+                widgetGrid.appendChild(widget.parentNode); // Move the entire col-12 container
             }
         });
     }
