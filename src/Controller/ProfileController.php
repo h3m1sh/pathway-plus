@@ -49,6 +49,13 @@ class ProfileController extends AbstractController
         ]);
         $profileForm->handleRequest($request);
         
+        // Create a separate avatar-only form for students
+        $avatarForm = $this->createForm(ProfileFormType::class, $user, [
+            'is_admin' => false,
+            'avatar_only' => true
+        ]);
+        $avatarForm->handleRequest($request);
+        
         // Create password change form
         $passwordForm = $this->createForm(PasswordChangeFormType::class);
         $passwordForm->handleRequest($request);
@@ -84,6 +91,37 @@ class ProfileController extends AbstractController
             return $this->redirectToRoute('app_profile');
         }
         
+        // Handle avatar form submission (for students)
+        if ($avatarForm->isSubmitted() && $avatarForm->isValid()) {
+            // Handle file upload
+            $avatarFile = $avatarForm->get('avatarFile')->getData();
+            if ($avatarFile) {
+                $originalFilename = pathinfo($avatarFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $this->slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$avatarFile->guessExtension();
+                
+                try {
+                    $avatarFile->move(
+                        $this->getParameter('avatars_directory'),
+                        $newFilename
+                    );
+                    
+                    // Update user's avatar URL
+                    $user->setAvatarUrl('/uploads/avatars/' . $newFilename);
+                    $user->setUpdatedAt(new \DateTimeImmutable());
+                    $user->setLastProfileUpdate('Profile picture updated');
+                    
+                    $this->entityManager->flush();
+                    
+                    $this->addFlash('success', 'Profile picture updated successfully!');
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Failed to upload profile picture.');
+                }
+            }
+            
+            return $this->redirectToRoute('app_profile');
+        }
+        
         // Handle password change form submission
         if ($passwordForm->isSubmitted() && $passwordForm->isValid()) {
             $currentPassword = $passwordForm->get('currentPassword')->getData();
@@ -110,6 +148,7 @@ class ProfileController extends AbstractController
         return $this->render('profile/index.html.twig', [
             'user' => $user,
             'profileForm' => $profileForm,
+            'avatarForm' => $avatarForm,
             'passwordForm' => $passwordForm,
         ]);
     }

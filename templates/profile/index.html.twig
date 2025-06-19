@@ -100,11 +100,11 @@
                             </div>
 
                             <!-- Profile Picture Upload - Available for all users -->
-                            {{ form_start(profileForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                            {{ form_start(avatarForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
                             <div class="mb-3">
-                                {{ form_label(profileForm.avatarFile, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
-                                {{ form_widget(profileForm.avatarFile) }}
-                                {{ form_errors(profileForm.avatarFile) }}
+                                {{ form_label(avatarForm.avatarFile, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                                {{ form_widget(avatarForm.avatarFile) }}
+                                {{ form_errors(avatarForm.avatarFile) }}
                                 <div class="form-text">Upload a profile picture (JPEG, PNG, or GIF, max 2MB)</div>
                             </div>
 
@@ -114,7 +114,7 @@
                                 </button>
                             </div>
                             
-                            {{ form_end(profileForm) }}
+                            {{ form_end(avatarForm) }}
                         {% endif %}
                     </div>
                 </div>
