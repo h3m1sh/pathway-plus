@@ -40,9 +40,9 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        {{ form_start(profileForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
-                        
                         {% if user.isAdmin() %}
+                            {{ form_start(profileForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                            
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     {{ form_label(profileForm.firstName, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
@@ -61,6 +61,22 @@
                                 {{ form_widget(profileForm.studentId) }}
                                 {{ form_errors(profileForm.studentId) }}
                             </div>
+
+                            <!-- Profile Picture Upload - Available for all users -->
+                            <div class="mb-3">
+                                {{ form_label(profileForm.avatarFile, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                                {{ form_widget(profileForm.avatarFile) }}
+                                {{ form_errors(profileForm.avatarFile) }}
+                                <div class="form-text">Upload a profile picture (JPEG, PNG, or GIF, max 2MB)</div>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle me-2"></i>Update Profile
+                                </button>
+                            </div>
+                            
+                            {{ form_end(profileForm) }}
                         {% else %}
                             <!-- Read-only display for students -->
                             <div class="row mb-3">
@@ -82,23 +98,24 @@
                                 <i class="bi bi-info-circle me-2"></i>
                                 <small>Personal information can only be updated by administrators. Please contact an administrator if you need to make changes.</small>
                             </div>
+
+                            <!-- Profile Picture Upload - Available for all users -->
+                            {{ form_start(profileForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                            <div class="mb-3">
+                                {{ form_label(profileForm.avatarFile, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                                {{ form_widget(profileForm.avatarFile) }}
+                                {{ form_errors(profileForm.avatarFile) }}
+                                <div class="form-text">Upload a profile picture (JPEG, PNG, or GIF, max 2MB)</div>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle me-2"></i>Update Profile Picture
+                                </button>
+                            </div>
+                            
+                            {{ form_end(profileForm) }}
                         {% endif %}
-
-                        <!-- Profile Picture Upload - Available for all users -->
-                        <div class="mb-3">
-                            {{ form_label(profileForm.avatarFile, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
-                            {{ form_widget(profileForm.avatarFile) }}
-                            {{ form_errors(profileForm.avatarFile) }}
-                            <div class="form-text">Upload a profile picture (JPEG, PNG, or GIF, max 2MB)</div>
-                        </div>
-
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle me-2"></i>Update Profile
-                            </button>
-                        </div>
-                        
-                        {{ form_end(profileForm) }}
                     </div>
                 </div>
             </div>
