@@ -1,6 +1,8 @@
 <?php
 // src/Controller/DashboardController.php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\User;
@@ -41,195 +43,280 @@ class DashboardController extends AbstractController
         SkillRepository $skillRepository,
         UserRepository $userRepository
     ): Response {
-        /** @var \App\Entity\User $user */
+        /** @var User $user */
         $user = $this->getUser();
 
         if (in_array('ROLE_ADMIN', $user->getRoles())) {
             return $this->redirectToRoute('admin_dashboard');
         }
 
-        $recentActivites = [
-            'credentials' => $studentProgressRepository->findRecentProgress($user, 30),
-            'skills' => $skillRepository->findRecentSkills($user, 30),
-            'profile' => $userRepository->findRecentProfileUpdates($user, 30),
-            'goals' => $userRepository->findRecentCareerGoals($user, 30),
-        ];
+        $studentProgress = $studentProgressRepository->findBy(['student' => $user], ['dateEarned' => 'DESC']);
+        $careerInterests = $user->getJobRoleInterests()->toArray();
+        $recentActivities = $this->getRecentActivities($user, $studentProgressRepository, $skillRepository, $userRepository);
+        $careerPaths = $this->buildCareerPaths($studentProgress, $careerInterests);
+        $stats = $this->calculateStats($studentProgress, $careerInterests);
 
-        // Convert objects to arrays and add type information
-        $allActivities = array_merge(
-            array_map(function($p) {
-                return [
-                    'id' => $p->getId(),
-                    'type' => 'credential',
-                    'name' => $p->getMicroCredential()->getName(),
-                    'dateEarned' => $p->getDateEarned(),
-                    'status' => $p->getStatus(),
-                    'badgeUrl' => $p->getMicroCredential()->getBadgeUrl(),
-                    'microCredential' => [
-                        'name' => $p->getMicroCredential()->getName(),
-                        'category' => $p->getMicroCredential()->getCategory(),
-                    ],
-                    'verifiedBy' => $p->getVerifiedBy(),
-                ];
-            }, $recentActivites['credentials']),
-            array_map(function($s) {
-                return [
-                    'id' => $s->getId(),
-                    'type' => 'skill',
-                    'name' => $s->getName(),
-                    'dateEarned' => $s->getCreatedAt(),
-                    'category' => $s->getCategory(),
-                ];
-            }, $recentActivites['skills']),
-            array_map(function($u) use ($user) {
-                return [
-                    'id' => $user->getId(),
-                    'type' => 'profile',
-                    'name' => 'Profile Update',
-                    'dateEarned' => $u['dateEarned'],
-                    'updateDescription' => $u['updateDescription'] ?? 'Profile updated',
-                ];
-            }, $recentActivites['profile']),
-            array_map(function($g) use ($user) {
-                return [
-                    'id' => $user->getId(),
-                    'type' => 'goal',
-                    'name' => 'Career Goal Update',
-                    'dateEarned' => $g['dateEarned'],
-                    'goalDescription' => $g['goalDescription'] ?? 'Career goal updated',
-                ];
-            }, $recentActivites['goals'])
-        );
+        return $this->render('dashboard/student.html.twig', [
+            'user' => $user,
+            'recentProgress' => $recentActivities,
+            'studentProgress' => $studentProgress,
+            'careerInterests' => $careerInterests,
+            'careerPaths' => $careerPaths,
+            'aiSuggestions' => $this->generateAiSuggestions($user, $studentProgress, $careerInterests),
+            'skillRecommendations' => $this->generateSkillRecommendations($user, $studentProgress, $careerInterests),
+            'stats' => $stats
+        ]);
+    }
 
-        usort($allActivities, fn($a, $b) => $b['dateEarned'] <=> $a['dateEarned']);
-
+    #[Route('/dashboard/suggestions/refresh', name: 'app_dashboard_refresh_suggestions', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function refreshSuggestions(
+        Request $request,
+        StudentProgressRepository $studentProgressRepository
+    ): JsonResponse {
+        /** @var User $user */
+        $user = $this->getUser();
         $studentProgress = $studentProgressRepository->findBy(['student' => $user], ['dateEarned' => 'DESC']);
         $careerInterests = $user->getJobRoleInterests()->toArray();
 
-        $totalCredentials = count($studentProgress);
-        $completedCredentials = count(array_filter($studentProgress, fn($p) => $p->isCompleted()));
-        $completionRate = $totalCredentials > 0 ? round(($completedCredentials / $totalCredentials) * 100) : 0;
+        $suggestions = $this->generateAiSuggestions($user, $studentProgress, $careerInterests);
 
+        return new JsonResponse([
+            'success' => true,
+            'suggestions' => $suggestions
+        ]);
+    }
+
+    #[Route('/dashboard/preferences/save', name: 'app_dashboard_save_preferences', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function savePreferences(Request $request): JsonResponse
+    {
+        try {
+            $data = json_decode($request->getContent(), true);
+            // Store preferences in session for now
+            $request->getSession()->set('dashboard_preferences', $data);
+
+            return new JsonResponse(['success' => true]);
+        } catch (\Exception $e) {
+            return new JsonResponse(['success' => false, 'message' => 'Failed to save preferences']);
+        }
+    }
+
+    #[Route('/dashboard/preferences/load', name: 'app_dashboard_load_preferences', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
+    public function loadPreferences(Request $request): JsonResponse
+    {
+        try {
+            $preferences = $request->getSession()->get('dashboard_preferences', []);
+
+            return new JsonResponse([
+                'success' => true,
+                'preferences' => $preferences
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse(['success' => false, 'message' => 'Failed to load preferences']);
+        }
+    }
+
+    #[Route('/admin', name: 'admin_dashboard')]
+    #[IsGranted('ROLE_ADMIN')]
+    public function adminDashboard(
+        UserRepository $userRepository,
+        SkillRepository $skillRepository,
+        JobRoleRepository $jobRoleRepository,
+        MicroCredentialRepository $microCredentialRepository
+    ): Response {
+        $stats = [
+            'users' => [
+                'total' => $userRepository->count([]),
+                'students' => $userRepository->count(['roles' => ['ROLE_STUDENT']]),
+                'admins' => $userRepository->count(['roles' => ['ROLE_ADMIN']]),
+                'active' => $userRepository->count(['isActive' => true]),
+            ],
+            'content' => [
+                'skills' => $skillRepository->count([]),
+                'jobRoles' => $jobRoleRepository->count([]),
+                'microCredentials' => $microCredentialRepository->count([]),
+            ],
+        ];
+        $users = $userRepository->findBy([], ['createdAt' => 'DESC'], 10);
+        $skills = $skillRepository->findBy([], ['createdAt' => 'DESC'], 10);
+        $recent = [
+            'users' => $users,
+            'skills' => $skills,
+        ];
+        return $this->render('admin/dashboard/index.html.twig', [
+            'stats' => $stats,
+            'user' => $this->getUser(),
+            'recent' => $recent,
+        ]);
+    }
+
+    #[Route('/profile', name: 'app_profile')]
+    #[IsGranted('ROLE_USER')]
+    public function profile(): Response
+    {
+        return $this->redirectToRoute('app_profile');
+    }
+
+    private function getRecentActivities(User $user, StudentProgressRepository $progressRepo, SkillRepository $skillRepo, UserRepository $userRepo): array
+    {
+        $activities = [
+            'credentials' => $progressRepo->findRecentProgress($user, 30),
+            'skills' => $skillRepo->findRecentSkills($user, 30),
+            'profile' => $userRepo->findRecentProfileUpdates($user, 30),
+            'goals' => $userRepo->findRecentCareerGoals($user, 30),
+        ];
+
+        $allActivities = array_merge(
+            array_map(fn($p) => [
+                'id' => $p->getId(),
+                'type' => 'credential',
+                'name' => $p->getMicroCredential()->getName(),
+                'dateEarned' => $p->getDateEarned(),
+                'status' => $p->getStatus(),
+                'microCredential' => [
+                    'name' => $p->getMicroCredential()->getName(),
+                    'category' => $p->getMicroCredential()->getCategory(),
+                ],
+                'verifiedBy' => $p->getVerifiedBy(),
+            ], $activities['credentials']),
+            array_map(fn($s) => [
+                'id' => $s->getId(),
+                'type' => 'skill',
+                'name' => $s->getName(),
+                'dateEarned' => $s->getCreatedAt(),
+                'category' => $s->getCategory(),
+            ], $activities['skills']),
+            array_map(fn($u) => [
+                'id' => $user->getId(),
+                'type' => 'profile',
+                'name' => 'Profile Update',
+                'dateEarned' => $u['dateEarned'],
+                'updateDescription' => $u['updateDescription'] ?? 'Profile updated',
+            ], $activities['profile']),
+            array_map(fn($g) => [
+                'id' => $user->getId(),
+                'type' => 'goal',
+                'name' => 'Career Goal Update',
+                'dateEarned' => $g['dateEarned'],
+                'goalDescription' => $g['goalDescription'] ?? 'Career goal updated',
+            ], $activities['goals'])
+        );
+
+        usort($allActivities, fn($a, $b) => $b['dateEarned'] <=> $a['dateEarned']);
+        return $allActivities;
+    }
+
+    private function buildCareerPaths(array $studentProgress, array $careerInterests): array
+    {
         $careerPaths = [];
+        $earnedSkills = $this->getEarnedSkills($studentProgress);
+
         foreach ($careerInterests as $jobRole) {
             $requiredSkills = $jobRole->getSkills();
             $totalSkills = count($requiredSkills);
-
-            $earnedSkills = [];
-            foreach ($studentProgress as $progress) {
-                if ($progress->isCompleted()) {
-                    foreach ($progress->getMicroCredential()->getSkills() as $skill) {
-                        $earnedSkills[$skill->getId()] = true;
-                    }
-                }
-            }
-            $completedSkills = array_filter($requiredSkills->toArray(), function($skill) use ($earnedSkills) {
-                return isset($earnedSkills[$skill->getId()]);
-            });
-
+            $completedSkills = array_filter($requiredSkills->toArray(), fn($skill) => isset($earnedSkills[$skill->getId()]));
             $completionPercentage = $totalSkills > 0 ? round((count($completedSkills) / $totalSkills) * 100) : 0;
-
-            $missingSkills = array_filter($requiredSkills->toArray(), function($skill) use ($earnedSkills) {
-                return !isset($earnedSkills[$skill->getId()]);
-            });
 
             $careerPaths[] = [
                 'jobRole' => $jobRole,
                 'totalSkills' => $totalSkills,
                 'completedSkills' => count($completedSkills),
                 'completionPercentage' => $completionPercentage,
-                'missingSkills' => $missingSkills,
+                'missingSkills' => array_filter($requiredSkills->toArray(), fn($skill) => !isset($earnedSkills[$skill->getId()])),
                 'industry' => $jobRole->getIndustry(),
                 'salaryRange' => $jobRole->getSalaryRange(),
                 'yearsOfTraining' => $jobRole->getYearsOfTraining(),
             ];
         }
 
-        // Generate AI suggestions
-        $aiSuggestions = $this->generateAiSuggestions($user, $studentProgress, $careerInterests);
-        
-        // Generate skill recommendations
-        $skillRecommendations = $this->generateSkillRecommendations($user, $studentProgress, $careerInterests);
-
-        return $this->render('dashboard/student.html.twig', [
-            'user' => $user,
-            'recentProgress' => $allActivities,
-            'studentProgress' => $studentProgress,
-            'careerInterests' => $careerInterests,
-            'careerPaths' => $careerPaths,
-            'aiSuggestions' => $aiSuggestions,
-            'skillRecommendations' => $skillRecommendations,
-            'stats' => [
-                'totalCredentials' => $totalCredentials,
-                'completedCredentials' => $completedCredentials,
-                'completionRate' => $completionRate,
-                'careerGoals' => count($careerInterests),
-            ]
-        ]);
+        return $careerPaths;
     }
 
-    /**
-     * Generate AI-powered suggestions for the user
-     */
+    private function getEarnedSkills(array $studentProgress): array
+    {
+        $earnedSkills = [];
+        foreach ($studentProgress as $progress) {
+            if ($progress->isCompleted()) {
+                foreach ($progress->getMicroCredential()->getSkills() as $skill) {
+                    $earnedSkills[$skill->getId()] = true;
+                }
+            }
+        }
+        return $earnedSkills;
+    }
+
+    private function calculateStats(array $studentProgress, array $careerInterests): array
+    {
+        $totalCredentials = count($studentProgress);
+        $completedCredentials = count(array_filter($studentProgress, fn($p) => $p->isCompleted()));
+        $completionRate = $totalCredentials > 0 ? round(($completedCredentials / $totalCredentials) * 100) : 0;
+
+        return [
+            'totalCredentials' => $totalCredentials,
+            'completedCredentials' => $completedCredentials,
+            'completionRate' => $completionRate,
+            'careerGoals' => count($careerInterests),
+        ];
+    }
+
     private function generateAiSuggestions(User $user, array $studentProgress, array $careerInterests): array
     {
         try {
-            // Extract user skills from completed credentials
-            $userSkills = [];
-            $earnedCredentials = [];
-            
-            foreach ($studentProgress as $progress) {
-                if ($progress->isCompleted()) {
-                    $microCredential = $progress->getMicroCredential();
-                    $earnedCredentials[] = [
-                        'title' => $microCredential->getName(),
-                        'category' => $microCredential->getCategory(),
-                        'dateEarned' => $progress->getDateEarned()->format('Y-m-d')
-                    ];
-                    
-                    foreach ($microCredential->getSkills() as $skill) {
-                        $userSkills[] = [
-                            'name' => $skill->getName(),
-                            'category' => $skill->getCategory(),
-                            'difficulty' => $skill->getDifficulty()
-                        ];
-                    }
-                }
-            }
+            $userSkills = $this->extractUserSkills($studentProgress);
+            $interests = array_map(fn($interest) => [
+                'title' => $interest->getTitle(),
+                'industry' => $interest->getIndustry(),
+                'salaryRange' => $interest->getSalaryRange()
+            ], $careerInterests);
+            $earnedCredentials = $this->extractEarnedCredentials($studentProgress);
 
-            // Extract career interests
-            $interests = array_map(function($interest) {
-                return [
-                    'title' => $interest->getTitle(),
-                    'industry' => $interest->getIndustry(),
-                    'salaryRange' => $interest->getSalaryRange()
-                ];
-            }, $careerInterests);
-
-            // Generate AI suggestions
             $suggestions = $this->aiService->generateCareerSuggestions($userSkills, $interests, $earnedCredentials);
             
-            // If AI fails, return default suggestions
-            if (isset($suggestions['error']) && $suggestions['error']) {
-                return $this->getDefaultSuggestions($userSkills, $interests, $earnedCredentials);
-            }
-
-            return $suggestions;
+            return isset($suggestions['error']) && $suggestions['error'] 
+                ? $this->getDefaultSuggestions() 
+                : $suggestions;
         } catch (\Exception $e) {
-            // Log error and return default suggestions
-            return $this->getDefaultSuggestions([], [], []);
+            return $this->getDefaultSuggestions();
         }
     }
 
-    /**
-     * Generate default suggestions when AI is unavailable
-     */
-    private function getDefaultSuggestions(array $userSkills, array $interests, array $earnedCredentials): array
+    private function extractUserSkills(array $studentProgress): array
     {
-        $skillCount = count($userSkills);
-        $interestCount = count($interests);
-        $credentialCount = count($earnedCredentials);
+        $userSkills = [];
+        foreach ($studentProgress as $progress) {
+            if ($progress->isCompleted()) {
+                foreach ($progress->getMicroCredential()->getSkills() as $skill) {
+                    $userSkills[] = [
+                        'name' => $skill->getName(),
+                        'category' => $skill->getCategory(),
+                        'difficulty' => $skill->getDifficulty()
+                    ];
+                }
+            }
+        }
+        return $userSkills;
+    }
 
+    private function extractEarnedCredentials(array $studentProgress): array
+    {
+        $earnedCredentials = [];
+        foreach ($studentProgress as $progress) {
+            if ($progress->isCompleted()) {
+                $microCredential = $progress->getMicroCredential();
+                $earnedCredentials[] = [
+                    'title' => $microCredential->getName(),
+                    'category' => $microCredential->getCategory(),
+                    'dateEarned' => $progress->getDateEarned()->format('Y-m-d')
+                ];
+            }
+        }
+        return $earnedCredentials;
+    }
+
+    private function getDefaultSuggestions(): array
+    {
         return [
             'suggestions' => [
                 [
@@ -249,240 +336,74 @@ class DashboardController extends AbstractController
                     'growth_potential' => 'High'
                 ]
             ],
-            'reasoning' => 'Focus on building a strong foundation of skills and credentials to advance your career goals.',
             'next_steps' => [
-                'Complete 2-3 more micro-credentials this month',
-                'Explore new skill areas related to your interests',
-                'Network with professionals in your target industry'
-            ]
+                'Complete at least 3 more micro-credentials',
+                'Focus on skills that align with your career interests',
+                'Consider taking advanced level credentials'
+            ],
+            'reasoning' => 'Based on your current skill set and career interests, we recommend focusing on continuous learning and skill development.'
         ];
     }
 
-    #[Route('/dashboard/suggestions/refresh', name: 'app_dashboard_refresh_suggestions', methods: ['POST'])]
-    #[IsGranted('ROLE_USER')]
-    public function refreshSuggestions(Request $request): JsonResponse
-    {
-        /** @var \App\Entity\User $user */
-        $user = $this->getUser();
-        
-        try {
-            $studentProgressRepository = $this->container->get(StudentProgressRepository::class);
-            $studentProgress = $studentProgressRepository->findBy(['student' => $user], ['dateEarned' => 'DESC']);
-            $careerInterests = $user->getJobRoleInterests()->toArray();
-            
-            $suggestions = $this->generateAiSuggestions($user, $studentProgress, $careerInterests);
-            
-            return $this->json([
-                'success' => true,
-                'suggestions' => $suggestions
-            ]);
-        } catch (\Exception $e) {
-            return $this->json([
-                'success' => false,
-                'error' => 'Failed to refresh suggestions'
-            ], 500);
-        }
-    }
-
-    #[Route('/dashboard/preferences/save', name: 'app_dashboard_save_preferences', methods: ['POST'])]
-    #[IsGranted('ROLE_USER')]
-    public function savePreferences(Request $request): JsonResponse
-    {
-        /** @var \App\Entity\User $user */
-        $user = $this->getUser();
-        
-        $data = json_decode($request->getContent(), true);
-        
-        if (!$data) {
-            return $this->json(['success' => false, 'message' => 'Invalid data'], 400);
-        }
-        
-        try {
-            // Store preferences in user entity (you might want to add a preferences field)
-            // For now, we'll store in session
-            $request->getSession()->set('dashboard_preferences_' . $user->getId(), $data);
-            
-            return $this->json([
-                'success' => true,
-                'message' => 'Preferences saved successfully'
-            ]);
-        } catch (\Exception $e) {
-            return $this->json([
-                'success' => false,
-                'message' => 'Failed to save preferences'
-            ], 500);
-        }
-    }
-
-    #[Route('/dashboard/preferences/load', name: 'app_dashboard_load_preferences', methods: ['GET'])]
-    #[IsGranted('ROLE_USER')]
-    public function loadPreferences(Request $request): JsonResponse
-    {
-        /** @var \App\Entity\User $user */
-        $user = $this->getUser();
-        
-        try {
-            $preferences = $request->getSession()->get('dashboard_preferences_' . $user->getId(), null);
-            
-            return $this->json([
-                'success' => true,
-                'preferences' => $preferences
-            ]);
-        } catch (\Exception $e) {
-            return $this->json([
-                'success' => false,
-                'message' => 'Failed to load preferences'
-            ], 500);
-        }
-    }
-
-    #[Route('/admin', name: 'admin_dashboard')]
-    #[IsGranted('ROLE_ADMIN')]
-    public function adminDashboard(
-        UserRepository $userRepository,
-        SkillRepository $skillRepository,
-        JobRoleRepository $jobRoleRepository,
-        MicroCredentialRepository $microCredentialRepository
-    ): Response {
-        $totalUsers = $userRepository->count([]);
-        $totalSkills = $skillRepository->count([]);
-        $totalJobRoles = $jobRoleRepository->count([]);
-        $totalMicroCredentials = $microCredentialRepository->count([]);
-
-        $recentUsers = $userRepository->findBy([], ['createdAt' => 'DESC'], 5);
-        $recentSkills = $skillRepository->findBy([], ['createdAt' => 'DESC'], 5);
-        $recentJobRoles = $jobRoleRepository->findBy([], ['createdAt' => 'DESC'], 5);
-        $recentMicroCredentials = $microCredentialRepository->findBy([], ['createdAt' => 'DESC'], 5);
-
-        return $this->render('admin/dashboard/index.html.twig', [
-            'totalUsers' => $totalUsers,
-            'totalSkills' => $totalSkills,
-            'totalJobRoles' => $totalJobRoles,
-            'totalMicroCredentials' => $totalMicroCredentials,
-            'recentUsers' => $recentUsers,
-            'recentSkills' => $recentSkills,
-            'recentJobRoles' => $recentJobRoles,
-            'recentMicroCredentials' => $recentMicroCredentials,
-        ]);
-    }
-
-    #[Route('/profile', name: 'app_profile')]
-    #[IsGranted('ROLE_USER')]
-    public function profile(): Response
-    {
-        return $this->redirectToRoute('app_profile_index');
-    }
-
-    /**
-     * Generate skill recommendations for the user
-     */
     private function generateSkillRecommendations(User $user, array $studentProgress, array $careerInterests): array
     {
         try {
-            // Extract user skills from completed credentials
-            $userSkills = [];
-            $earnedCredentials = [];
+            $userSkills = $this->extractUserSkills($studentProgress);
+            $interests = array_map(fn($interest) => [
+                'title' => $interest->getTitle(),
+                'industry' => $interest->getIndustry(),
+                'salaryRange' => $interest->getSalaryRange()
+            ], $careerInterests);
+            $earnedCredentials = $this->extractEarnedCredentials($studentProgress);
+
+            $recommendations = $this->aiService->generateSkillRecommendations($userSkills, $interests, $earnedCredentials);
             
-            foreach ($studentProgress as $progress) {
-                if ($progress->isCompleted()) {
-                    $microCredential = $progress->getMicroCredential();
-                    $earnedCredentials[] = [
-                        'title' => $microCredential->getName(),
-                        'category' => $microCredential->getCategory(),
-                        'dateEarned' => $progress->getDateEarned()->format('Y-m-d')
-                    ];
-                    
-                    foreach ($microCredential->getSkills() as $skill) {
-                        $userSkills[] = [
-                            'name' => $skill->getName(),
-                            'category' => $skill->getCategory(),
-                            'difficulty' => $skill->getDifficulty()
-                        ];
-                    }
-                }
-            }
-
-            // Extract career interests as target roles
-            $targetRoles = array_map(function($interest) {
-                return [
-                    'title' => $interest->getTitle(),
-                    'industry' => $interest->getIndustry(),
-                    'salaryRange' => $interest->getSalaryRange()
-                ];
-            }, $careerInterests);
-
-            // Extract career interests
-            $interests = array_map(function($interest) {
-                return [
-                    'title' => $interest->getTitle(),
-                    'industry' => $interest->getIndustry(),
-                    'salaryRange' => $interest->getSalaryRange()
-                ];
-            }, $careerInterests);
-
-            // Generate AI skill recommendations
-            $recommendations = $this->aiService->generateSkillRecommendations($userSkills, $interests, $earnedCredentials, $targetRoles);
-            
-            // If AI fails, return default recommendations
-            if (isset($recommendations['error']) && $recommendations['error']) {
-                return $this->getDefaultSkillRecommendations($userSkills, $interests, $earnedCredentials);
-            }
-
-            return $recommendations;
+            return isset($recommendations['error']) && $recommendations['error'] 
+                ? $this->getDefaultSkillRecommendations() 
+                : $recommendations;
         } catch (\Exception $e) {
-            // Log error and return default recommendations
-            return $this->getDefaultSkillRecommendations([], [], []);
+            return $this->getDefaultSkillRecommendations();
         }
     }
 
-    /**
-     * Generate default skill recommendations when AI is unavailable
-     */
-    private function getDefaultSkillRecommendations(array $userSkills, array $interests, array $earnedCredentials): array
+    private function getDefaultSkillRecommendations(): array
     {
-        $skillCount = count($userSkills);
-        $interestCount = count($interests);
-
         return [
             'recommendations' => [
                 [
-                    'skill' => 'Communication Skills',
-                    'category' => 'Soft Skills',
+                    'skill' => 'Project Management',
                     'importance' => 'High',
-                    'reasoning' => 'Essential for career advancement and team collaboration',
-                    'difficulty' => 'Beginner',
-                    'estimated_time' => '2-3 months',
-                    'related_credentials' => ['Communication Certificate', 'Leadership Training'],
+                    'reasoning' => 'Essential for career advancement and leadership roles.',
+                    'estimated_time' => '3-6 months',
+                    'difficulty' => 'Intermediate',
                     'market_demand' => 'High',
-                    'salary_impact' => 'High'
+                    'salary_impact' => '+15-25%',
+                    'related_credentials' => ['Project Management Fundamentals', 'Agile Methodology']
                 ],
                 [
                     'skill' => 'Data Analysis',
-                    'category' => 'Technical Skills',
                     'importance' => 'Medium',
-                    'reasoning' => 'Valuable across many industries and roles',
-                    'difficulty' => 'Intermediate',
-                    'estimated_time' => '4-6 months',
-                    'related_credentials' => ['Data Science Certificate', 'Analytics Training'],
-                    'market_demand' => 'High',
-                    'salary_impact' => 'High'
+                    'reasoning' => 'Increasingly valuable across all industries.',
+                    'estimated_time' => '2-4 months',
+                    'difficulty' => 'Beginner',
+                    'market_demand' => 'Very High',
+                    'salary_impact' => '+10-20%',
+                    'related_credentials' => ['Data Analysis Basics', 'Excel Advanced']
                 ]
             ],
-            'priority_skills' => ['Communication Skills', 'Data Analysis', 'Problem Solving'],
+            'priority_skills' => ['Project Management', 'Data Analysis', 'Communication', 'Leadership', 'Problem Solving'],
             'learning_paths' => [
                 [
-                    'path_name' => 'Professional Development',
-                    'description' => 'Build essential workplace skills',
-                    'skills_sequence' => ['Communication Skills', 'Leadership', 'Project Management'],
-                    'total_duration' => '6 months',
-                    'difficulty_progression' => 'Beginner to Intermediate'
-                ]
-            ],
-            'skill_gaps' => [
+                    'path_name' => 'Leadership Development',
+                    'description' => 'Progressive path from team member to leader',
+                    'total_duration' => '12 months',
+                    'difficulty_progression' => 'Beginner to Advanced'
+                ],
                 [
-                    'category' => 'Soft Skills',
-                    'missing_skills' => ['Communication', 'Leadership'],
-                    'impact' => 'High'
+                    'path_name' => 'Technical Excellence',
+                    'description' => 'Deep dive into technical skills and methodologies',
+                    'total_duration' => '18 months',
+                    'difficulty_progression' => 'Intermediate to Expert'
                 ]
             ]
         ];
@@ -490,27 +411,20 @@ class DashboardController extends AbstractController
 
     #[Route('/dashboard/skill-recommendations/refresh', name: 'app_dashboard_refresh_skill_recommendations', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
-    public function refreshSkillRecommendations(Request $request): JsonResponse
-    {
-        /** @var \App\Entity\User $user */
+    public function refreshSkillRecommendations(
+        Request $request,
+        StudentProgressRepository $studentProgressRepository
+    ): JsonResponse {
+        /** @var User $user */
         $user = $this->getUser();
-        
-        try {
-            $studentProgressRepository = $this->container->get(StudentProgressRepository::class);
-            $studentProgress = $studentProgressRepository->findBy(['student' => $user], ['dateEarned' => 'DESC']);
-            $careerInterests = $user->getJobRoleInterests()->toArray();
-            
-            $recommendations = $this->generateSkillRecommendations($user, $studentProgress, $careerInterests);
-            
-            return $this->json([
-                'success' => true,
-                'recommendations' => $recommendations
-            ]);
-        } catch (\Exception $e) {
-            return $this->json([
-                'success' => false,
-                'error' => 'Failed to refresh skill recommendations'
-            ], 500);
-        }
+        $studentProgress = $studentProgressRepository->findBy(['student' => $user], ['dateEarned' => 'DESC']);
+        $careerInterests = $user->getJobRoleInterests()->toArray();
+
+        $recommendations = $this->generateSkillRecommendations($user, $studentProgress, $careerInterests);
+
+        return new JsonResponse([
+            'success' => true,
+            'recommendations' => $recommendations
+        ]);
     }
 }
