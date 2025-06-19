@@ -321,7 +321,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, JobRole>
      */
-
     public function getJobRoleInterests(): Collection
     {
         return $this->jobRoleInterests;

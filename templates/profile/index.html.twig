@@ -1,0 +1,326 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profile - {{ user.fullName }}{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col">
+                <div class="d-flex align-items-center">
+                    {% if user.avatarUrl %}
+                        <img src="{{ user.avatarUrl }}" alt="{{ user.fullName }}" class="rounded-circle me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 80px; height: 80px; font-size: 24px;">
+                            {{ user.firstName|slice(0,1) }}{{ user.lastName|slice(0,1) }}
+                        </div>
+                    {% endif %}
+                    <div>
+                        <h1 class="h3 mb-1">{{ user.fullName }}</h1>
+                        <p class="text-muted mb-0">
+                            <i class="bi bi-envelope me-1"></i>{{ user.email }}
+                            {% if user.isAdmin() %}
+                                <span class="badge bg-primary ms-2">Administrator</span>
+                            {% else %}
+                                <span class="badge bg-success ms-2">Student</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Personal Information Section -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-person-lines-fill me-2"></i>Personal Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(profileForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(profileForm.firstName, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                                {{ form_widget(profileForm.firstName) }}
+                                {{ form_errors(profileForm.firstName) }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form_label(profileForm.lastName, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                                {{ form_widget(profileForm.lastName) }}
+                                {{ form_errors(profileForm.lastName) }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(profileForm.studentId, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                            {{ form_widget(profileForm.studentId) }}
+                            {{ form_errors(profileForm.studentId) }}
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-2"></i>Update Profile
+                            </button>
+                        </div>
+                        
+                        {{ form_end(profileForm) }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Career Interests Section -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-briefcase me-2"></i>Career Interests
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">Current Interests</label>
+                            <div id="currentInterests" class="mb-3">
+                                {% if user.jobRoleInterests|length > 0 %}
+                                    {% for interest in user.jobRoleInterests %}
+                                        <span class="badge bg-primary me-2 mb-2 interest-tag" data-id="{{ interest.id }}">
+                                            {{ interest.title }}
+                                            <button type="button" class="btn-close btn-close-white ms-2" 
+                                                    onclick="removeInterest({{ interest.id }})" 
+                                                    style="font-size: 0.6em;"></button>
+                                        </span>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="text-muted">No career interests selected yet.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="addInterest" class="form-label fw-medium">Add New Interest</label>
+                            <select id="addInterest" class="form-select">
+                                <option value="">Select a career interest...</option>
+                                {% for jobRole in availableJobRoles %}
+                                    {% if jobRole not in user.jobRoleInterests %}
+                                        <option value="{{ jobRole.id }}">{{ jobRole.title }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="button" class="btn btn-outline-primary" onclick="saveInterests()">
+                                <i class="bi bi-save me-2"></i>Save Interests
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Password Change Section -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-shield-lock me-2"></i>Change Password
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(passwordForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                        
+                        <div class="mb-3">
+                            {{ form_label(passwordForm.currentPassword, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                            {{ form_widget(passwordForm.currentPassword) }}
+                            {{ form_errors(passwordForm.currentPassword) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(passwordForm.newPassword.first, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                            {{ form_widget(passwordForm.newPassword.first) }}
+                            {{ form_errors(passwordForm.newPassword.first) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(passwordForm.newPassword.second, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                            {{ form_widget(passwordForm.newPassword.second) }}
+                            {{ form_errors(passwordForm.newPassword.second) }}
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-key me-2"></i>Change Password
+                            </button>
+                        </div>
+                        
+                        {{ form_end(passwordForm) }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Information Section -->
+            <div class="col-lg-6 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-info-circle me-2"></i>Account Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-sm-4 fw-medium text-muted">User ID:</div>
+                            <div class="col-sm-8">
+                                <code class="text-primary">{{ user.id }}</code>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 fw-medium text-muted">Email:</div>
+                            <div class="col-sm-8">
+                                <a href="mailto:{{ user.email }}" class="text-decoration-none">{{ user.email }}</a>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 fw-medium text-muted">Role:</div>
+                            <div class="col-sm-8">
+                                {% if user.isAdmin() %}
+                                    <span class="badge bg-primary">Administrator</span>
+                                {% else %}
+                                    <span class="badge bg-success">Student</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 fw-medium text-muted">Member Since:</div>
+                            <div class="col-sm-8">{{ user.createdAt|date('M j, Y') }}</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 fw-medium text-muted">Last Updated:</div>
+                            <div class="col-sm-8">
+                                {% if user.updatedAt %}
+                                    {{ user.updatedAt|date('M j, Y g:i A') }}
+                                {% else %}
+                                    Never
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 fw-medium text-muted">Last Login:</div>
+                            <div class="col-sm-8">
+                                {% if user.lastLoginAt %}
+                                    {{ user.lastLoginAt|date('M j, Y g:i A') }}
+                                {% else %}
+                                    Never
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4 fw-medium text-muted">Account Status:</div>
+                            <div class="col-sm-8">
+                                {% if user.isActive %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Inactive</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Career interests management
+        let currentInterests = {{ user.jobRoleInterests|map(interest => interest.id)|json_encode|raw }};
+        
+        function removeInterest(interestId) {
+            currentInterests = currentInterests.filter(id => id !== interestId);
+            updateInterestsDisplay();
+            updateAddInterestOptions();
+        }
+        
+        function addInterest(interestId, interestTitle) {
+            if (!currentInterests.includes(interestId)) {
+                currentInterests.push(interestId);
+                updateInterestsDisplay();
+                updateAddInterestOptions();
+            }
+        }
+        
+        function updateInterestsDisplay() {
+            const container = document.getElementById('currentInterests');
+            if (currentInterests.length === 0) {
+                container.innerHTML = '<p class="text-muted">No career interests selected yet.</p>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            currentInterests.forEach(interestId => {
+                const option = document.querySelector(`#addInterest option[value="${interestId}"]`);
+                if (option) {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge bg-primary me-2 mb-2 interest-tag';
+                    badge.setAttribute('data-id', interestId);
+                    badge.innerHTML = `
+                        ${option.textContent}
+                        <button type="button" class="btn-close btn-close-white ms-2" 
+                                onclick="removeInterest(${interestId})" 
+                                style="font-size: 0.6em;"></button>
+                    `;
+                    container.appendChild(badge);
+                }
+            });
+        }
+        
+        function updateAddInterestOptions() {
+            const select = document.getElementById('addInterest');
+            const options = select.querySelectorAll('option');
+            options.forEach(option => {
+                if (option.value) {
+                    option.style.display = currentInterests.includes(parseInt(option.value)) ? 'none' : '';
+                }
+            });
+        }
+        
+        function saveInterests() {
+            const formData = new FormData();
+            formData.append('interests', JSON.stringify(currentInterests));
+            
+            fetch('{{ path('app_profile') }}', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    const alert = document.createElement('div');
+                    alert.className = 'alert alert-success alert-dismissible fade show';
+                    alert.innerHTML = `
+                        Career interests updated successfully!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    document.querySelector('.container').insertBefore(alert, document.querySelector('.row'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        
+        // Handle add interest selection
+        document.getElementById('addInterest').addEventListener('change', function() {
+            if (this.value) {
+                addInterest(parseInt(this.value), this.options[this.selectedIndex].text);
+                this.value = '';
+            }
+        });
+    </script>
+{% endblock %} 
