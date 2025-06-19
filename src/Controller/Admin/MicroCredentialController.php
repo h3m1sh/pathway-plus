@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\MicroCredential;
@@ -7,6 +9,7 @@ use App\Form\MicroCredentialForm;
 use App\Repository\MicroCredentialRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,7 +45,6 @@ final class MicroCredentialController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $this->handleFileUpload($form, $microCredential);
 
             $entityManager->persist($microCredential);
@@ -59,15 +61,16 @@ final class MicroCredentialController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_admin_micro_credential_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, MicroCredential $microCredential, EntityManagerInterface $entityManager): Response
-    {
+    public function edit(
+        Request $request, 
+        MicroCredential $microCredential, 
+        EntityManagerInterface $entityManager
+    ): Response {
         $form = $this->createForm(MicroCredentialForm::class, $microCredential);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Handle file upload
             $this->handleFileUpload($form, $microCredential);
-
             $entityManager->flush();
 
             $this->addFlash('success', 'Micro-credential updated successfully!');
@@ -81,8 +84,11 @@ final class MicroCredentialController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_admin_micro_credential_delete', methods: ['DELETE'])]
-    public function delete(Request $request, MicroCredential $microCredential, EntityManagerInterface $entityManager): Response
-    {
+    public function delete(
+        Request $request, 
+        MicroCredential $microCredential, 
+        EntityManagerInterface $entityManager
+    ): Response {
         if ($this->isCsrfTokenValid('delete'.$microCredential->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($microCredential);
             $entityManager->flush();
@@ -91,9 +97,7 @@ final class MicroCredentialController extends AbstractController
         return $this->redirectToRoute('app_admin_micro_credential_index', [], Response::HTTP_SEE_OTHER);
     }
 
-
-
-    public function handleFileUpload(\Symfony\Component\Form\FormInterface $form, MicroCredential $microCredential): void
+    private function handleFileUpload(FormInterface $form, MicroCredential $microCredential): void
     {
         $badgeFile = $form->get('badgeFile')->getData();
         if ($badgeFile) {

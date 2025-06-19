@@ -36,112 +36,37 @@ class ProfileController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        $isAdmin = $user->isAdmin();
         
-        // Handle AJAX request for career interests
         if ($request->isXmlHttpRequest() && $request->request->has('interests')) {
             return $this->handleCareerInterestsUpdate($request, $user);
         }
         
-        // Create profile form
         $profileForm = $this->createForm(ProfileFormType::class, $user, [
-            'is_admin' => $isAdmin
+            'is_admin' => $user->isAdmin()
         ]);
         $profileForm->handleRequest($request);
         
-        // Create a separate avatar-only form for students
         $avatarForm = $this->createForm(ProfileFormType::class, $user, [
             'is_admin' => false,
             'avatar_only' => true
         ]);
         $avatarForm->handleRequest($request);
         
-        // Create password change form
         $passwordForm = $this->createForm(PasswordChangeFormType::class);
         $passwordForm->handleRequest($request);
         
-        // Handle profile form submission
         if ($profileForm->isSubmitted() && $profileForm->isValid()) {
-            // Handle file upload
-            $avatarFile = $profileForm->get('avatarFile')->getData();
-            if ($avatarFile) {
-                $originalFilename = pathinfo($avatarFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $this->slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$avatarFile->guessExtension();
-                
-                try {
-                    $avatarFile->move(
-                        $this->getParameter('avatars_directory'),
-                        $newFilename
-                    );
-                    
-                    // Update user's avatar URL
-                    $user->setAvatarUrl('/uploads/avatars/' . $newFilename);
-                } catch (\Exception $e) {
-                    $this->addFlash('error', 'Failed to upload profile picture.');
-                }
-            }
-            
-            $user->setUpdatedAt(new \DateTimeImmutable());
-            $user->setLastProfileUpdate('Profile information updated');
-            
-            $this->entityManager->flush();
-            
-            $this->addFlash('success', 'Profile updated successfully!');
+            $this->handleProfileUpdate($profileForm, $user);
             return $this->redirectToRoute('app_profile');
         }
         
-        // Handle avatar form submission (for students)
         if ($avatarForm->isSubmitted() && $avatarForm->isValid()) {
-            // Handle file upload
-            $avatarFile = $avatarForm->get('avatarFile')->getData();
-            if ($avatarFile) {
-                $originalFilename = pathinfo($avatarFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $this->slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$avatarFile->guessExtension();
-                
-                try {
-                    $avatarFile->move(
-                        $this->getParameter('avatars_directory'),
-                        $newFilename
-                    );
-                    
-                    // Update user's avatar URL
-                    $user->setAvatarUrl('/uploads/avatars/' . $newFilename);
-                    $user->setUpdatedAt(new \DateTimeImmutable());
-                    $user->setLastProfileUpdate('Profile picture updated');
-                    
-                    $this->entityManager->flush();
-                    
-                    $this->addFlash('success', 'Profile picture updated successfully!');
-                } catch (\Exception $e) {
-                    $this->addFlash('error', 'Failed to upload profile picture.');
-                }
-            }
-            
+            $this->handleAvatarUpdate($avatarForm, $user);
             return $this->redirectToRoute('app_profile');
         }
         
-        // Handle password change form submission
         if ($passwordForm->isSubmitted() && $passwordForm->isValid()) {
-            $currentPassword = $passwordForm->get('currentPassword')->getData();
-            $newPassword = $passwordForm->get('newPassword')->getData();
-            
-            // Verify current password
-            if (!$this->passwordHasher->isPasswordValid($user, $currentPassword)) {
-                $this->addFlash('error', 'Current password is incorrect.');
-                return $this->redirectToRoute('app_profile');
-            }
-            
-            // Hash and set new password
-            $hashedPassword = $this->passwordHasher->hashPassword($user, $newPassword);
-            $user->setPassword($hashedPassword);
-            $user->setUpdatedAt(new \DateTimeImmutable());
-            $user->setLastProfileUpdate('Password changed');
-            
-            $this->entityManager->flush();
-            
-            $this->addFlash('success', 'Password changed successfully!');
+            $this->handlePasswordChange($passwordForm, $user);
             return $this->redirectToRoute('app_profile');
         }
         
@@ -162,10 +87,8 @@ class ProfileController extends AbstractController
                 return new JsonResponse(['success' => false, 'message' => 'Invalid data format']);
             }
             
-            // Clear current interests
             $user->getJobRoleInterests()->clear();
             
-            // Add new interests
             foreach ($interestsData as $interestId) {
                 $jobRole = $this->jobRoleRepository->find($interestId);
                 if ($jobRole && !$jobRole->isArchived()) {
@@ -182,6 +105,70 @@ class ProfileController extends AbstractController
             
         } catch (\Exception $e) {
             return new JsonResponse(['success' => false, 'message' => 'Error updating career interests']);
+        }
+    }
+
+    private function handleProfileUpdate($profileForm, User $user): void
+    {
+        $avatarFile = $profileForm->get('avatarFile')->getData();
+        if ($avatarFile) {
+            $this->uploadAvatar($avatarFile, $user);
+        }
+        
+        $user->setUpdatedAt(new \DateTimeImmutable());
+        $user->setLastProfileUpdate('Profile information updated');
+        
+        $this->entityManager->flush();
+        $this->addFlash('success', 'Profile updated successfully!');
+    }
+
+    private function handleAvatarUpdate($avatarForm, User $user): void
+    {
+        $avatarFile = $avatarForm->get('avatarFile')->getData();
+        if ($avatarFile) {
+            $this->uploadAvatar($avatarFile, $user);
+            $user->setUpdatedAt(new \DateTimeImmutable());
+            $user->setLastProfileUpdate('Profile picture updated');
+            
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Profile picture updated successfully!');
+        }
+    }
+
+    private function handlePasswordChange($passwordForm, User $user): void
+    {
+        $currentPassword = $passwordForm->get('currentPassword')->getData();
+        $newPassword = $passwordForm->get('newPassword')->getData();
+        
+        if (!$this->passwordHasher->isPasswordValid($user, $currentPassword)) {
+            $this->addFlash('error', 'Current password is incorrect.');
+            return;
+        }
+        
+        $hashedPassword = $this->passwordHasher->hashPassword($user, $newPassword);
+        $user->setPassword($hashedPassword);
+        $user->setUpdatedAt(new \DateTimeImmutable());
+        $user->setLastProfileUpdate('Password changed');
+        
+        $this->entityManager->flush();
+        $this->addFlash('success', 'Password changed successfully!');
+    }
+
+    private function uploadAvatar($avatarFile, User $user): void
+    {
+        $originalFilename = pathinfo($avatarFile->getClientOriginalName(), PATHINFO_FILENAME);
+        $safeFilename = $this->slugger->slug($originalFilename);
+        $newFilename = $safeFilename.'-'.uniqid().'.'.$avatarFile->guessExtension();
+        
+        try {
+            $avatarFile->move(
+                $this->getParameter('avatars_directory'),
+                $newFilename
+            );
+            
+            $user->setAvatarUrl('/uploads/avatars/' . $newFilename);
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Failed to upload profile picture.');
         }
     }
 } 

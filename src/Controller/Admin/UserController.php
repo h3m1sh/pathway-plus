@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\User;
@@ -24,8 +26,11 @@ final class UserController extends AbstractController
     }
 
     #[Route('/new', name: 'app_admin_user_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
-    {
+    public function new(
+        Request $request, 
+        EntityManagerInterface $entityManager, 
+        UserPasswordHasherInterface $passwordHasher
+    ): Response {
         $user = new User();
         $user->setIsActive(true);
         $user->setCreatedAt(new \DateTimeImmutable());
@@ -34,36 +39,8 @@ final class UserController extends AbstractController
         $form = $this->createForm(UserFormType::class, $user);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
-            if ($form->isValid()) {
-                if (empty($user->getRoles()) || $user->getRoles() === ['ROLE_USER']) {
-                    $user->setRoles(['ROLE_STUDENT']);
-                }
-
-                $plainPassword = $form->get('plainPassword')->getData();
-                if (!empty($plainPassword)) {
-                    $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
-                    $user->setPassword($hashedPassword);
-                } elseif ($user->getId() === null) {
-                    $this->addFlash('error', 'Password is required for new users.');
-                    return $this->render('admin/user/new.html.twig', [
-                        'user' => $user,
-                        'form' => $form,
-                    ]);
-                }
-            } else {
-                $this->addFlash('error', 'Please fix the validation errors below.');
-                return $this->render('admin/user/new.html.twig', [
-                    'user' => $user,
-                    'form' => $form,
-                ]);
-            }
-
-            $user->setUpdatedAt(new \DateTimeImmutable());
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'User created successfully.');
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->handleUserCreation($user, $form, $passwordHasher, $entityManager);
             return $this->redirectToRoute('app_admin_user_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -82,43 +59,30 @@ final class UserController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_admin_user_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
-    {
+    public function edit(
+        Request $request, 
+        User $user, 
+        EntityManagerInterface $entityManager, 
+        UserPasswordHasherInterface $passwordHasher
+    ): Response {
         $form = $this->createForm(UserFormType::class, $user);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
-            if ($form->isValid()) {
-                if (empty($user->getRoles()) || $user->getRoles() === ['ROLE_USER']) {
-                    $user->setRoles(['ROLE_STUDENT']);
-                }
-
-                $plainPassword = $form->get('plainPassword')->getData();
-                if (!empty($plainPassword)) {
-                    $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
-                    $user->setPassword($hashedPassword);
-                }
-
-                $user->setUpdatedAt(new \DateTimeImmutable());
-                $entityManager->flush();
-
-                $this->addFlash('success', 'User updated successfully.');
-
-                if ($request->isXmlHttpRequest()) {
-                    return new Response('success', Response::HTTP_OK);
-                }
-
-                return $this->redirectToRoute('app_admin_user_index', [], Response::HTTP_SEE_OTHER);
-            } else {
-                $this->addFlash('error', 'Please fix the validation errors below.');
-
-                if ($request->isXmlHttpRequest()) {
-                    return $this->render('admin/user/edit.html.twig', [
-                        'user' => $user,
-                        'form' => $form,
-                    ], new Response('', Response::HTTP_BAD_REQUEST));
-                }
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->handleUserUpdate($user, $form, $passwordHasher, $entityManager);
+            
+            if ($request->isXmlHttpRequest()) {
+                return new Response('success', Response::HTTP_OK);
             }
+            
+            return $this->redirectToRoute('app_admin_user_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        if ($form->isSubmitted() && !$form->isValid() && $request->isXmlHttpRequest()) {
+            return $this->render('admin/user/edit.html.twig', [
+                'user' => $user,
+                'form' => $form,
+            ], new Response('', Response::HTTP_BAD_REQUEST));
         }
 
         return $this->render('admin/user/edit.html.twig', [
@@ -139,5 +103,43 @@ final class UserController extends AbstractController
         }
 
         return $this->redirectToRoute('app_admin_user_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    private function handleUserCreation(User $user, $form, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): void
+    {
+        if (empty($user->getRoles()) || $user->getRoles() === ['ROLE_USER']) {
+            $user->setRoles(['ROLE_STUDENT']);
+        }
+
+        $plainPassword = $form->get('plainPassword')->getData();
+        if (!empty($plainPassword)) {
+            $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
+            $user->setPassword($hashedPassword);
+        } elseif ($user->getId() === null) {
+            $this->addFlash('error', 'Password is required for new users.');
+            return;
+        }
+
+        $user->setUpdatedAt(new \DateTimeImmutable());
+        $entityManager->persist($user);
+        $entityManager->flush();
+        $this->addFlash('success', 'User created successfully.');
+    }
+
+    private function handleUserUpdate(User $user, $form, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): void
+    {
+        if (empty($user->getRoles()) || $user->getRoles() === ['ROLE_USER']) {
+            $user->setRoles(['ROLE_STUDENT']);
+        }
+
+        $plainPassword = $form->get('plainPassword')->getData();
+        if (!empty($plainPassword)) {
+            $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
+            $user->setPassword($hashedPassword);
+        }
+
+        $user->setUpdatedAt(new \DateTimeImmutable());
+        $entityManager->flush();
+        $this->addFlash('success', 'User updated successfully.');
     }
 }

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Controller;
+declare(strict_types=1);
 
+namespace App\Controller;
 
 use App\Service\SkillPassportService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -56,7 +57,7 @@ class SkillPassportController extends AbstractController
     }
 
 
-    #[Route('/credential/{id}', name: 'app_credential_detial', methods: ['GET'])]
+    #[Route('/credential/{id}', name: 'app_credential_detail', methods: ['GET'])]
     public function credentialDetail(int $id): JsonResponse
     {
         $user = $this->getUser();
@@ -82,14 +83,11 @@ class SkillPassportController extends AbstractController
         $user = $this->getUser();
         $passportData = $this->skillPassportService->getSkillPassportData($user);
 
-        switch ($format) {
-            case 'pdf':
-                return $this->exportPdf($passportData, $user);
-            case 'csv':
-                return $this->exportCsv($passportData, $user);
-            default:
-                throw $this->createNotFoundException('Export format not supported');
-        }
+        return match ($format) {
+            'pdf' => $this->exportPdf($passportData, $user),
+            'csv' => $this->exportCsv($passportData, $user),
+            default => throw $this->createNotFoundException('Export format not supported')
+        };
     }
 
     private function exportCsv(array $data, $user): Response

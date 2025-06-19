@@ -1,20 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\Skill;
+use App\Form\SkillFormType;
+use App\Repository\SkillRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Repository\SkillRepository;
-use Symfony\Component\HttpFoundation\Request;
-use App\Form\SkillFormType;
-use Doctrine\ORM\EntityManagerInterface;
 
 #[Route('/admin/skill')]
 final class SkillController extends AbstractController
 {
-    #[Route( name: 'app_admin_skill_index')]
+    #[Route(name: 'app_admin_skill_index')]
     public function index(SkillRepository $repository, Request $request): Response
     {
         $page = $request->query->getInt('page', 1);
@@ -41,7 +43,6 @@ final class SkillController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $skill = $form->getData();
             $skill->setUpdatedAt(new \DateTimeImmutable());
             $entityManager->persist($skill);
             $entityManager->flush();
@@ -57,8 +58,12 @@ final class SkillController extends AbstractController
     }
 
     #[Route('/edit/{id}', name: 'app_admin_skill_edit', methods: ['GET', 'POST'])]
-    public function edit(int $id, SkillRepository $skillRepository, Request $request, EntityManagerInterface $entityManager): Response
-    {
+    public function edit(
+        int $id, 
+        SkillRepository $skillRepository, 
+        Request $request, 
+        EntityManagerInterface $entityManager
+    ): Response {
         $skill = $skillRepository->find($id);
 
         if (!$skill) {
@@ -70,7 +75,6 @@ final class SkillController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $skill->setUpdatedAt(new \DateTimeImmutable());
-            $entityManager->persist($skill);
             $entityManager->flush();
 
             $this->addFlash('success', 'Skill updated successfully!');
@@ -84,8 +88,12 @@ final class SkillController extends AbstractController
     }
 
     #[Route('/delete/{id}', name: 'app_admin_skill_delete', methods: ['DELETE'])]
-    public function delete(SkillRepository $skillRepository, Request $request, EntityManagerInterface $entityManager, int $id): Response
-    {
+    public function delete(
+        SkillRepository $skillRepository, 
+        Request $request, 
+        EntityManagerInterface $entityManager, 
+        int $id
+    ): Response {
         $skill = $skillRepository->find($id);
 
         if (!$skill) {

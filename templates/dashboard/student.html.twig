@@ -118,13 +118,402 @@
         </div>
     </div>
 
-    <!-- Widget Grid -->
-    <div class="row g-0">
-        <!-- Left Sidebar: Skill Recommendations -->
-        <div class="col-lg-3 mb-4 pe-lg-0">
-            <div class="widget-item">
-                <!-- Skill Recommendations Widget -->
-                <div class="card widget-card" id="skillRecommendations">
+    <!-- Main Content with Sidebar -->
+    <div class="row">
+        <!-- Main Dashboard Content -->
+        <div class="col-lg-9">
+            <div class="row g-3">
+                <div class="col-12">
+                    <div class="card widget-card mb-3">
+                        <div class="widget-item" data-widget="profile" draggable="true">
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    {% if user.avatarUrl %}
+                                        <img src="{{ user.avatarUrl }}" alt="{{ user.fullName }}"
+                                             class="rounded-circle mb-2" style="width: 80px; height: 80px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2"
+                                             style="width: 80px; height: 80px; font-size: 2rem;">
+                                            {{ user.firstName|slice(0,1) }}{{ user.lastName|slice(0,1) }}
+                                        </div>
+                                    {% endif %}
+                                    <h6 class="mb-1">{{ user.fullName }}</h6>
+                                    {% if user.studentId %}
+                                        <small class="text-muted">ID: {{ user.studentId }}</small>
+                                    {% endif %}
+                                </div>
+
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <div class="fw-bold text-primary">{{ stats.totalCredentials }}</div>
+                                        <small class="text-muted">Total</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="fw-bold text-success">{{ stats.completedCredentials }}</div>
+                                        <small class="text-muted">Earned</small>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="fw-bold text-warning">{{ stats.careerGoals }}</div>
+                                        <small class="text-muted">Goals</small>
+                                    </div>
+                                </div>
+
+                                {% if careerInterests|length > 0 %}
+                                    <hr>
+                                    <h6 class="text-muted mb-2">Career Interests</h6>
+                                    {% for interest in careerInterests|slice(0, 3) %}
+                                        <div class="badge bg-light text-dark border mb-1 me-1">
+                                            {{ interest.title }}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="card widget-card mb-3">
+                        <div class="widget-item" data-widget="skillPassport" draggable="true">
+                            <div class="card-body">
+                                {% if studentProgress|length > 0 %}
+                                    <div class="row" id="credentialGrid">
+                                        {% for progress in studentProgress|slice(0, 6) %}
+                                            <div class="col-md-4 col-sm-6 mb-3">
+                                                <div class="card border-0 bg-light h-100">
+                                                    <div class="card-body text-center p-3">
+                                                        {% if progress.microCredential.badgeUrl %}
+                                                            <img src="{{ progress.microCredential.badgeUrl }}"
+                                                                 alt="{{ progress.microCredential.name }}"
+                                                                 class="mb-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                        {% else %}
+                                                            <i class="bi bi-award-fill text-primary mb-2" style="font-size: 2rem;"></i>
+                                                        {% endif %}
+                                                        <h6 class="card-title mb-1" style="font-size: 0.9rem;">
+                                                            {{ progress.microCredential.name }}
+                                                        </h6>
+                                                        <small class="text-muted">
+                                                            {{ progress.dateEarned.format('M Y') }}
+                                                        </small>
+                                                        <div class="mt-2">
+                                                            {% if progress.status == 'Completed' or progress.status == 'Verified' %}
+                                                                <span class="badge bg-success">{{ progress.status }}</span>
+                                                            {% elseif progress.status == 'In Progress' %}
+                                                                <span class="badge bg-warning">{{ progress.status }}</span>
+                                                            {% else %}
+                                                                <span class="badge bg-secondary">{{ progress.status }}</span>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% if studentProgress|length > 6 %}
+                                        <div class="text-center mt-3">
+                                            <button class="btn btn-outline-primary btn-sm" onclick="showAllCredentials()">
+                                                View All {{ studentProgress|length }} Credentials
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="text-center py-4">
+                                        <i class="bi bi-award text-muted" style="font-size: 3rem;"></i>
+                                        <h6 class="text-muted mt-2">No credentials yet</h6>
+                                        <p class="text-muted mb-3">Start your learning journey to earn your first micro-credential!</p>
+                                        <button class="btn btn-primary btn-sm">
+                                            <i class="bi bi-search me-1"></i>Browse Available Credentials
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="card widget-card mb-3">
+                        <div class="widget-item" data-widget="careerPath" draggable="true">
+                            <div class="card-body">
+                                {% if careerPaths|length > 0 %}
+                                    {% for path in careerPaths %}
+                                        <div class="career-path-card mb-4">
+                                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                                <div>
+                                                    <h6 class="mb-1">{{ path.jobRole.title }}</h6>
+                                                    <div class="text-muted small">
+                                                        {% if path.industry %}
+                                                            <span class="badge bg-info me-2">{{ path.industry }}</span>
+                                                        {% endif %}
+                                                        {% if path.salaryRange %}
+                                                            <span class="text-success">{{ path.salaryRange }}</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <div class="text-end">
+                                                    <div class="h4 mb-0 text-primary">{{ path.completionPercentage }}%</div>
+                                                    <small class="text-muted">Complete</small>
+                                                </div>
+                                            </div>
+
+                                            <!-- Progress Bar -->
+                                            <div class="progress mb-3" style="height: 8px;">
+                                                <div class="progress-bar bg-primary" role="progressbar" 
+                                                     style="width: {{ path.completionPercentage }}%"
+                                                     aria-valuenow="{{ path.completionPercentage }}" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100">
+                                                </div>
+                                            </div>
+
+                                            <!-- Skills Overview -->
+                                            <div class="skills-overview mb-3">
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <small class="text-muted">Required Skills</small>
+                                                    <small class="text-muted">{{ path.completedSkills }}/{{ path.totalSkills }}</small>
+                                                </div>
+                                                <div class="d-flex flex-wrap gap-2">
+                                                    {% for skill in path.jobRole.skills %}
+                                                        <span class="badge {% if skill in path.missingSkills %}bg-light text-dark border{% else %}bg-success{% endif %}">
+                                                            {{ skill.name }}
+                                                        </span>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+
+                                            <!-- Missing Skills -->
+                                            {% if path.missingSkills|length > 0 %}
+                                                <div class="missing-skills">
+                                                    <h6 class="text-muted mb-2">Skills to Develop</h6>
+                                                    <div class="d-flex flex-wrap gap-2">
+                                                        {% for skill in path.missingSkills %}
+                                                            <span class="badge bg-light text-dark border">
+                                                                {{ skill.name }}
+                                                                {% if skill.category %}
+                                                                    <small class="text-muted">({{ skill.category }})</small>
+                                                                {% endif %}
+                                                            </span>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+
+                                            <!-- Career Details -->
+                                            {% if path.yearsOfTraining %}
+                                                <div class="mt-3 pt-3 border-top">
+                                                    <small class="text-muted">
+                                                        <i class="bi bi-clock me-1"></i>Typical Training: {{ path.yearsOfTraining }} years
+                                                    </small>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="text-center py-4">
+                                        <i class="bi bi-map text-muted" style="font-size: 3rem;"></i>
+                                        <h6 class="text-muted mt-2">No Career Goals Set</h6>
+                                        <p class="text-muted mb-3">Set your career goals to see your progress roadmap!</p>
+                                        <button class="btn btn-primary btn-sm" onclick="scrollToWidget('careerExplorer')">
+                                            <i class="bi bi-search me-1"></i>Explore Careers
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="card widget-card mb-3">
+                        <div class="widget-item" data-widget="recentActivity" draggable="true">
+                            <div class="card-body">
+                                {% if recentProgress|length > 0 %}
+                                    <div class="timeline">
+                                        {% for progress in recentProgress|slice(0, 5) %}
+                                            <div class="timeline-item d-flex align-items-start mb-4">
+                                                <div class="timeline-marker rounded-circle d-flex align-items-center justify-content-center me-3"
+                                                     style="width: 40px; height: 40px; min-width: 40px; background: linear-gradient(135deg, var(--electric-blue) 0%, var(--sky-blue) 100%);">
+                                                    {% if progress.type == 'credential' %}
+                                                        <i class="bi bi-award text-white"></i>
+                                                    {% elseif progress.type == 'skill' %}
+                                                        <i class="bi bi-star text-white"></i>
+                                                    {% elseif progress.type == 'profile' %}
+                                                        <i class="bi bi-person text-white"></i>
+                                                    {% else %}
+                                                        <i class="bi bi-flag text-white"></i>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="timeline-content flex-grow-1">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            {% if progress.type == 'credential' %}
+                                                                <h6 class="mb-1">{{ progress.microCredential.name }}</h6>
+                                                                <p class="text-muted mb-1">
+                                                                    Earned {{ progress.microCredential.category }} credential
+                                                                    {% if progress.verifiedBy %}
+                                                                        • Verified by {{ progress.verifiedBy }}
+                                                                    {% endif %}
+                                                                </p>
+                                                                {% if progress.dateEarned|date('Y-m-d') == "now"|date('Y-m-d') %}
+                                                                    <div class="alert alert-success py-2 px-3 mb-2" style="font-size: 0.9rem;">
+                                                                        <i class="bi bi-trophy me-1"></i>Congratulations on earning this credential!
+                                                                    </div>
+                                                                {% endif %}
+                                                            {% elseif progress.type == 'skill' %}
+                                                                <h6 class="mb-1">New Skill: {{ progress.name }}</h6>
+                                                                <p class="text-muted mb-1">
+                                                                    Added to your skill set
+                                                                    {% if progress.category %}
+                                                                        • {{ progress.category }}
+                                                                    {% endif %}
+                                                                </p>
+                                                            {% elseif progress.type == 'profile' %}
+                                                                <h6 class="mb-1">Profile Updated</h6>
+                                                                <p class="text-muted mb-1">
+                                                                    {{ progress.updateDescription }}
+                                                                </p>
+                                                            {% else %}
+                                                                <h6 class="mb-1">New Career Goal</h6>
+                                                                <p class="text-muted mb-1">
+                                                                    Set goal: {{ progress.goalDescription }}
+                                                                </p>
+                                                            {% endif %}
+                                                            
+                                                            {% if progress.type == 'credential' or progress.type == 'skill' %}
+                                                                <div class="d-flex gap-2 mt-2">
+                                                                    <button class="btn btn-sm btn-outline-primary" onclick="shareAchievement('{{ progress.id }}', '{{ progress.type }}')">
+                                                                        <i class="bi bi-share me-1"></i>Share
+                                                                    </button>
+                                                                    {% if progress.type == 'credential' %}
+                                                                        <button class="btn btn-sm btn-outline-secondary" onclick="viewCredentialDetails('{{ progress.id }}')">
+                                                                            <i class="bi bi-eye me-1"></i>View Details
+                                                                        </button>
+                                                                    {% endif %}
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="text-end">
+                                                            <small class="text-muted d-block">{{ progress.dateEarned|date('M j') }}</small>
+                                                            <small class="text-muted">{{ progress.dateEarned|date('g:i A') }}</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    {% if recentProgress|length > 5 %}
+                                        <div class="text-center">
+                                            <button class="btn btn-outline-secondary btn-sm" onclick="showAllActivity()">
+                                                View All Recent Activity
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="text-center py-4">
+                                        <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
+                                        <h6 class="text-muted mt-2">No recent activity</h6>
+                                        <p class="text-muted">Complete a micro-credential to see your progress here!</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="card widget-card mb-3">
+                        <div class="widget-item" data-widget="suggestions" draggable="true">
+                            <div class="card-body">
+                                {% if aiSuggestions.suggestions is defined and aiSuggestions.suggestions|length > 0 %}
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h6 class="mb-0 text-primary">Career Recommendations</h6>
+                                        </div>
+                                        <div class="row g-2">
+                                            {% for suggestion in aiSuggestions.suggestions|slice(0, 4) %}
+                                                <div class="col-12 col-md-12">
+                                                    <div class="card border-0 bg-light mb-2 h-100">
+                                                        <div class="card-body p-3 d-flex flex-column justify-content-between h-100">
+                                                            <div>
+                                                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                                                    <h6 class="card-title mb-1">{{ suggestion.role }}</h6>
+                                                                    <span class="badge bg-success">{{ suggestion.match_score }}% Match</span>
+                                                                </div>
+                                                                <p class="card-text small text-muted mb-2">{{ suggestion.reasoning }}</p>
+                                                                <div class="d-flex justify-content-between align-items-center">
+                                                                    <small class="text-muted">
+                                                                        <i class="bi bi-currency-dollar me-1"></i>{{ suggestion.salary_range }}
+                                                                    </small>
+                                                                    <small class="text-muted">
+                                                                        <i class="bi bi-graph-up me-1"></i>{{ suggestion.growth_potential }}
+                                                                    </small>
+                                                                </div>
+                                                                {% if suggestion.required_skills is defined and suggestion.required_skills|length > 0 %}
+                                                                    <div class="mt-2">
+                                                                        <small class="text-muted">Key Skills:</small>
+                                                                        <div class="mt-1">
+                                                                            {% for skill in suggestion.required_skills|slice(0, 3) %}
+                                                                                <span class="badge bg-primary me-1" style="font-size: 0.7rem;">{{ skill }}</span>
+                                                                            {% endfor %}
+                                                                        </div>
+                                                                    </div>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+
+                                    <!-- Next Steps -->
+                                    {% if aiSuggestions.next_steps is defined and aiSuggestions.next_steps|length > 0 %}
+                                        <div class="mb-3">
+                                            <h6 class="text-primary mb-2">Next Steps</h6>
+                                            <ul class="list-unstyled mb-0">
+                                                {% for step in aiSuggestions.next_steps|slice(0, 3) %}
+                                                    <li class="mb-1">
+                                                        <i class="bi bi-check-circle text-success me-2"></i>
+                                                        <small>{{ step }}</small>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+
+                                    <!-- AI Reasoning -->
+                                    {% if aiSuggestions.reasoning is defined %}
+                                        <div class="alert alert-info p-2 mb-0">
+                                            <small>
+                                                <i class="bi bi-robot me-1"></i>
+                                                <strong>AI Analysis:</strong> {{ aiSuggestions.reasoning }}
+                                            </small>
+                                        </div>
+                                    {% endif %}
+
+                                {% else %}
+                                    <!-- Loading State -->
+                                    <div class="text-center py-4" id="suggestionsLoading">
+                                        <div class="spinner-border text-primary mb-3" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        <h6 class="text-muted">Generating AI Suggestions</h6>
+                                        <p class="text-muted small">Analyzing your skills and career interests...</p>
+                                    </div>
+
+                                    <!-- Error State (hidden by default) -->
+                                    <div class="text-center py-4" id="suggestionsError" style="display: none;">
+                                        <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
+                                        <h6 class="text-muted mt-2">Unable to Load Suggestions</h6>
+                                        <p class="text-muted small">Please try refreshing the page or contact support.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Sidebar: Skill Recommendations -->
+        <div class="col-lg-3">
+            <div class="sidebar-container">
+                <div class="card widget-card sidebar-widget mb-2" id="skillRecommendations">
                     <div class="widget-header">
                         <h5 class="widget-title">
                             <i class="bi bi-gear me-2"></i>Skill Recommendations
@@ -141,9 +530,6 @@
                             <div class="mb-3">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h6 class="mb-0 text-primary">Recommended Skills</h6>
-                                    <button class="btn btn-sm btn-outline-primary" onclick="refreshSkillRecommendations()" title="Refresh Recommendations">
-                                        <i class="bi bi-arrow-clockwise"></i>
-                                    </button>
                                 </div>
                                 <div class="row g-2">
                                     {% for recommendation in skillRecommendations.recommendations|slice(0, 4) %}
@@ -238,463 +624,6 @@
                                 <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
                                 <h6 class="text-muted mt-2">Unable to Load Recommendations</h6>
                                 <p class="text-muted small">Please try refreshing the page or contact support.</p>
-                                <button class="btn btn-sm btn-outline-primary" onclick="refreshSkillRecommendations()">
-                                    <i class="bi bi-arrow-clockwise me-1"></i>Try Again
-                                </button>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content: Main Dashboard Widgets -->
-        <div class="col-lg-6 mb-4 ps-lg-4 pe-lg-4">
-            <div class="row" id="widgetGrid">
-                <!-- Profile + Skill Passport -->
-                <div class="col-12 mb-4 widget-item" data-widget="profile" draggable="true">
-                    <div class="card widget-card" id="profileWidget">
-                        <div class="widget-header">
-                            <h5 class="widget-title">
-                                <i class="bi bi-person-badge me-2"></i>Profile Overview
-                            </h5>
-                            <div class="widget-controls" style="display: none;">
-                                <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('profile')" title="Hide Widget">
-                                    <i class="bi bi-eye-slash"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="widget-body">
-                            <div class="text-center mb-3">
-                                {% if user.avatarUrl %}
-                                    <img src="{{ user.avatarUrl }}" alt="{{ user.fullName }}"
-                                         class="rounded-circle mb-2" style="width: 80px; height: 80px; object-fit: cover;">
-                                {% else %}
-                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2"
-                                         style="width: 80px; height: 80px; font-size: 2rem;">
-                                        {{ user.firstName|slice(0,1) }}{{ user.lastName|slice(0,1) }}
-                                    </div>
-                                {% endif %}
-                                <h6 class="mb-1">{{ user.fullName }}</h6>
-                                {% if user.studentId %}
-                                    <small class="text-muted">ID: {{ user.studentId }}</small>
-                                {% endif %}
-                            </div>
-
-                            <div class="row text-center">
-                                <div class="col-4">
-                                    <div class="fw-bold text-primary">{{ stats.totalCredentials }}</div>
-                                    <small class="text-muted">Total</small>
-                                </div>
-                                <div class="col-4">
-                                    <div class="fw-bold text-success">{{ stats.completedCredentials }}</div>
-                                    <small class="text-muted">Earned</small>
-                                </div>
-                                <div class="col-4">
-                                    <div class="fw-bold text-warning">{{ stats.careerGoals }}</div>
-                                    <small class="text-muted">Goals</small>
-                                </div>
-                            </div>
-
-                            {% if careerInterests|length > 0 %}
-                                <hr>
-                                <h6 class="text-muted mb-2">Career Interests</h6>
-                                {% for interest in careerInterests|slice(0, 3) %}
-                                    <div class="badge bg-light text-dark border mb-1 me-1">
-                                        {{ interest.title }}
-                                    </div>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 mb-4 widget-item" data-widget="skillPassport" draggable="true">
-                    <div class="card widget-card" id="skillPassport">
-                        <div class="widget-header d-flex justify-content-between align-items-center">
-                            <h5 class="widget-title">
-                                <i class="bi bi-award me-2"></i>Skill Passport
-                            </h5>
-                            <div class="d-flex align-items-center">
-                                <div class="btn-group btn-group-sm me-2" role="group">
-                                    <button type="button" class="btn btn-outline-secondary active" data-view="grid">
-                                        <i class="bi bi-grid"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary" data-view="list">
-                                        <i class="bi bi-list"></i>
-                                    </button>
-                                </div>
-                                <div class="widget-controls" style="display: none;">
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('skillPassport')" title="Hide Widget">
-                                        <i class="bi bi-eye-slash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="widget-body">
-                            {% if studentProgress|length > 0 %}
-                                <div class="row" id="credentialGrid">
-                                    {% for progress in studentProgress|slice(0, 6) %}
-                                        <div class="col-md-4 col-sm-6 mb-3">
-                                            <div class="card border-0 bg-light h-100">
-                                                <div class="card-body text-center p-3">
-                                                    {% if progress.microCredential.badgeUrl %}
-                                                        <img src="{{ progress.microCredential.badgeUrl }}"
-                                                             alt="{{ progress.microCredential.name }}"
-                                                             class="mb-2" style="width: 40px; height: 40px; object-fit: cover;">
-                                                    {% else %}
-                                                        <i class="bi bi-award-fill text-primary mb-2" style="font-size: 2rem;"></i>
-                                                    {% endif %}
-                                                    <h6 class="card-title mb-1" style="font-size: 0.9rem;">
-                                                        {{ progress.microCredential.name }}
-                                                    </h6>
-                                                    <small class="text-muted">
-                                                        {{ progress.dateEarned.format('M Y') }}
-                                                    </small>
-                                                    <div class="mt-2">
-                                                        {% if progress.status == 'Completed' or progress.status == 'Verified' %}
-                                                            <span class="badge bg-success">{{ progress.status }}</span>
-                                                        {% elseif progress.status == 'In Progress' %}
-                                                            <span class="badge bg-warning">{{ progress.status }}</span>
-                                                        {% else %}
-                                                            <span class="badge bg-secondary">{{ progress.status }}</span>
-                                                        {% endif %}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                                {% if studentProgress|length > 6 %}
-                                    <div class="text-center mt-3">
-                                        <button class="btn btn-outline-primary btn-sm" onclick="showAllCredentials()">
-                                            View All {{ studentProgress|length }} Credentials
-                                        </button>
-                                    </div>
-                                {% endif %}
-                            {% else %}
-                                <div class="text-center py-4">
-                                    <i class="bi bi-award text-muted" style="font-size: 3rem;"></i>
-                                    <h6 class="text-muted mt-2">No credentials yet</h6>
-                                    <p class="text-muted mb-3">Start your learning journey to earn your first micro-credential!</p>
-                                    <button class="btn btn-primary btn-sm">
-                                        <i class="bi bi-search me-1"></i>Browse Available Credentials
-                                    </button>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 mb-4 widget-item" data-widget="recentActivity" draggable="true">
-                    <div class="card widget-card" id="recentActivity">
-                        <div class="widget-header">
-                            <h5 class="widget-title">
-                                <i class="bi bi-clock-history me-2"></i>Recent Activity
-                                <small class="text-muted">(Last 30 days)</small>
-                            </h5>
-                            <div class="widget-controls" style="display: none;">
-                                <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('recentActivity')" title="Hide Widget">
-                                    <i class="bi bi-eye-slash"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="widget-body">
-                            {% if recentProgress|length > 0 %}
-                                <div class="timeline">
-                                    {% for progress in recentProgress|slice(0, 5) %}
-                                        <div class="timeline-item d-flex align-items-start mb-4">
-                                            <div class="timeline-marker rounded-circle d-flex align-items-center justify-content-center me-3"
-                                                 style="width: 40px; height: 40px; min-width: 40px; background: linear-gradient(135deg, var(--electric-blue) 0%, var(--sky-blue) 100%);">
-                                                {% if progress.type == 'credential' %}
-                                                    <i class="bi bi-award text-white"></i>
-                                                {% elseif progress.type == 'skill' %}
-                                                    <i class="bi bi-star text-white"></i>
-                                                {% elseif progress.type == 'profile' %}
-                                                    <i class="bi bi-person text-white"></i>
-                                                {% else %}
-                                                    <i class="bi bi-flag text-white"></i>
-                                                {% endif %}
-                                            </div>
-                                            <div class="timeline-content flex-grow-1">
-                                                <div class="d-flex justify-content-between align-items-start">
-                                                    <div>
-                                                        {% if progress.type == 'credential' %}
-                                                            <h6 class="mb-1">{{ progress.microCredential.name }}</h6>
-                                                            <p class="text-muted mb-1">
-                                                                Earned {{ progress.microCredential.category }} credential
-                                                                {% if progress.verifiedBy %}
-                                                                    • Verified by {{ progress.verifiedBy }}
-                                                                {% endif %}
-                                                            </p>
-                                                            {% if progress.dateEarned|date('Y-m-d') == "now"|date('Y-m-d') %}
-                                                                <div class="alert alert-success py-2 px-3 mb-2" style="font-size: 0.9rem;">
-                                                                    <i class="bi bi-trophy me-1"></i>Congratulations on earning this credential!
-                                                                </div>
-                                                            {% endif %}
-                                                        {% elseif progress.type == 'skill' %}
-                                                            <h6 class="mb-1">New Skill: {{ progress.name }}</h6>
-                                                            <p class="text-muted mb-1">
-                                                                Added to your skill set
-                                                                {% if progress.category %}
-                                                                    • {{ progress.category }}
-                                                                {% endif %}
-                                                            </p>
-                                                        {% elseif progress.type == 'profile' %}
-                                                            <h6 class="mb-1">Profile Updated</h6>
-                                                            <p class="text-muted mb-1">
-                                                                {{ progress.updateDescription }}
-                                                            </p>
-                                                        {% else %}
-                                                            <h6 class="mb-1">New Career Goal</h6>
-                                                            <p class="text-muted mb-1">
-                                                                Set goal: {{ progress.goalDescription }}
-                                                            </p>
-                                                        {% endif %}
-                                                        
-                                                        {% if progress.type == 'credential' or progress.type == 'skill' %}
-                                                            <div class="d-flex gap-2 mt-2">
-                                                                <button class="btn btn-sm btn-outline-primary" onclick="shareAchievement('{{ progress.id }}', '{{ progress.type }}')">
-                                                                    <i class="bi bi-share me-1"></i>Share
-                                                                </button>
-                                                                {% if progress.type == 'credential' %}
-                                                                    <button class="btn btn-sm btn-outline-secondary" onclick="viewCredentialDetails('{{ progress.id }}')">
-                                                                        <i class="bi bi-eye me-1"></i>View Details
-                                                                    </button>
-                                                                {% endif %}
-                                                            </div>
-                                                        {% endif %}
-                                                    </div>
-                                                    <div class="text-end">
-                                                        <small class="text-muted d-block">{{ progress.dateEarned|date('M j') }}</small>
-                                                        <small class="text-muted">{{ progress.dateEarned|date('g:i A') }}</small>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                                {% if recentProgress|length > 5 %}
-                                    <div class="text-center">
-                                        <button class="btn btn-outline-secondary btn-sm" onclick="showAllActivity()">
-                                            View All Recent Activity
-                                        </button>
-                                    </div>
-                                {% endif %}
-                            {% else %}
-                                <div class="text-center py-4">
-                                    <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
-                                    <h6 class="text-muted mt-2">No recent activity</h6>
-                                    <p class="text-muted">Complete a micro-credential to see your progress here!</p>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 mb-4 widget-item" data-widget="careerPath" draggable="true">
-                    <div class="card widget-card" id="careerPath">
-                        <div class="widget-header">
-                            <h5 class="widget-title">
-                                <i class="bi bi-map me-2"></i>Career Roadmap
-                            </h5>
-                            <div class="widget-controls" style="display: none;">
-                                <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('careerPath')" title="Hide Widget">
-                                    <i class="bi bi-eye-slash"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="widget-body">
-                            {% if careerPaths|length > 0 %}
-                                {% for path in careerPaths %}
-                                    <div class="career-path-card mb-4">
-                                        <div class="d-flex justify-content-between align-items-start mb-3">
-                                            <div>
-                                                <h6 class="mb-1">{{ path.jobRole.title }}</h6>
-                                                <div class="text-muted small">
-                                                    {% if path.industry %}
-                                                        <span class="badge bg-info me-2">{{ path.industry }}</span>
-                                                    {% endif %}
-                                                    {% if path.salaryRange %}
-                                                        <span class="text-success">{{ path.salaryRange }}</span>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                            <div class="text-end">
-                                                <div class="h4 mb-0 text-primary">{{ path.completionPercentage }}%</div>
-                                                <small class="text-muted">Complete</small>
-                                            </div>
-                                        </div>
-
-                                        <!-- Progress Bar -->
-                                        <div class="progress mb-3" style="height: 8px;">
-                                            <div class="progress-bar bg-primary" role="progressbar" 
-                                                 style="width: {{ path.completionPercentage }}%"
-                                                 aria-valuenow="{{ path.completionPercentage }}" 
-                                                 aria-valuemin="0" 
-                                                 aria-valuemax="100">
-                                            </div>
-                                        </div>
-
-                                        <!-- Skills Overview -->
-                                        <div class="skills-overview mb-3">
-                                            <div class="d-flex justify-content-between mb-2">
-                                                <small class="text-muted">Required Skills</small>
-                                                <small class="text-muted">{{ path.completedSkills }}/{{ path.totalSkills }}</small>
-                                            </div>
-                                            <div class="d-flex flex-wrap gap-2">
-                                                {% for skill in path.jobRole.skills %}
-                                                    <span class="badge {% if skill in path.missingSkills %}bg-light text-dark border{% else %}bg-success{% endif %}">
-                                                        {{ skill.name }}
-                                                    </span>
-                                                {% endfor %}
-                                            </div>
-                                        </div>
-
-                                        <!-- Missing Skills -->
-                                        {% if path.missingSkills|length > 0 %}
-                                            <div class="missing-skills">
-                                                <h6 class="text-muted mb-2">Skills to Develop</h6>
-                                                <div class="d-flex flex-wrap gap-2">
-                                                    {% for skill in path.missingSkills %}
-                                                        <span class="badge bg-light text-dark border">
-                                                            {{ skill.name }}
-                                                            {% if skill.category %}
-                                                                <small class="text-muted">({{ skill.category }})</small>
-                                                            {% endif %}
-                                                        </span>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                        {% endif %}
-
-                                        <!-- Career Details -->
-                                        {% if path.yearsOfTraining %}
-                                            <div class="mt-3 pt-3 border-top">
-                                                <small class="text-muted">
-                                                    <i class="bi bi-clock me-1"></i>Typical Training: {{ path.yearsOfTraining }} years
-                                                </small>
-                                            </div>
-                                        {% endif %}
-                                    </div>
-                                {% endfor %}
-                            {% else %}
-                                <div class="text-center py-4">
-                                    <i class="bi bi-map text-muted" style="font-size: 3rem;"></i>
-                                    <h6 class="text-muted mt-2">No Career Goals Set</h6>
-                                    <p class="text-muted mb-3">Set your career goals to see your progress roadmap!</p>
-                                    <button class="btn btn-primary btn-sm" onclick="scrollToWidget('careerExplorer')">
-                                        <i class="bi bi-search me-1"></i>Explore Careers
-                                    </button>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Sidebar: AI Suggestions -->
-        <div class="col-lg-3 mb-4 ps-lg-0">
-            <div class="widget-item">
-                <!-- AI Suggestions Widget -->
-                <div class="card widget-card" id="suggestions">
-                    <div class="widget-header">
-                        <h5 class="widget-title">
-                            <i class="bi bi-lightbulb me-2"></i>AI Suggestions
-                        </h5>
-                        <div class="widget-controls" style="display: none;">
-                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('suggestions')" title="Hide Widget">
-                                <i class="bi bi-eye-slash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="widget-body">
-                        {% if aiSuggestions.suggestions is defined and aiSuggestions.suggestions|length > 0 %}
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h6 class="mb-0 text-primary">Career Recommendations</h6>
-                                    <button class="btn btn-sm btn-outline-primary" onclick="refreshSuggestions()" title="Refresh Suggestions">
-                                        <i class="bi bi-arrow-clockwise"></i>
-                                    </button>
-                                </div>
-                                <div class="row g-2">
-                                    {% for suggestion in aiSuggestions.suggestions|slice(0, 4) %}
-                                        <div class="col-12 col-md-12">
-                                            <div class="card border-0 bg-light mb-2 h-100">
-                                                <div class="card-body p-3 d-flex flex-column justify-content-between h-100">
-                                                    <div>
-                                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                                            <h6 class="card-title mb-1">{{ suggestion.role }}</h6>
-                                                            <span class="badge bg-success">{{ suggestion.match_score }}% Match</span>
-                                                        </div>
-                                                        <p class="card-text small text-muted mb-2">{{ suggestion.reasoning }}</p>
-                                                        <div class="d-flex justify-content-between align-items-center">
-                                                            <small class="text-muted">
-                                                                <i class="bi bi-currency-dollar me-1"></i>{{ suggestion.salary_range }}
-                                                            </small>
-                                                            <small class="text-muted">
-                                                                <i class="bi bi-graph-up me-1"></i>{{ suggestion.growth_potential }}
-                                                            </small>
-                                                        </div>
-                                                        {% if suggestion.required_skills is defined and suggestion.required_skills|length > 0 %}
-                                                            <div class="mt-2">
-                                                                <small class="text-muted">Key Skills:</small>
-                                                                <div class="mt-1">
-                                                                    {% for skill in suggestion.required_skills|slice(0, 3) %}
-                                                                        <span class="badge bg-primary me-1" style="font-size: 0.7rem;">{{ skill }}</span>
-                                                                    {% endfor %}
-                                                                </div>
-                                                            </div>
-                                                        {% endif %}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-
-                            <!-- Next Steps -->
-                            {% if aiSuggestions.next_steps is defined and aiSuggestions.next_steps|length > 0 %}
-                                <div class="mb-3">
-                                    <h6 class="text-primary mb-2">Next Steps</h6>
-                                    <ul class="list-unstyled mb-0">
-                                        {% for step in aiSuggestions.next_steps|slice(0, 3) %}
-                                            <li class="mb-1">
-                                                <i class="bi bi-check-circle text-success me-2"></i>
-                                                <small>{{ step }}</small>
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            {% endif %}
-
-                            <!-- AI Reasoning -->
-                            {% if aiSuggestions.reasoning is defined %}
-                                <div class="alert alert-info p-2 mb-0">
-                                    <small>
-                                        <i class="bi bi-robot me-1"></i>
-                                        <strong>AI Analysis:</strong> {{ aiSuggestions.reasoning }}
-                                    </small>
-                                </div>
-                            {% endif %}
-
-                        {% else %}
-                            <!-- Loading State -->
-                            <div class="text-center py-4" id="suggestionsLoading">
-                                <div class="spinner-border text-primary mb-3" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <h6 class="text-muted">Generating AI Suggestions</h6>
-                                <p class="text-muted small">Analyzing your skills and career interests...</p>
-                            </div>
-
-                            <!-- Error State (hidden by default) -->
-                            <div class="text-center py-4" id="suggestionsError" style="display: none;">
-                                <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
-                                <h6 class="text-muted mt-2">Unable to Load Suggestions</h6>
-                                <p class="text-muted small">Please try refreshing the page or contact support.</p>
-                                <button class="btn btn-sm btn-outline-primary" onclick="refreshSuggestions()">
-                                    <i class="bi bi-arrow-clockwise me-1"></i>Try Again
-                                </button>
                             </div>
                         {% endif %}
                     </div>
@@ -896,6 +825,19 @@
         .widget-card {
             max-height: 320px;
         }
+    }
+    .sidebar-widget {
+        height: auto !important;
+    }
+    .sidebar-container {
+        position: sticky;
+        top: 20px;
+        z-index: 1020;
+    }
+    .navbar-pathway {
+        position: sticky;
+        top: 0;
+        z-index: 1100;
     }
 </style>
 
@@ -1371,320 +1313,6 @@
                     timer: 3000
                 });
             });
-    }
-
-    function refreshSuggestions() {
-        const suggestionsWidget = document.getElementById('suggestions');
-        const widgetBody = suggestionsWidget.querySelector('.widget-body');
-        
-        // Show loading state
-        widgetBody.innerHTML = `
-            <div class="text-center py-4" id="suggestionsLoading">
-                <div class="spinner-border text-primary mb-3" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <h6 class="text-muted">Refreshing AI Suggestions</h6>
-                <p class="text-muted small">Analyzing your latest progress...</p>
-            </div>
-        `;
-
-        // Make AJAX request to refresh suggestions
-        fetch('{{ path("app_dashboard_refresh_suggestions") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.suggestions) {
-                // Update the suggestions widget with new data
-                updateSuggestionsWidget(data.suggestions);
-                
-                // Show success message
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Suggestions Updated!',
-                    text: 'Your AI recommendations have been refreshed with the latest data.',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            } else {
-                throw new Error(data.error || 'Failed to refresh suggestions');
-            }
-        })
-        .catch(error => {
-            console.error('Error refreshing suggestions:', error);
-            
-            // Show error state
-            widgetBody.innerHTML = `
-                <div class="text-center py-4" id="suggestionsError">
-                    <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
-                    <h6 class="text-muted mt-2">Unable to Refresh Suggestions</h6>
-                    <p class="text-muted small">Please try again or contact support if the problem persists.</p>
-                    <button class="btn btn-sm btn-outline-primary" onclick="refreshSuggestions()">
-                        <i class="bi bi-arrow-clockwise me-1"></i>Try Again
-                    </button>
-                </div>
-            `;
-        });
-    }
-
-    function updateSuggestionsWidget(suggestions) {
-        const suggestionsWidget = document.getElementById('suggestions');
-        const widgetBody = suggestionsWidget.querySelector('.widget-body');
-        
-        if (suggestions.suggestions && suggestions.suggestions.length > 0) {
-            let html = `
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="mb-0 text-primary">Career Recommendations</h6>
-                        <button class="btn btn-sm btn-outline-primary" onclick="refreshSuggestions()" title="Refresh Suggestions">
-                            <i class="bi bi-arrow-clockwise"></i>
-                        </button>
-                    </div>
-            `;
-            
-            // Add suggestions
-            suggestions.suggestions.slice(0, 3).forEach(suggestion => {
-                html += `
-                    <div class="card border-0 bg-light mb-2">
-                        <div class="card-body p-3">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h6 class="card-title mb-1">${suggestion.role}</h6>
-                                <span class="badge bg-success">${suggestion.match_score}% Match</span>
-                            </div>
-                            <p class="card-text small text-muted mb-2">${suggestion.reasoning}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">
-                                    <i class="bi bi-currency-dollar me-1"></i>${suggestion.salary_range}
-                                </small>
-                                <small class="text-muted">
-                                    <i class="bi bi-graph-up me-1"></i>${suggestion.growth_potential}
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += `</div>`;
-            
-            // Add next steps
-            if (suggestions.next_steps && suggestions.next_steps.length > 0) {
-                html += `
-                    <div class="mb-3">
-                        <h6 class="text-primary mb-2">Next Steps</h6>
-                        <ul class="list-unstyled mb-0">
-                `;
-                suggestions.next_steps.slice(0, 3).forEach(step => {
-                    html += `
-                        <li class="mb-1">
-                            <i class="bi bi-check-circle text-success me-2"></i>
-                            <small>${step}</small>
-                        </li>
-                    `;
-                });
-                html += `
-                        </ul>
-                    </div>
-                `;
-            }
-            
-            // Add AI reasoning
-            if (suggestions.reasoning) {
-                html += `
-                    <div class="alert alert-info p-2 mb-0">
-                        <small>
-                            <i class="bi bi-robot me-1"></i>
-                            <strong>AI Analysis:</strong> ${suggestions.reasoning}
-                        </small>
-                    </div>
-                `;
-            }
-            
-            widgetBody.innerHTML = html;
-        } else {
-            // Show error state if no suggestions
-            widgetBody.innerHTML = `
-                <div class="text-center py-4" id="suggestionsError">
-                    <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
-                    <h6 class="text-muted mt-2">No Suggestions Available</h6>
-                    <p class="text-muted small">Try adding more skills or career interests to get personalized recommendations.</p>
-                    <button class="btn btn-sm btn-outline-primary" onclick="refreshSuggestions()">
-                        <i class="bi bi-arrow-clockwise me-1"></i>Try Again
-                    </button>
-                </div>
-            `;
-        }
-    }
-
-    function refreshSkillRecommendations() {
-        const skillRecommendationsWidget = document.getElementById('skillRecommendations');
-        const widgetBody = skillRecommendationsWidget.querySelector('.widget-body');
-        
-        // Show loading state
-        widgetBody.innerHTML = `
-            <div class="text-center py-4" id="skillRecommendationsLoading">
-                <div class="spinner-border text-primary mb-3" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <h6 class="text-muted">Refreshing Skill Recommendations</h6>
-                <p class="text-muted small">Analyzing your latest progress...</p>
-            </div>
-        `;
-
-        // Make AJAX request to refresh recommendations
-        fetch('{{ path("app_dashboard_refresh_skill_recommendations") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.recommendations) {
-                // Update the skill recommendations widget with new data
-                updateSkillRecommendationsWidget(data.recommendations);
-                
-                // Show success message
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Recommendations Updated!',
-                    text: 'Your skill recommendations have been refreshed with the latest data.',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            } else {
-                throw new Error(data.error || 'Failed to refresh recommendations');
-            }
-        })
-        .catch(error => {
-            console.error('Error refreshing skill recommendations:', error);
-            
-            // Show error state
-            widgetBody.innerHTML = `
-                <div class="text-center py-4" id="skillRecommendationsError">
-                    <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
-                    <h6 class="text-muted mt-2">Unable to Refresh Recommendations</h6>
-                    <p class="text-muted small">Please try again or contact support if the problem persists.</p>
-                    <button class="btn btn-sm btn-outline-primary" onclick="refreshSkillRecommendations()">
-                        <i class="bi bi-arrow-clockwise me-1"></i>Try Again
-                    </button>
-                </div>
-            `;
-        });
-    }
-
-    function updateSkillRecommendationsWidget(recommendations) {
-        const skillRecommendationsWidget = document.getElementById('skillRecommendations');
-        const widgetBody = skillRecommendationsWidget.querySelector('.widget-body');
-        
-        if (recommendations.recommendations && recommendations.recommendations.length > 0) {
-            let html = `
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="mb-0 text-primary">Recommended Skills</h6>
-                        <button class="btn btn-sm btn-outline-primary" onclick="refreshSkillRecommendations()" title="Refresh Recommendations">
-                            <i class="bi bi-arrow-clockwise"></i>
-                        </button>
-                    </div>
-            `;
-            
-            // Add recommendations
-            recommendations.recommendations.slice(0, 3).forEach(recommendation => {
-                html += `
-                    <div class="card border-0 bg-light mb-2">
-                        <div class="card-body p-3">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h6 class="card-title mb-1">${recommendation.skill}</h6>
-                                <span class="badge bg-${recommendation.importance === 'High' ? 'danger' : recommendation.importance === 'Medium' ? 'warning' : 'info'}">
-                                    ${recommendation.importance}
-                                </span>
-                            </div>
-                            <p class="card-text small text-muted mb-2">${recommendation.reasoning}</p>
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <small class="text-muted">
-                                    <i class="bi bi-clock me-1"></i>${recommendation.estimated_time}
-                                </small>
-                                <small class="text-muted">
-                                    <i class="bi bi-bar-chart me-1"></i>${recommendation.difficulty}
-                                </small>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">
-                                    <i class="bi bi-graph-up me-1"></i>Market: ${recommendation.market_demand}
-                                </small>
-                                <small class="text-muted">
-                                    <i class="bi bi-currency-dollar me-1"></i>Impact: ${recommendation.salary_impact}
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += `</div>`;
-            
-            // Add priority skills
-            if (recommendations.priority_skills && recommendations.priority_skills.length > 0) {
-                html += `
-                    <div class="mb-3">
-                        <h6 class="text-primary mb-2">Priority Skills</h6>
-                        <div class="d-flex flex-wrap gap-1">
-                `;
-                recommendations.priority_skills.slice(0, 5).forEach(skill => {
-                    html += `
-                        <span class="badge bg-primary">${skill}</span>
-                    `;
-                });
-                html += `
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // Add learning paths
-            if (recommendations.learning_paths && recommendations.learning_paths.length > 0) {
-                html += `
-                    <div class="mb-3">
-                        <h6 class="text-primary mb-2">Learning Paths</h6>
-                        ${recommendations.learning_paths.slice(0, 2).map(path => `
-                            <div class="card border-0 bg-light mb-2">
-                                <div class="card-body p-2">
-                                    <h6 class="card-title mb-1 small">${path.path_name}</h6>
-                                    <p class="card-text small text-muted mb-1">${path.description}</p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <small class="text-muted">${path.total_duration}</small>
-                                        <small class="text-muted">${path.difficulty_progression}</small>
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            }
-            
-            widgetBody.innerHTML = html;
-        } else {
-            // Show error state if no recommendations
-            widgetBody.innerHTML = `
-                <div class="text-center py-4" id="skillRecommendationsError">
-                    <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
-                    <h6 class="text-muted mt-2">No Recommendations Available</h6>
-                    <p class="text-muted small">Try adding more skills or career interests to get personalized recommendations.</p>
-                    <button class="btn btn-sm btn-outline-primary" onclick="refreshSkillRecommendations()">
-                        <i class="bi bi-arrow-clockwise me-1"></i>Try Again
-                    </button>
-                </div>
-            `;
-        }
     }
 </script>
 

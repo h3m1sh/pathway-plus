@@ -386,7 +386,7 @@
                 card.addEventListener('click', function() {
                     const progressId = this.dataset.progressId;
                     if (progressId) {
-                        fetch(`{{ path('app_credential_detial', {'id': '__ID__'}) }}`.replace('__ID__', progressId))
+                        fetch(`{{ path('app_credential_detail', {'id': '__ID__'}) }}`.replace('__ID__', progressId))
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {

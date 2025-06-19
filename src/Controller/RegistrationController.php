@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\User;
@@ -26,20 +28,13 @@ final class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Get the plain password from the form
             $plainPassword = $form->get('plainPassword')->getData();
-
-            // Hash the password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
-
-            // Set default role to student
             $user->setRoles(['ROLE_STUDENT']);
 
-            // Persist the user
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Add success message and redirect to login
             $this->addFlash('success', 'Registration successful! You can now log in.');
             return $this->redirectToRoute('app_login');
         }
