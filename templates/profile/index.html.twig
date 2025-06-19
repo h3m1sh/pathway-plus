@@ -40,34 +40,64 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        {{ form_start(profileForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                {{ form_label(profileForm.firstName, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
-                                {{ form_widget(profileForm.firstName) }}
-                                {{ form_errors(profileForm.firstName) }}
+                        {% if user.isAdmin() %}
+                            {{ form_start(profileForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    {{ form_label(profileForm.firstName, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                                    {{ form_widget(profileForm.firstName) }}
+                                    {{ form_errors(profileForm.firstName) }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    {{ form_label(profileForm.lastName, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                                    {{ form_widget(profileForm.lastName) }}
+                                    {{ form_errors(profileForm.lastName) }}
+                                </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                {{ form_label(profileForm.lastName, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
-                                {{ form_widget(profileForm.lastName) }}
-                                {{ form_errors(profileForm.lastName) }}
+
+                            <div class="mb-3">
+                                {{ form_label(profileForm.studentId, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                                {{ form_widget(profileForm.studentId) }}
+                                {{ form_errors(profileForm.studentId) }}
                             </div>
-                        </div>
 
-                        <div class="mb-3">
-                            {{ form_label(profileForm.studentId, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
-                            {{ form_widget(profileForm.studentId) }}
-                            {{ form_errors(profileForm.studentId) }}
-                        </div>
+                            <div class="mb-3">
+                                {{ form_label(profileForm.avatarFile, null, {'label_attr': {'class': 'form-label fw-medium'}}) }}
+                                {{ form_widget(profileForm.avatarFile) }}
+                                {{ form_errors(profileForm.avatarFile) }}
+                                <div class="form-text">Upload a profile picture (JPEG, PNG, or GIF, max 2MB)</div>
+                            </div>
 
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle me-2"></i>Update Profile
-                            </button>
-                        </div>
-                        
-                        {{ form_end(profileForm) }}
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle me-2"></i>Update Profile
+                                </button>
+                            </div>
+                            
+                            {{ form_end(profileForm) }}
+                        {% else %}
+                            <!-- Read-only display for students -->
+                            <div class="row mb-3">
+                                <div class="col-sm-4 fw-medium text-muted">First Name:</div>
+                                <div class="col-sm-8">{{ user.firstName }}</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm-4 fw-medium text-muted">Last Name:</div>
+                                <div class="col-sm-8">{{ user.lastName }}</div>
+                            </div>
+                            {% if user.studentId %}
+                                <div class="row mb-3">
+                                    <div class="col-sm-4 fw-medium text-muted">Student Number:</div>
+                                    <div class="col-sm-8">{{ user.studentId }}</div>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <small>Personal information can only be updated by administrators. Please contact an administrator if you need to make changes.</small>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

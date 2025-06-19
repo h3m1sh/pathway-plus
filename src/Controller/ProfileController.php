@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/profile')]
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
@@ -25,7 +26,8 @@ class ProfileController extends AbstractController
     public function __construct(
         private EntityManagerInterface $entityManager,
         private UserPasswordHasherInterface $passwordHasher,
-        private JobRoleRepository $jobRoleRepository
+        private JobRoleRepository $jobRoleRepository,
+        private SluggerInterface $slugger
     ) {
     }
 
@@ -34,6 +36,7 @@ class ProfileController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
+        $isAdmin = $user->isAdmin();
         
         // Handle AJAX request for career interests
         if ($request->isXmlHttpRequest() && $request->request->has('interests')) {
@@ -41,7 +44,9 @@ class ProfileController extends AbstractController
         }
         
         // Create profile form
-        $profileForm = $this->createForm(ProfileFormType::class, $user);
+        $profileForm = $this->createForm(ProfileFormType::class, $user, [
+            'is_admin' => $isAdmin
+        ]);
         $profileForm->handleRequest($request);
         
         // Create password change form
@@ -50,6 +55,26 @@ class ProfileController extends AbstractController
         
         // Handle profile form submission
         if ($profileForm->isSubmitted() && $profileForm->isValid()) {
+            // Handle file upload
+            $avatarFile = $profileForm->get('avatarFile')->getData();
+            if ($avatarFile) {
+                $originalFilename = pathinfo($avatarFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $this->slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$avatarFile->guessExtension();
+                
+                try {
+                    $avatarFile->move(
+                        $this->getParameter('avatars_directory'),
+                        $newFilename
+                    );
+                    
+                    // Update user's avatar URL
+                    $user->setAvatarUrl('/uploads/avatars/' . $newFilename);
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Failed to upload profile picture.');
+                }
+            }
+            
             $user->setUpdatedAt(new \DateTimeImmutable());
             $user->setLastProfileUpdate('Profile information updated');
             
