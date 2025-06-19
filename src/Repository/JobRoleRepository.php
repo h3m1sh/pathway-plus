@@ -87,6 +87,79 @@ class JobRoleRepository extends ServiceEntityRepository
         return array_column($result, 'salaryRange');
     }
 
+    /**
+     * Get recently added job roles
+     * @param int $limit Number of jobs to return
+     * @return array
+     */
+    public function findRecentlyAdded(int $limit = 5): array
+    {
+        return $this->createQueryBuilder('jr')
+            ->orderBy('jr.id', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Get trending/popular job roles (based on skills count as a simple metric)
+     * @param int $limit Number of jobs to return
+     * @return array
+     */
+    public function findTrendingJobs(int $limit = 10): array
+    {
+        // Get jobs with their skill counts
+        $qb = $this->createQueryBuilder('jr')
+            ->leftJoin('jr.skills', 's')
+            ->addSelect('COUNT(s.id) as skillCount')
+            ->groupBy('jr.id')
+            ->orderBy('skillCount', 'DESC')
+            ->addOrderBy('jr.title', 'ASC')
+            ->setMaxResults($limit);
+        
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Get job statistics
+     * @return array
+     */
+    public function getJobStatistics(): array
+    {
+        $totalJobs = $this->count([]);
+        
+        $industryStats = $this->createQueryBuilder('jr')
+            ->select('jr.industry, COUNT(jr.id) as count')
+            ->where('jr.industry IS NOT NULL')
+            ->andWhere('jr.industry != :empty')
+            ->setParameter('empty', '')
+            ->groupBy('jr.industry')
+            ->orderBy('count', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
+
+        // Calculate average skills per job
+        $qb = $this->createQueryBuilder('jr')
+            ->select('COUNT(s.id) as skillCount')
+            ->leftJoin('jr.skills', 's')
+            ->groupBy('jr.id');
+        
+        $skillCounts = $qb->getQuery()->getScalarResult();
+        $avgSkillsPerJob = 0;
+        
+        if (!empty($skillCounts)) {
+            $totalSkills = array_sum(array_column($skillCounts, 'skillCount'));
+            $avgSkillsPerJob = round($totalSkills / count($skillCounts), 1);
+        }
+
+        return [
+            'totalJobs' => $totalJobs,
+            'topIndustries' => $industryStats,
+            'avgSkillsPerJob' => $avgSkillsPerJob,
+        ];
+    }
+
     //    /**
     //     * @return JobRole[] Returns an array of JobRole objects
     //     */

@@ -2,8 +2,23 @@
 
 {% block title %}Browse Jobs - Pathway+{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .sidebar-widget {
+            height: auto !important;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+        .sidebar-container {
+            position: sticky;
+            top: 20px;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-<div class="container">
+<div class="container-fluid">
     <!-- Page Header -->
     <div class="row mb-4">
         <div class="col-12">
@@ -103,9 +118,10 @@
         </div>
     {% endif %}
 
-    <!-- Jobs List -->
+    <!-- Main Content with Sidebar -->
     <div class="row">
-        <div class="col-12">
+        <!-- Main Jobs List -->
+        <div class="col-lg-9">
             {% if jobs.nbResults > 0 %}
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
                     {% for job in jobs %}
@@ -274,6 +290,104 @@
                     </div>
                 </div>
             {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-3">
+            <div class="sidebar-container">
+                <!-- Statistics Widget -->
+                <div class="card widget-card sidebar-widget mb-2">
+                    <div class="card-header bg-primary text-white py-1">
+                        <h6 class="mb-0 small">
+                            <i class="bi bi-graph-up me-1"></i>Job Statistics
+                        </h6>
+                    </div>
+                    <div class="card-body py-2">
+                        <div class="row text-center mb-2">
+                            <div class="col-6">
+                                <div class="h6 text-primary mb-0">{{ jobStats.totalJobs }}</div>
+                                <div class="small text-muted">Jobs</div>
+                            </div>
+                            <div class="col-6">
+                                <div class="h6 text-success mb-0">{{ jobStats.avgSkillsPerJob }}</div>
+                                <div class="small text-muted">Avg Skills</div>
+                            </div>
+                        </div>
+                        
+                        {% if jobStats.topIndustries|length > 0 %}
+                            <hr class="my-2">
+                            <h6 class="text-muted mb-1 small">Top Industries</h6>
+                            {% for industry in jobStats.topIndustries|slice(0, 3) %}
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="small">{{ industry.industry|length > 15 ? industry.industry|slice(0, 15) ~ '...' : industry.industry }}</span>
+                                    <span class="badge bg-light text-dark small">{{ industry.count }}</span>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Recently Added Jobs -->
+                <div class="card widget-card sidebar-widget mb-2">
+                    <div class="card-header bg-info text-white py-1">
+                        <h6 class="mb-0 small">
+                            <i class="bi bi-clock-history me-1"></i>Recently Added
+                        </h6>
+                    </div>
+                    <div class="card-body py-2">
+                        {% if recentlyAddedJobs|length > 0 %}
+                            {% for job in recentlyAddedJobs|slice(0, 5) %}
+                                <div class="mb-1 {% if not loop.last %}border-bottom pb-1{% endif %}">
+                                    <h6 class="mb-1 small">
+                                        <a href="{{ path('app_jobs_show', {id: job.id}) }}" class="text-decoration-none">
+                                            {{ job.title|length > 22 ? job.title|slice(0, 22) ~ '...' : job.title }}
+                                        </a>
+                                    </h6>
+                                    {% if job.industry %}
+                                        <span class="badge bg-secondary small">{{ job.industry|length > 12 ? job.industry|slice(0, 12) ~ '...' : job.industry }}</span>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted small mb-0">No recent jobs</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Trending Jobs -->
+                <div class="card widget-card sidebar-widget">
+                    <div class="card-header bg-warning text-dark py-1">
+                        <h6 class="mb-0 small">
+                            <i class="bi bi-fire me-1"></i>Trending Jobs
+                        </h6>
+                    </div>
+                    <div class="card-body py-2">
+                        {% if trendingJobs|length > 0 %}
+                            {% for result in trendingJobs|slice(0, 5) %}
+                                {% set job = result[0] %}
+                                {% set skillCount = result.skillCount %}
+                                <div class="mb-1 {% if not loop.last %}border-bottom pb-1{% endif %}">
+                                    <h6 class="mb-1 small">
+                                        <a href="{{ path('app_jobs_show', {id: job.id}) }}" class="text-decoration-none">
+                                            {{ job.title|length > 22 ? job.title|slice(0, 22) ~ '...' : job.title }}
+                                        </a>
+                                    </h6>
+                                    <div class="d-flex align-items-center">
+                                        {% if job.industry %}
+                                            <span class="badge bg-secondary small me-1">{{ job.industry|length > 10 ? job.industry|slice(0, 10) ~ '...' : job.industry }}</span>
+                                        {% endif %}
+                                        <span class="badge bg-warning text-dark small">
+                                            <i class="bi bi-tags me-1"></i>{{ skillCount }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted small mb-0">No trending jobs</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

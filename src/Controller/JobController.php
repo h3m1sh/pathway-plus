@@ -31,10 +31,18 @@ class JobController extends AbstractController
 
         $pagerfanta = $this->jobRoleRepository->findPaginated($page, $maxPerPage, $search, $industry);
 
+        // Get additional data for side components
+        $recentlyAddedJobs = $this->jobRoleRepository->findRecentlyAdded(5);
+        $trendingJobs = $this->jobRoleRepository->findTrendingJobs(10);
+        $jobStats = $this->jobRoleRepository->getJobStatistics();
+
         return $this->render('jobs/browse.html.twig', [
             'jobs' => $pagerfanta,
             'search' => $search,
             'industry' => $industry,
+            'recentlyAddedJobs' => $recentlyAddedJobs,
+            'trendingJobs' => $trendingJobs,
+            'jobStats' => $jobStats,
         ]);
     }
 
