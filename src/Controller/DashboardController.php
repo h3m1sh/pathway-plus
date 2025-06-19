@@ -187,7 +187,7 @@ class DashboardController extends AbstractController
                         $userSkills[] = [
                             'name' => $skill->getName(),
                             'category' => $skill->getCategory(),
-                            'level' => $skill->getLevel()
+                            'difficulty' => $skill->getDifficulty()
                         ];
                     }
                 }
