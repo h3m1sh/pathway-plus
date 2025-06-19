@@ -565,6 +565,126 @@
                 </div>
             </div>
         </div>
+
+        <!-- Skill Recommendations Widget -->
+        <div class="col-lg-4 mb-4 widget-item" data-widget="skillRecommendations" draggable="true">
+            <div class="card widget-card" id="skillRecommendations">
+                <div class="widget-header">
+                    <h5 class="widget-title">
+                        <i class="bi bi-gear me-2"></i>Skill Recommendations
+                    </h5>
+                    <div class="widget-controls" style="display: none;">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('skillRecommendations')" title="Hide Widget">
+                            <i class="bi bi-eye-slash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="widget-body">
+                    {% if skillRecommendations.recommendations is defined and skillRecommendations.recommendations|length > 0 %}
+                        <!-- Skill Recommendations Content -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0 text-primary">Recommended Skills</h6>
+                                <button class="btn btn-sm btn-outline-primary" onclick="refreshSkillRecommendations()" title="Refresh Recommendations">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                            </div>
+                            
+                            {% for recommendation in skillRecommendations.recommendations|slice(0, 3) %}
+                                <div class="card border-0 bg-light mb-2">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="card-title mb-1">{{ recommendation.skill }}</h6>
+                                            <span class="badge bg-{% if recommendation.importance == 'High' %}danger{% elseif recommendation.importance == 'Medium' %}warning{% else %}info{% endif %}">
+                                                {{ recommendation.importance }}
+                                            </span>
+                                        </div>
+                                        <p class="card-text small text-muted mb-2">{{ recommendation.reasoning }}</p>
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock me-1"></i>{{ recommendation.estimated_time }}
+                                            </small>
+                                            <small class="text-muted">
+                                                <i class="bi bi-bar-chart me-1"></i>{{ recommendation.difficulty }}
+                                            </small>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">
+                                                <i class="bi bi-graph-up me-1"></i>Market: {{ recommendation.market_demand }}
+                                            </small>
+                                            <small class="text-muted">
+                                                <i class="bi bi-currency-dollar me-1"></i>Impact: {{ recommendation.salary_impact }}
+                                            </small>
+                                        </div>
+                                        ${recommendation.related_credentials && recommendation.related_credentials.length > 0 ? `
+                                            <div class="mt-2">
+                                                <small class="text-muted">Related Credentials:</small>
+                                                <div class="mt-1">
+                                                    ${recommendation.related_credentials.slice(0, 2).map(credential => 
+                                                        `<span class="badge bg-secondary me-1" style="font-size: 0.7rem;">${credential}</span>`
+                                                    ).join('')}
+                                                </div>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Priority Skills -->
+                        {% if skillRecommendations.priority_skills is defined and skillRecommendations.priority_skills|length > 0 %}
+                            <div class="mb-3">
+                                <h6 class="text-primary mb-2">Priority Skills</h6>
+                                <div class="d-flex flex-wrap gap-1">
+                                    {% for skill in skillRecommendations.priority_skills|slice(0, 5) %}
+                                        <span class="badge bg-primary">{{ skill }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Learning Paths -->
+                        {% if skillRecommendations.learning_paths is defined and skillRecommendations.learning_paths|length > 0 %}
+                            <div class="mb-3">
+                                <h6 class="text-primary mb-2">Learning Paths</h6>
+                                {% for path in skillRecommendations.learning_paths|slice(0, 2) %}
+                                    <div class="card border-0 bg-light mb-2">
+                                        <div class="card-body p-2">
+                                            <h6 class="card-title mb-1 small">{{ path.path_name }}</h6>
+                                            <p class="card-text small text-muted mb-1">{{ path.description }}</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">{{ path.total_duration }}</small>
+                                                <small class="text-muted">{{ path.difficulty_progression }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                    {% else %}
+                        <!-- Loading State -->
+                        <div class="text-center py-4" id="skillRecommendationsLoading">
+                            <div class="spinner-border text-primary mb-3" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <h6 class="text-muted">Analyzing Your Skills</h6>
+                            <p class="text-muted small">Generating personalized skill recommendations...</p>
+                        </div>
+
+                        <!-- Error State (hidden by default) -->
+                        <div class="text-center py-4" id="skillRecommendationsError" style="display: none;">
+                            <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
+                            <h6 class="text-muted mt-2">Unable to Load Recommendations</h6>
+                            <p class="text-muted small">Please try refreshing the page or contact support.</p>
+                            <button class="btn btn-sm btn-outline-primary" onclick="refreshSkillRecommendations()">
+                                <i class="bi bi-arrow-clockwise me-1"></i>Try Again
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -730,7 +850,8 @@
         skillPassport: { name: 'Skill Passport', icon: 'bi-award' },
         recentActivity: { name: 'Recent Activity', icon: 'bi-clock-history' },
         careerPath: { name: 'Career Roadmap', icon: 'bi-map' },
-        suggestions: { name: 'AI Suggestions', icon: 'bi-lightbulb' }
+        suggestions: { name: 'AI Suggestions', icon: 'bi-lightbulb' },
+        skillRecommendations: { name: 'Skill Recommendations', icon: 'bi-gear' }
     };
 
     let isCustomizationMode = false;
@@ -1289,24 +1410,6 @@
                                     <i class="bi bi-graph-up me-1"></i>${suggestion.growth_potential}
                                 </small>
                             </div>
-                `;
-                
-                if (suggestion.required_skills && suggestion.required_skills.length > 0) {
-                    html += `
-                        <div class="mt-2">
-                            <small class="text-muted">Key Skills:</small>
-                            <div class="mt-1">
-                    `;
-                    suggestion.required_skills.slice(0, 3).forEach(skill => {
-                        html += `<span class="badge bg-primary me-1" style="font-size: 0.7rem;">${skill}</span>`;
-                    });
-                    html += `
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                html += `
                         </div>
                     </div>
                 `;
@@ -1356,6 +1459,181 @@
                     <h6 class="text-muted mt-2">No Suggestions Available</h6>
                     <p class="text-muted small">Try adding more skills or career interests to get personalized recommendations.</p>
                     <button class="btn btn-sm btn-outline-primary" onclick="refreshSuggestions()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Try Again
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    function refreshSkillRecommendations() {
+        const skillRecommendationsWidget = document.getElementById('skillRecommendations');
+        const widgetBody = skillRecommendationsWidget.querySelector('.widget-body');
+        
+        // Show loading state
+        widgetBody.innerHTML = `
+            <div class="text-center py-4" id="skillRecommendationsLoading">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h6 class="text-muted">Refreshing Skill Recommendations</h6>
+                <p class="text-muted small">Analyzing your latest progress...</p>
+            </div>
+        `;
+
+        // Make AJAX request to refresh recommendations
+        fetch('{{ path("app_dashboard_refresh_skill_recommendations") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.recommendations) {
+                // Update the skill recommendations widget with new data
+                updateSkillRecommendationsWidget(data.recommendations);
+                
+                // Show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Recommendations Updated!',
+                    text: 'Your skill recommendations have been refreshed with the latest data.',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            } else {
+                throw new Error(data.error || 'Failed to refresh recommendations');
+            }
+        })
+        .catch(error => {
+            console.error('Error refreshing skill recommendations:', error);
+            
+            // Show error state
+            widgetBody.innerHTML = `
+                <div class="text-center py-4" id="skillRecommendationsError">
+                    <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
+                    <h6 class="text-muted mt-2">Unable to Refresh Recommendations</h6>
+                    <p class="text-muted small">Please try again or contact support if the problem persists.</p>
+                    <button class="btn btn-sm btn-outline-primary" onclick="refreshSkillRecommendations()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Try Again
+                    </button>
+                </div>
+            `;
+        });
+    }
+
+    function updateSkillRecommendationsWidget(recommendations) {
+        const skillRecommendationsWidget = document.getElementById('skillRecommendations');
+        const widgetBody = skillRecommendationsWidget.querySelector('.widget-body');
+        
+        if (recommendations.recommendations && recommendations.recommendations.length > 0) {
+            let html = `
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0 text-primary">Recommended Skills</h6>
+                        <button class="btn btn-sm btn-outline-primary" onclick="refreshSkillRecommendations()" title="Refresh Recommendations">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+            `;
+            
+            // Add recommendations
+            recommendations.recommendations.slice(0, 3).forEach(recommendation => {
+                html += `
+                    <div class="card border-0 bg-light mb-2">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="card-title mb-1">${recommendation.skill}</h6>
+                                <span class="badge bg-${recommendation.importance === 'High' ? 'danger' : recommendation.importance === 'Medium' ? 'warning' : 'info'}">
+                                    ${recommendation.importance}
+                                </span>
+                            </div>
+                            <p class="card-text small text-muted mb-2">${recommendation.reasoning}</p>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="text-muted">
+                                    <i class="bi bi-clock me-1"></i>${recommendation.estimated_time}
+                                </small>
+                                <small class="text-muted">
+                                    <i class="bi bi-bar-chart me-1"></i>${recommendation.difficulty}
+                                </small>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="bi bi-graph-up me-1"></i>Market: ${recommendation.market_demand}
+                                </small>
+                                <small class="text-muted">
+                                    <i class="bi bi-currency-dollar me-1"></i>Impact: ${recommendation.salary_impact}
+                                </small>
+                            </div>
+                            ${recommendation.related_credentials && recommendation.related_credentials.length > 0 ? `
+                                <div class="mt-2">
+                                    <small class="text-muted">Related Credentials:</small>
+                                    <div class="mt-1">
+                                        ${recommendation.related_credentials.slice(0, 2).map(credential => 
+                                            `<span class="badge bg-secondary me-1" style="font-size: 0.7rem;">${credential}</span>`
+                                        ).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `</div>`;
+            
+            // Add priority skills
+            if (recommendations.priority_skills && recommendations.priority_skills.length > 0) {
+                html += `
+                    <div class="mb-3">
+                        <h6 class="text-primary mb-2">Priority Skills</h6>
+                        <div class="d-flex flex-wrap gap-1">
+                `;
+                recommendations.priority_skills.slice(0, 5).forEach(skill => {
+                    html += `
+                        <span class="badge bg-primary">${skill}</span>
+                    `;
+                });
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Add learning paths
+            if (recommendations.learning_paths && recommendations.learning_paths.length > 0) {
+                html += `
+                    <div class="mb-3">
+                        <h6 class="text-primary mb-2">Learning Paths</h6>
+                        ${recommendations.learning_paths.slice(0, 2).map(path => `
+                            <div class="card border-0 bg-light mb-2">
+                                <div class="card-body p-2">
+                                    <h6 class="card-title mb-1 small">${path.path_name}</h6>
+                                    <p class="card-text small text-muted mb-1">${path.description}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">${path.total_duration}</small>
+                                        <small class="text-muted">${path.difficulty_progression}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            widgetBody.innerHTML = html;
+        } else {
+            // Show error state if no recommendations
+            widgetBody.innerHTML = `
+                <div class="text-center py-4" id="skillRecommendationsError">
+                    <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
+                    <h6 class="text-muted mt-2">No Recommendations Available</h6>
+                    <p class="text-muted small">Try adding more skills or career interests to get personalized recommendations.</p>
+                    <button class="btn btn-sm btn-outline-primary" onclick="refreshSkillRecommendations()">
                         <i class="bi bi-arrow-clockwise me-1"></i>Try Again
                     </button>
                 </div>

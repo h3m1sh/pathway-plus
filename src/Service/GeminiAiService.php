@@ -113,6 +113,27 @@ class GeminiAiService
     }
 
     /**
+     * Generate personalized skill recommendations
+     */
+    public function generateSkillRecommendations(array $userSkills, array $userInterests, array $earnedCredentials, array $targetRoles = []): array
+    {
+        $prompt = $this->buildSkillRecommendationPrompt($userSkills, $userInterests, $earnedCredentials, $targetRoles);
+        
+        try {
+            $response = $this->generateContent($prompt);
+            return $this->parseSkillRecommendations($response);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to generate skill recommendations', ['error' => $e->getMessage()]);
+            return [
+                'recommendations' => [],
+                'priority_skills' => [],
+                'learning_paths' => [],
+                'error' => true
+            ];
+        }
+    }
+
+    /**
      * Make the actual API request to Gemini
      */
     private function makeApiRequest(string $prompt, array $options = []): array
@@ -284,6 +305,64 @@ PROMPT;
     }
 
     /**
+     * Build prompt for skill recommendations
+     */
+    private function buildSkillRecommendationPrompt(array $userSkills, array $userInterests, array $earnedCredentials, array $targetRoles): string
+    {
+        $skillsList = implode(', ', array_map(fn($skill) => $skill['name'], $userSkills));
+        $interestsList = implode(', ', array_map(fn($interest) => $interest['title'], $userInterests));
+        $credentialsList = implode(', ', array_map(fn($cred) => $cred['title'], $earnedCredentials));
+        $targetRolesList = implode(', ', array_map(fn($role) => $role['title'], $targetRoles));
+
+        return <<<PROMPT
+You are a skills development AI assistant for higher education students. Based on the following information, provide personalized skill recommendations:
+
+Student's Current Skills: {$skillsList}
+Career Interests: {$interestsList}
+Earned Credentials: {$credentialsList}
+Target Roles: {$targetRolesList}
+
+IMPORTANT: You must respond with ONLY valid JSON. Do not include any other text, explanations, or formatting outside the JSON structure.
+
+Respond with this exact JSON structure:
+{
+    "recommendations": [
+        {
+            "skill": "Skill Name",
+            "category": "Technical/Business/Soft Skills",
+            "importance": "High/Medium/Low",
+            "reasoning": "Why this skill is recommended",
+            "difficulty": "Beginner/Intermediate/Advanced",
+            "estimated_time": "2-3 months",
+            "related_credentials": ["credential1", "credential2"],
+            "market_demand": "High/Medium/Low",
+            "salary_impact": "High/Medium/Low"
+        }
+    ],
+    "priority_skills": ["skill1", "skill2", "skill3"],
+    "learning_paths": [
+        {
+            "path_name": "Path Name",
+            "description": "Path description",
+            "skills_sequence": ["skill1", "skill2", "skill3"],
+            "total_duration": "6 months",
+            "difficulty_progression": "Beginner to Advanced"
+        }
+    ],
+    "skill_gaps": [
+        {
+            "category": "Technical Skills",
+            "missing_skills": ["skill1", "skill2"],
+            "impact": "High/Medium/Low"
+        }
+    ]
+}
+
+Focus on skills that will have the highest impact on the student's career goals and provide practical learning paths.
+PROMPT;
+    }
+
+    /**
      * Parse career suggestions from AI response
      */
     private function parseCareerSuggestions(array $response): array
@@ -358,6 +437,33 @@ PROMPT;
                 'recommendations' => [],
                 'timeline' => [],
                 'resources' => [],
+                'error' => true
+            ];
+        }
+    }
+
+    /**
+     * Parse skill recommendations from AI response
+     */
+    private function parseSkillRecommendations(array $response): array
+    {
+        try {
+            $content = $response['candidates'][0]['content']['parts'][0]['text'] ?? '';
+            
+            // Try to extract JSON from the response
+            $jsonData = $this->extractJsonFromResponse($content);
+            
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new \RuntimeException('Invalid JSON response from AI: ' . json_last_error_msg());
+            }
+            
+            return $jsonData;
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to parse skill recommendations', ['error' => $e->getMessage()]);
+            return [
+                'recommendations' => [],
+                'priority_skills' => [],
+                'learning_paths' => [],
                 'error' => true
             ];
         }

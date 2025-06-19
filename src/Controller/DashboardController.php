@@ -147,6 +147,9 @@ class DashboardController extends AbstractController
 
         // Generate AI suggestions
         $aiSuggestions = $this->generateAiSuggestions($user, $studentProgress, $careerInterests);
+        
+        // Generate skill recommendations
+        $skillRecommendations = $this->generateSkillRecommendations($user, $studentProgress, $careerInterests);
 
         return $this->render('dashboard/student.html.twig', [
             'user' => $user,
@@ -155,6 +158,7 @@ class DashboardController extends AbstractController
             'careerInterests' => $careerInterests,
             'careerPaths' => $careerPaths,
             'aiSuggestions' => $aiSuggestions,
+            'skillRecommendations' => $skillRecommendations,
             'stats' => [
                 'totalCredentials' => $totalCredentials,
                 'completedCredentials' => $completedCredentials,
@@ -367,5 +371,146 @@ class DashboardController extends AbstractController
     public function profile(): Response
     {
         return $this->redirectToRoute('app_profile_index');
+    }
+
+    /**
+     * Generate skill recommendations for the user
+     */
+    private function generateSkillRecommendations(User $user, array $studentProgress, array $careerInterests): array
+    {
+        try {
+            // Extract user skills from completed credentials
+            $userSkills = [];
+            $earnedCredentials = [];
+            
+            foreach ($studentProgress as $progress) {
+                if ($progress->isCompleted()) {
+                    $microCredential = $progress->getMicroCredential();
+                    $earnedCredentials[] = [
+                        'title' => $microCredential->getName(),
+                        'category' => $microCredential->getCategory(),
+                        'dateEarned' => $progress->getDateEarned()->format('Y-m-d')
+                    ];
+                    
+                    foreach ($microCredential->getSkills() as $skill) {
+                        $userSkills[] = [
+                            'name' => $skill->getName(),
+                            'category' => $skill->getCategory(),
+                            'difficulty' => $skill->getDifficulty()
+                        ];
+                    }
+                }
+            }
+
+            // Extract career interests as target roles
+            $targetRoles = array_map(function($interest) {
+                return [
+                    'title' => $interest->getTitle(),
+                    'industry' => $interest->getIndustry(),
+                    'salaryRange' => $interest->getSalaryRange()
+                ];
+            }, $careerInterests);
+
+            // Extract career interests
+            $interests = array_map(function($interest) {
+                return [
+                    'title' => $interest->getTitle(),
+                    'industry' => $interest->getIndustry(),
+                    'salaryRange' => $interest->getSalaryRange()
+                ];
+            }, $careerInterests);
+
+            // Generate AI skill recommendations
+            $recommendations = $this->aiService->generateSkillRecommendations($userSkills, $interests, $earnedCredentials, $targetRoles);
+            
+            // If AI fails, return default recommendations
+            if (isset($recommendations['error']) && $recommendations['error']) {
+                return $this->getDefaultSkillRecommendations($userSkills, $interests, $earnedCredentials);
+            }
+
+            return $recommendations;
+        } catch (\Exception $e) {
+            // Log error and return default recommendations
+            return $this->getDefaultSkillRecommendations([], [], []);
+        }
+    }
+
+    /**
+     * Generate default skill recommendations when AI is unavailable
+     */
+    private function getDefaultSkillRecommendations(array $userSkills, array $interests, array $earnedCredentials): array
+    {
+        $skillCount = count($userSkills);
+        $interestCount = count($interests);
+
+        return [
+            'recommendations' => [
+                [
+                    'skill' => 'Communication Skills',
+                    'category' => 'Soft Skills',
+                    'importance' => 'High',
+                    'reasoning' => 'Essential for career advancement and team collaboration',
+                    'difficulty' => 'Beginner',
+                    'estimated_time' => '2-3 months',
+                    'related_credentials' => ['Communication Certificate', 'Leadership Training'],
+                    'market_demand' => 'High',
+                    'salary_impact' => 'High'
+                ],
+                [
+                    'skill' => 'Data Analysis',
+                    'category' => 'Technical Skills',
+                    'importance' => 'Medium',
+                    'reasoning' => 'Valuable across many industries and roles',
+                    'difficulty' => 'Intermediate',
+                    'estimated_time' => '4-6 months',
+                    'related_credentials' => ['Data Science Certificate', 'Analytics Training'],
+                    'market_demand' => 'High',
+                    'salary_impact' => 'High'
+                ]
+            ],
+            'priority_skills' => ['Communication Skills', 'Data Analysis', 'Problem Solving'],
+            'learning_paths' => [
+                [
+                    'path_name' => 'Professional Development',
+                    'description' => 'Build essential workplace skills',
+                    'skills_sequence' => ['Communication Skills', 'Leadership', 'Project Management'],
+                    'total_duration' => '6 months',
+                    'difficulty_progression' => 'Beginner to Intermediate'
+                ]
+            ],
+            'skill_gaps' => [
+                [
+                    'category' => 'Soft Skills',
+                    'missing_skills' => ['Communication', 'Leadership'],
+                    'impact' => 'High'
+                ]
+            ]
+        ];
+    }
+
+    #[Route('/dashboard/skill-recommendations/refresh', name: 'app_dashboard_refresh_skill_recommendations', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function refreshSkillRecommendations(Request $request): JsonResponse
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        
+        try {
+            $studentProgressRepository = $this->container->get(StudentProgressRepository::class);
+            $studentProgress = $studentProgressRepository->findBy(['student' => $user], ['dateEarned' => 'DESC']);
+            $careerInterests = $user->getJobRoleInterests()->toArray();
+            
+            $recommendations = $this->generateSkillRecommendations($user, $studentProgress, $careerInterests);
+            
+            return $this->json([
+                'success' => true,
+                'recommendations' => $recommendations
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'error' => 'Failed to refresh skill recommendations'
+            ], 500);
+        }
     }
 }
