@@ -19,14 +19,15 @@ class JobRoleRepository extends ServiceEntityRepository
     }
 
     /**
-     * Get paginated job roles with optional search filter
+     * Get paginated job roles with optional search and industry filter
      *
      * @param int $page Current page number (1-based)
      * @param int $maxPerPage Number of items per page
-    * @param string|null $search Optional search query
+     * @param string|null $search Optional search query
+     * @param string|null $industry Optional industry filter
      * @return Pagerfanta
      */
-    public function findPaginated(int $page = 1, int $maxPerPage = 10, ?string $search = null): Pagerfanta
+    public function findPaginated(int $page = 1, int $maxPerPage = 10, ?string $search = null, ?string $industry = null): Pagerfanta
     {
         $qb = $this->createQueryBuilder('jr')
             ->orderBy('jr.title', 'ASC');
@@ -34,6 +35,11 @@ class JobRoleRepository extends ServiceEntityRepository
         if ($search) {
             $qb->andWhere('jr.title LIKE :search OR jr.industry LIKE :search OR jr.jobCode LIKE :search')
                ->setParameter('search', '%' . $search . '%');
+        }
+
+        if ($industry) {
+            $qb->andWhere('jr.industry = :industry')
+               ->setParameter('industry', $industry);
         }
 
         $adapter = new QueryAdapter($qb);

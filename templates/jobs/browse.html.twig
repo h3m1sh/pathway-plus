@@ -35,7 +35,7 @@
             <div class="card widget-card">
                 <div class="card-body py-3">
                     <form method="GET" action="{{ path('app_jobs_browse') }}" class="row g-3">
-                        <div class="col-md-8">
+                        <div class="col-md-6">
                             <div class="input-group">
                                 <span class="input-group-text bg-primary text-white">
                                     <i class="bi bi-search"></i>
@@ -51,9 +51,29 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <select name="industry" class="form-select">
+                                <option value="">All Industries</option>
+                                <option value="Information Technology" {{ app.request.get('industry') == 'Information Technology' ? 'selected' : '' }}>Information Technology</option>
+                                <option value="Finance" {{ app.request.get('industry') == 'Finance' ? 'selected' : '' }}>Finance</option>
+                                <option value="Healthcare" {{ app.request.get('industry') == 'Healthcare' ? 'selected' : '' }}>Healthcare</option>
+                                <option value="Education" {{ app.request.get('industry') == 'Education' ? 'selected' : '' }}>Education</option>
+                                <option value="Design" {{ app.request.get('industry') == 'Design' ? 'selected' : '' }}>Design</option>
+                                <option value="Advertising and Marketing" {{ app.request.get('industry') == 'Advertising and Marketing' ? 'selected' : '' }}>Advertising and Marketing</option>
+                                <option value="Engineering" {{ app.request.get('industry') == 'Engineering' ? 'selected' : '' }}>Engineering</option>
+                                <option value="Sales" {{ app.request.get('industry') == 'Sales' ? 'selected' : '' }}>Sales</option>
+                                <option value="Administration" {{ app.request.get('industry') == 'Administration' ? 'selected' : '' }}>Administration</option>
+                                <option value="Architecture, Technical Design and Mapping" {{ app.request.get('industry') == 'Architecture, Technical Design and Mapping' ? 'selected' : '' }}>Architecture & Design</option>
+                                <option value="Community Services" {{ app.request.get('industry') == 'Community Services' ? 'selected' : '' }}>Community Services</option>
+                                <option value="Data & Analytics" {{ app.request.get('industry') == 'Data & Analytics' ? 'selected' : '' }}>Data & Analytics</option>
+                                <option value="Product Management" {{ app.request.get('industry') == 'Product Management' ? 'selected' : '' }}>Product Management</option>
+                                <option value="Creative Design" {{ app.request.get('industry') == 'Creative Design' ? 'selected' : '' }}>Creative Design</option>
+                                <option value="Entertainment" {{ app.request.get('industry') == 'Entertainment' ? 'selected' : '' }}>Entertainment</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
                             <div class="d-flex gap-2">
-                                {% if search %}
+                                {% if search or app.request.get('industry') %}
                                     <a href="{{ path('app_jobs_browse') }}" class="btn btn-outline-secondary">
                                         <i class="bi bi-x-circle me-1"></i>Clear
                                     </a>
@@ -147,7 +167,7 @@
                                             {% endif %}
                                             {% if job.yearsOfTraining %}
                                                 <div class="col-6">
-                                                    <i class="bi bi-clock me-1"></i>{{ job.yearsOfTraining }}
+                                                    <i class="bi bi-clock me-1"></i>{{ job.yearsOfTraining }} {{ job.yearsOfTraining == '1' ? 'year' : 'years' }}
                                                 </div>
                                             {% endif %}
                                         </div>
@@ -171,7 +191,7 @@
                                 <ul class="pagination justify-content-center">
                                     {% if jobs.hasPreviousPage %}
                                         <li class="page-item">
-                                            <a class="page-link" href="{{ path('app_jobs_browse', {page: jobs.previousPage, search: search}) }}">
+                                            <a class="page-link" href="{{ path('app_jobs_browse', {page: jobs.previousPage, search: search, industry: industry}) }}">
                                                 <i class="bi bi-chevron-left"></i> Previous
                                             </a>
                                         </li>
@@ -182,7 +202,7 @@
                                     
                                     {% if startPage > 1 %}
                                         <li class="page-item">
-                                            <a class="page-link" href="{{ path('app_jobs_browse', {page: 1, search: search}) }}">1</a>
+                                            <a class="page-link" href="{{ path('app_jobs_browse', {page: 1, search: search, industry: industry}) }}">1</a>
                                         </li>
                                         {% if startPage > 2 %}
                                             <li class="page-item disabled">
@@ -193,7 +213,7 @@
 
                                     {% for page in startPage..endPage %}
                                         <li class="page-item {{ page == jobs.currentPage ? 'active' : '' }}">
-                                            <a class="page-link" href="{{ path('app_jobs_browse', {page: page, search: search}) }}">
+                                            <a class="page-link" href="{{ path('app_jobs_browse', {page: page, search: search, industry: industry}) }}">
                                                 {{ page }}
                                             </a>
                                         </li>
@@ -206,13 +226,13 @@
                                             </li>
                                         {% endif %}
                                         <li class="page-item">
-                                            <a class="page-link" href="{{ path('app_jobs_browse', {page: jobs.nbPages, search: search}) }}">{{ jobs.nbPages }}</a>
+                                            <a class="page-link" href="{{ path('app_jobs_browse', {page: jobs.nbPages, search: search, industry: industry}) }}">{{ jobs.nbPages }}</a>
                                         </li>
                                     {% endif %}
 
                                     {% if jobs.hasNextPage %}
                                         <li class="page-item">
-                                            <a class="page-link" href="{{ path('app_jobs_browse', {page: jobs.nextPage, search: search}) }}">
+                                            <a class="page-link" href="{{ path('app_jobs_browse', {page: jobs.nextPage, search: search, industry: industry}) }}">
                                                 Next <i class="bi bi-chevron-right"></i>
                                             </a>
                                         </li>

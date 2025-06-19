@@ -26,13 +26,15 @@ class JobController extends AbstractController
     {
         $page = max(1, (int) $request->query->get('page', 1));
         $search = $request->query->get('search');
+        $industry = $request->query->get('industry');
         $maxPerPage = 12;
 
-        $pagerfanta = $this->jobRoleRepository->findPaginated($page, $maxPerPage, $search);
+        $pagerfanta = $this->jobRoleRepository->findPaginated($page, $maxPerPage, $search, $industry);
 
         return $this->render('jobs/browse.html.twig', [
             'jobs' => $pagerfanta,
             'search' => $search,
+            'industry' => $industry,
         ]);
     }
 
