@@ -9,6 +9,7 @@ use App\Repository\UserRepository;
 use App\Repository\SkillRepository;
 use App\Repository\JobRoleRepository;
 use App\Repository\MicroCredentialRepository;
+use App\Service\GeminiAiService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,6 +19,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DashboardController extends AbstractController
 {
+    public function __construct(
+        private GeminiAiService $aiService
+    ) {
+    }
+
     #[Route('/', name: 'app_home')]
     public function home(): Response
     {
@@ -98,7 +104,7 @@ class DashboardController extends AbstractController
         usort($allActivities, fn($a, $b) => $b['dateEarned'] <=> $a['dateEarned']);
 
         $studentProgress = $studentProgressRepository->findBy(['student' => $user], ['dateEarned' => 'DESC']);
-        $careerInterests = $user->getJobRoleInterests();
+        $careerInterests = $user->getJobRoleInterests()->toArray();
 
         $totalCredentials = count($studentProgress);
         $completedCredentials = count(array_filter($studentProgress, fn($p) => $p->isCompleted()));
@@ -139,12 +145,16 @@ class DashboardController extends AbstractController
             ];
         }
 
+        // Generate AI suggestions
+        $aiSuggestions = $this->generateAiSuggestions($user, $studentProgress, $careerInterests);
+
         return $this->render('dashboard/student.html.twig', [
             'user' => $user,
             'recentProgress' => $allActivities,
             'studentProgress' => $studentProgress,
             'careerInterests' => $careerInterests,
             'careerPaths' => $careerPaths,
+            'aiSuggestions' => $aiSuggestions,
             'stats' => [
                 'totalCredentials' => $totalCredentials,
                 'completedCredentials' => $completedCredentials,
@@ -152,6 +162,122 @@ class DashboardController extends AbstractController
                 'careerGoals' => count($careerInterests),
             ]
         ]);
+    }
+
+    /**
+     * Generate AI-powered suggestions for the user
+     */
+    private function generateAiSuggestions(User $user, array $studentProgress, array $careerInterests): array
+    {
+        try {
+            // Extract user skills from completed credentials
+            $userSkills = [];
+            $earnedCredentials = [];
+            
+            foreach ($studentProgress as $progress) {
+                if ($progress->isCompleted()) {
+                    $microCredential = $progress->getMicroCredential();
+                    $earnedCredentials[] = [
+                        'title' => $microCredential->getName(),
+                        'category' => $microCredential->getCategory(),
+                        'dateEarned' => $progress->getDateEarned()->format('Y-m-d')
+                    ];
+                    
+                    foreach ($microCredential->getSkills() as $skill) {
+                        $userSkills[] = [
+                            'name' => $skill->getName(),
+                            'category' => $skill->getCategory(),
+                            'level' => $skill->getLevel()
+                        ];
+                    }
+                }
+            }
+
+            // Extract career interests
+            $interests = array_map(function($interest) {
+                return [
+                    'title' => $interest->getTitle(),
+                    'industry' => $interest->getIndustry(),
+                    'salaryRange' => $interest->getSalaryRange()
+                ];
+            }, $careerInterests);
+
+            // Generate AI suggestions
+            $suggestions = $this->aiService->generateCareerSuggestions($userSkills, $interests, $earnedCredentials);
+            
+            // If AI fails, return default suggestions
+            if (isset($suggestions['error']) && $suggestions['error']) {
+                return $this->getDefaultSuggestions($userSkills, $interests, $earnedCredentials);
+            }
+
+            return $suggestions;
+        } catch (\Exception $e) {
+            // Log error and return default suggestions
+            return $this->getDefaultSuggestions([], [], []);
+        }
+    }
+
+    /**
+     * Generate default suggestions when AI is unavailable
+     */
+    private function getDefaultSuggestions(array $userSkills, array $interests, array $earnedCredentials): array
+    {
+        $skillCount = count($userSkills);
+        $interestCount = count($interests);
+        $credentialCount = count($earnedCredentials);
+
+        return [
+            'suggestions' => [
+                [
+                    'role' => 'Continue Learning',
+                    'match_score' => 90,
+                    'reasoning' => 'Based on your current progress, focus on completing more micro-credentials to strengthen your profile.',
+                    'required_skills' => ['Continuous Learning', 'Time Management'],
+                    'salary_range' => 'Varies',
+                    'growth_potential' => 'High'
+                ],
+                [
+                    'role' => 'Skill Development',
+                    'match_score' => 85,
+                    'reasoning' => 'Consider developing complementary skills to enhance your career prospects.',
+                    'required_skills' => ['Communication', 'Problem Solving'],
+                    'salary_range' => 'Varies',
+                    'growth_potential' => 'High'
+                ]
+            ],
+            'reasoning' => 'Focus on building a strong foundation of skills and credentials to advance your career goals.',
+            'next_steps' => [
+                'Complete 2-3 more micro-credentials this month',
+                'Explore new skill areas related to your interests',
+                'Network with professionals in your target industry'
+            ]
+        ];
+    }
+
+    #[Route('/dashboard/suggestions/refresh', name: 'app_dashboard_refresh_suggestions', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function refreshSuggestions(Request $request): JsonResponse
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        
+        try {
+            $studentProgressRepository = $this->container->get(StudentProgressRepository::class);
+            $studentProgress = $studentProgressRepository->findBy(['student' => $user], ['dateEarned' => 'DESC']);
+            $careerInterests = $user->getJobRoleInterests()->toArray();
+            
+            $suggestions = $this->generateAiSuggestions($user, $studentProgress, $careerInterests);
+            
+            return $this->json([
+                'success' => true,
+                'suggestions' => $suggestions
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'error' => 'Failed to refresh suggestions'
+            ], 500);
+        }
     }
 
     #[Route('/dashboard/preferences/save', name: 'app_dashboard_save_preferences', methods: ['POST'])]
@@ -214,57 +340,25 @@ class DashboardController extends AbstractController
         JobRoleRepository $jobRoleRepository,
         MicroCredentialRepository $microCredentialRepository
     ): Response {
-        // Get all users and calculate role-based statistics
-        $allUsers = $userRepository->findAll();
-        $totalUsers = count($allUsers);
+        $totalUsers = $userRepository->count([]);
+        $totalSkills = $skillRepository->count([]);
+        $totalJobRoles = $jobRoleRepository->count([]);
+        $totalMicroCredentials = $microCredentialRepository->count([]);
 
-        $totalStudents = 0;
-        $totalAdmins = 0;
-        $activeUsers = 0;
-
-        foreach ($allUsers as $user) {
-            if ($user->isAdmin()) {
-                $totalAdmins++;
-            } elseif ($user->isStudent()) {
-                $totalStudents++;
-            }
-
-            if ($user->isActive()) {
-                $activeUsers++;
-            }
-        }
-
-        $totalSkills = count($skillRepository->findAll());
-        $totalJobRoles = count($jobRoleRepository->findAll());
-        $totalMicroCredentials = count($microCredentialRepository->findAll());
-
-        // Get recent items for quick access
         $recentUsers = $userRepository->findBy([], ['createdAt' => 'DESC'], 5);
         $recentSkills = $skillRepository->findBy([], ['createdAt' => 'DESC'], 5);
         $recentJobRoles = $jobRoleRepository->findBy([], ['createdAt' => 'DESC'], 5);
         $recentMicroCredentials = $microCredentialRepository->findBy([], ['createdAt' => 'DESC'], 5);
 
         return $this->render('admin/dashboard/index.html.twig', [
-            'user' => $this->getUser(),
-            'stats' => [
-                'users' => [
-                    'total' => $totalUsers,
-                    'students' => $totalStudents,
-                    'admins' => $totalAdmins,
-                    'active' => $activeUsers,
-                ],
-                'content' => [
-                    'skills' => $totalSkills,
-                    'jobRoles' => $totalJobRoles,
-                    'microCredentials' => $totalMicroCredentials,
-                ]
-            ],
-            'recent' => [
-                'users' => $recentUsers,
-                'skills' => $recentSkills,
-                'jobRoles' => $recentJobRoles,
-                'microCredentials' => $recentMicroCredentials,
-            ]
+            'totalUsers' => $totalUsers,
+            'totalSkills' => $totalSkills,
+            'totalJobRoles' => $totalJobRoles,
+            'totalMicroCredentials' => $totalMicroCredentials,
+            'recentUsers' => $recentUsers,
+            'recentSkills' => $recentSkills,
+            'recentJobRoles' => $recentJobRoles,
+            'recentMicroCredentials' => $recentMicroCredentials,
         ]);
     }
 
@@ -272,8 +366,6 @@ class DashboardController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function profile(): Response
     {
-        return $this->render('dashboard/profile.html.twig', [
-            'user' => $this->getUser()
-        ]);
+        return $this->redirectToRoute('app_profile_index');
     }
 }
