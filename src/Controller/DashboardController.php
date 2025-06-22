@@ -273,9 +273,9 @@ class DashboardController extends AbstractController
             $earnedCredentials = $this->extractEarnedCredentials($studentProgress);
 
             $suggestions = $this->aiService->generateCareerSuggestions($userSkills, $interests, $earnedCredentials);
-            
-            return isset($suggestions['error']) && $suggestions['error'] 
-                ? $this->getDefaultSuggestions() 
+
+            return isset($suggestions['error']) && $suggestions['error']
+                ? $this->getDefaultSuggestions()
                 : $suggestions;
         } catch (\Exception $e) {
             return $this->getDefaultSuggestions();
@@ -357,9 +357,9 @@ class DashboardController extends AbstractController
             $earnedCredentials = $this->extractEarnedCredentials($studentProgress);
 
             $recommendations = $this->aiService->generateSkillRecommendations($userSkills, $interests, $earnedCredentials);
-            
-            return isset($recommendations['error']) && $recommendations['error'] 
-                ? $this->getDefaultSkillRecommendations() 
+
+            return isset($recommendations['error']) && $recommendations['error']
+                ? $this->getDefaultSkillRecommendations()
                 : $recommendations;
         } catch (\Exception $e) {
             return $this->getDefaultSkillRecommendations();
@@ -409,22 +409,5 @@ class DashboardController extends AbstractController
         ];
     }
 
-    #[Route('/dashboard/skill-recommendations/refresh', name: 'app_dashboard_refresh_skill_recommendations', methods: ['POST'])]
-    #[IsGranted('ROLE_USER')]
-    public function refreshSkillRecommendations(
-        Request $request,
-        StudentProgressRepository $studentProgressRepository
-    ): JsonResponse {
-        /** @var User $user */
-        $user = $this->getUser();
-        $studentProgress = $studentProgressRepository->findBy(['student' => $user], ['dateEarned' => 'DESC']);
-        $careerInterests = $user->getJobRoleInterests()->toArray();
 
-        $recommendations = $this->generateSkillRecommendations($user, $studentProgress, $careerInterests);
-
-        return new JsonResponse([
-            'success' => true,
-            'recommendations' => $recommendations
-        ]);
-    }
 }
