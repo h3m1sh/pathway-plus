@@ -2,6 +2,166 @@
 
 {% block title %}{{ job.title }} - Pathway+{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Enhanced card styling for job detail page */
+        .job-header-card {
+            border: 2px solid rgba(0, 123, 255, 0.2);
+            box-shadow: 0 4px 16px rgba(0, 123, 255, 0.1);
+            background: linear-gradient(145deg, #ffffff 0%, #f0f8ff 100%);
+        }
+        
+        .job-header-card:hover {
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.15);
+            border-color: rgba(0, 123, 255, 0.3);
+        }
+        
+        .job-content-card {
+            border: 2px solid rgba(108, 117, 125, 0.2);
+            box-shadow: 0 6px 20px rgba(30, 42, 56, 0.15);
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+        }
+        
+        .job-content-card:hover {
+            box-shadow: 0 8px 24px rgba(30, 42, 56, 0.18);
+            border-color: rgba(0, 123, 255, 0.3);
+        }
+        
+        /* Enhanced detail items */
+        .detail-item {
+            border: 1px solid rgba(108, 117, 125, 0.15);
+            box-shadow: 0 2px 8px rgba(30, 42, 56, 0.08);
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+        }
+        
+        .detail-item:hover {
+            box-shadow: 0 4px 12px rgba(30, 42, 56, 0.12);
+            border-color: rgba(0, 123, 255, 0.2);
+        }
+        
+        /* Enhanced badge styling */
+        .badge {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            font-weight: 500;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Enhanced button styling */
+        .btn-primary {
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+        }
+        
+        .btn-outline-primary {
+            border: 2px solid var(--electric-blue);
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+        }
+        
+        .btn-outline-primary:hover {
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+        }
+        
+        /* Existing job detail styles */
+        .job-content {
+            line-height: 1.6;
+            color: var(--dark-charcoal);
+            font-size: 0.95rem;
+        }
+
+        .job-content p {
+            margin-bottom: 1rem;
+        }
+
+        .job-content ul, .job-content ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .job-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .content-section {
+            border-bottom: 1px solid rgba(108, 117, 125, 0.1);
+            padding-bottom: 1.5rem;
+        }
+
+        .content-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .sidebar-section {
+            border-bottom: 1px solid rgba(108, 117, 125, 0.1);
+            padding-bottom: 1.5rem;
+        }
+
+        .sidebar-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .job-details-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--dark-charcoal);
+            margin-right: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .detail-value {
+            color: var(--muted-gray);
+            font-size: 0.9rem;
+        }
+
+        .h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .h6 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .h2 {
+                font-size: 1.5rem;
+            }
+            
+            .job-content {
+                font-size: 0.9rem;
+            }
+            
+            .detail-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.25rem;
+            }
+            
+            .content-section, .sidebar-section {
+                border-bottom: 1px solid rgba(108, 117, 125, 0.1);
+                padding-bottom: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
 <div class="container">
     <!-- Back Navigation -->
@@ -28,7 +188,7 @@
     <!-- Job Header -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card widget-card">
+            <div class="card widget-card job-header-card">
                 <div class="card-body">
                     <div class="row align-items-start">
                         <div class="col-md-8">
@@ -67,7 +227,7 @@
     <!-- Main Content Card -->
     <div class="row">
         <div class="col-12">
-            <div class="card widget-card">
+            <div class="card widget-card job-content-card">
                 <div class="card-body">
                     <div class="row">
                         <!-- Main Content -->
@@ -172,123 +332,6 @@
         </div>
     </div>
 </div>
-
-<style>
-.job-content {
-    line-height: 1.6;
-    color: var(--dark-charcoal);
-    font-size: 0.95rem;
-}
-
-.job-content p {
-    margin-bottom: 1rem;
-}
-
-.job-content ul, .job-content ol {
-    padding-left: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-.job-content li {
-    margin-bottom: 0.5rem;
-}
-
-.content-section {
-    border-bottom: 1px solid rgba(108, 117, 125, 0.1);
-    padding-bottom: 1.5rem;
-}
-
-.content-section:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.sidebar-section {
-    border-bottom: 1px solid rgba(108, 117, 125, 0.1);
-    padding-bottom: 1.5rem;
-}
-
-.sidebar-section:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.job-details-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.detail-item {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem;
-    background-color: var(--cool-white);
-    border-radius: 6px;
-    border: 1px solid rgba(108, 117, 125, 0.1);
-}
-
-.detail-label {
-    font-weight: 600;
-    color: var(--dark-charcoal);
-    margin-right: 0.5rem;
-    font-size: 0.9rem;
-}
-
-.detail-value {
-    color: var(--muted-gray);
-    font-size: 0.9rem;
-}
-
-.card.widget-card {
-    border-radius: 8px;
-    border: none;
-    box-shadow: 0 2px 8px rgba(30, 42, 56, 0.08);
-    transition: all 0.3s ease;
-}
-
-.card.widget-card:hover {
-    box-shadow: 0 4px 16px rgba(30, 42, 56, 0.12);
-    transform: translateY(-1px);
-}
-
-.h2 {
-    font-size: 1.75rem;
-    font-weight: 600;
-}
-
-.h5 {
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.h6 {
-    font-size: 1rem;
-    font-weight: 600;
-}
-
-@media (max-width: 768px) {
-    .h2 {
-        font-size: 1.5rem;
-    }
-    
-    .job-content {
-        font-size: 0.9rem;
-    }
-    
-    .detail-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-    
-    .content-section, .sidebar-section {
-        border-bottom: 1px solid rgba(108, 117, 125, 0.1);
-        padding-bottom: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-}
-</style>
 
 <script>
 function addToInterests(jobId) {

@@ -14,7 +14,7 @@
             position: sticky;
             top: 20px;
         }
-        
+
         /* Enhanced card styling for browse jobs page */
         .job-card {
             border: 2px solid rgba(108, 117, 125, 0.2);
@@ -22,47 +22,47 @@
             transition: all 0.3s ease;
             background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
         }
-        
+
         .job-card:hover {
             box-shadow: 0 10px 30px rgba(30, 42, 56, 0.25);
             transform: translateY(-4px);
             border-color: rgba(0, 123, 255, 0.4);
         }
-        
+
         .search-card {
             border: 2px solid rgba(0, 123, 255, 0.2);
             box-shadow: 0 4px 16px rgba(0, 123, 255, 0.1);
             background: linear-gradient(145deg, #ffffff 0%, #f0f8ff 100%);
         }
-        
+
         .sidebar-card {
             border: 2px solid rgba(108, 117, 125, 0.18);
             box-shadow: 0 4px 16px rgba(30, 42, 56, 0.12);
             background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
         }
-        
+
         .sidebar-card:hover {
             box-shadow: 0 6px 20px rgba(30, 42, 56, 0.18);
             border-color: rgba(0, 123, 255, 0.3);
         }
-        
+
         /* Card header enhancements */
         .card-header {
             border-bottom: 2px solid rgba(0, 123, 255, 0.1);
             background: linear-gradient(135deg, var(--bs-primary) 0%, #0056b3 100%);
         }
-        
+
         /* Badge enhancements */
         .badge {
             border: 1px solid rgba(0, 0, 0, 0.1);
             font-weight: 500;
         }
-        
+
         /* Enhanced button styling */
         .btn-primary {
             box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
         }
-        
+
         .btn-primary:hover {
             box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
         }
@@ -107,10 +107,10 @@
                                 <span class="input-group-text bg-primary text-white">
                                     <i class="bi bi-search"></i>
                                 </span>
-                                <input type="text" 
-                                       class="form-control" 
-                                       name="search" 
-                                       value="{{ search }}" 
+                                <input type="text"
+                                       class="form-control"
+                                       name="search"
+                                       value="{{ search }}"
                                        placeholder="Search jobs by title, industry, or skills..."
                                        aria-label="Search jobs">
                                 <button class="btn btn-primary" type="submit">
@@ -239,8 +239,8 @@
                                                 </div>
                                             {% endif %}
                                         </div>
-                                        
-                                        <a href="{{ path('app_jobs_show', {id: job.id}) }}" 
+
+                                        <a href="{{ path('app_jobs_show', {id: job.id}) }}"
                                            class="btn btn-primary btn-sm w-100">
                                             <i class="bi bi-eye me-1"></i>View Details
                                         </a>
@@ -267,7 +267,7 @@
 
                                     {% set startPage = max(1, jobs.currentPage - 2) %}
                                     {% set endPage = min(jobs.nbPages, jobs.currentPage + 2) %}
-                                    
+
                                     {% if startPage > 1 %}
                                         <li class="page-item">
                                             <a class="page-link" href="{{ path('app_jobs_browse', {page: 1, search: search, industry: industry}) }}">1</a>
@@ -365,7 +365,7 @@
                                 <div class="small text-muted">Avg Skills</div>
                             </div>
                         </div>
-                        
+
                         {% if jobStats.topIndustries|length > 0 %}
                             <hr class="my-2">
                             <h6 class="text-muted mb-1 small">Top Industries</h6>
@@ -408,7 +408,7 @@
 
                 <!-- Trending Jobs -->
                 <div class="card widget-card sidebar-card sidebar-widget">
-                    <div class="card-header bg-warning text-dark py-1">
+                    <div class="card-header bg-warning text-white py-1">
                         <h6 class="mb-0 small">
                             <i class="bi bi-fire me-1"></i>Trending Jobs
                         </h6>
@@ -443,4 +443,4 @@
         </div>
     </div>
 </div>
-{% endblock %} 
+{% endblock %}
