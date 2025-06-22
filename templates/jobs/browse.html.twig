@@ -14,6 +14,58 @@
             position: sticky;
             top: 20px;
         }
+        
+        /* Enhanced card styling for browse jobs page */
+        .job-card {
+            border: 2px solid rgba(108, 117, 125, 0.2);
+            box-shadow: 0 6px 20px rgba(30, 42, 56, 0.15);
+            transition: all 0.3s ease;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+        }
+        
+        .job-card:hover {
+            box-shadow: 0 10px 30px rgba(30, 42, 56, 0.25);
+            transform: translateY(-4px);
+            border-color: rgba(0, 123, 255, 0.4);
+        }
+        
+        .search-card {
+            border: 2px solid rgba(0, 123, 255, 0.2);
+            box-shadow: 0 4px 16px rgba(0, 123, 255, 0.1);
+            background: linear-gradient(145deg, #ffffff 0%, #f0f8ff 100%);
+        }
+        
+        .sidebar-card {
+            border: 2px solid rgba(108, 117, 125, 0.18);
+            box-shadow: 0 4px 16px rgba(30, 42, 56, 0.12);
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+        }
+        
+        .sidebar-card:hover {
+            box-shadow: 0 6px 20px rgba(30, 42, 56, 0.18);
+            border-color: rgba(0, 123, 255, 0.3);
+        }
+        
+        /* Card header enhancements */
+        .card-header {
+            border-bottom: 2px solid rgba(0, 123, 255, 0.1);
+            background: linear-gradient(135deg, var(--bs-primary) 0%, #0056b3 100%);
+        }
+        
+        /* Badge enhancements */
+        .badge {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            font-weight: 500;
+        }
+        
+        /* Enhanced button styling */
+        .btn-primary {
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+        }
     </style>
 {% endblock %}
 
@@ -47,7 +99,7 @@
     <!-- Search Bar -->
     <div class="row mb-3">
         <div class="col-12">
-            <div class="card widget-card">
+            <div class="card widget-card search-card">
                 <div class="card-body py-3">
                     <form method="GET" action="{{ path('app_jobs_browse') }}" class="row g-3">
                         <div class="col-md-6">
@@ -126,7 +178,7 @@
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
                     {% for job in jobs %}
                         <div class="col">
-                            <div class="card widget-card h-100">
+                            <div class="card widget-card job-card h-100">
                                 <div class="card-body py-3 d-flex flex-column">
                                     <!-- Job Header -->
                                     <div class="mb-2">
@@ -263,7 +315,7 @@
                 <!-- No Results -->
                 <div class="row">
                     <div class="col-12">
-                        <div class="card widget-card">
+                        <div class="card widget-card search-card">
                             <div class="card-body text-center py-5">
                                 <i class="bi bi-search display-1 text-muted mb-3"></i>
                                 <h3 class="text-muted mb-3">
@@ -296,7 +348,7 @@
         <div class="col-lg-3">
             <div class="sidebar-container">
                 <!-- Statistics Widget -->
-                <div class="card widget-card sidebar-widget mb-2">
+                <div class="card widget-card sidebar-card sidebar-widget mb-2">
                     <div class="card-header bg-primary text-white py-1">
                         <h6 class="mb-0 small">
                             <i class="bi bi-graph-up me-1"></i>Job Statistics
@@ -328,7 +380,7 @@
                 </div>
 
                 <!-- Recently Added Jobs -->
-                <div class="card widget-card sidebar-widget mb-2">
+                <div class="card widget-card sidebar-card sidebar-widget mb-2">
                     <div class="card-header bg-info text-white py-1">
                         <h6 class="mb-0 small">
                             <i class="bi bi-clock-history me-1"></i>Recently Added
@@ -355,7 +407,7 @@
                 </div>
 
                 <!-- Trending Jobs -->
-                <div class="card widget-card sidebar-widget">
+                <div class="card widget-card sidebar-card sidebar-widget">
                     <div class="card-header bg-warning text-dark py-1">
                         <h6 class="mb-0 small">
                             <i class="bi bi-fire me-1"></i>Trending Jobs
