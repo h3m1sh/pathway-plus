@@ -219,17 +219,53 @@
         <div class="row mb-4">
             <div class="col-lg-8">
                 <div class="card widget-card">
-                    <div class="card-header bg-white d-flex align-items-center justify-content-between">
-                        <h5 class="card-title mb-0">
-                            <i class="bi bi-chat-dots me-2"></i>Career Assistant Chat
-                        </h5>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="personalizationToggle" checked>
-                            <label class="form-check-label" for="personalizationToggle" title="Toggle personalized advice">Personalized</label>
+                    <div class="card-header bg-white">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h5 class="card-title mb-0">
+                                <i class="bi bi-chat-dots me-2"></i>Career Assistant Chat
+                            </h5>
+                            <div class="d-flex align-items-center gap-3">
+                                <!-- Mode Selector -->
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" id="modeSelector" data-bs-toggle="dropdown">
+                                        <i class="bi bi-gear me-1"></i><span id="currentMode">General</span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#" data-mode="general">
+                                            <i class="bi bi-chat-dots me-2"></i>General Guidance
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="#" data-mode="interview">
+                                            <i class="bi bi-camera-video me-2"></i>Interview Simulator
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="#" data-mode="discovery">
+                                            <i class="bi bi-compass me-2"></i>Career Discovery
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="#" data-mode="coach">
+                                            <i class="bi bi-person-workspace me-2"></i>Development Coach
+                                        </a></li>
+                                    </ul>
+                                </div>
+                                <!-- Personalization Toggle -->
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="personalizationToggle" checked>
+                                    <label class="form-check-label" for="personalizationToggle" title="Toggle personalized advice">Personalized</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body" style="height: 350px; overflow-y: auto; background: #f9fafb;" id="chatMessages">
-                        <!-- Chat messages will appear here -->
+                        <!-- Welcome message -->
+                        <div class="chat-message assistant-message mb-3">
+                            <div class="d-flex align-items-start">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                     style="width: 32px; height: 32px; font-size: 0.8rem; min-width: 32px;">
+                                    <i class="bi bi-robot"></i>
+                                </div>
+                                <div class="chat-bubble bg-light rounded p-3" style="max-width: 80%;">
+                                    <p class="mb-0">Hello! I'm your Career Assistant. I can help you with career guidance, interview practice, career discovery, and professional development. What would you like to work on today?</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-footer bg-white">
                         <form id="chatForm" class="d-flex align-items-center gap-2">
@@ -241,13 +277,45 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Quick Actions Sidebar -->
+            <div class="col-lg-4">
+                <div class="card widget-card">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-lightning me-2"></i>Quick Actions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary btn-sm" onclick="askQuestion('What are my career options based on my skills?')">
+                                <i class="bi bi-search me-1"></i>Career Options
+                            </button>
+                            <button class="btn btn-outline-success btn-sm" onclick="askQuestion('How can I improve my resume?')">
+                                <i class="bi bi-file-earmark-text me-1"></i>Resume Help
+                            </button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="askQuestion('What interview questions should I prepare for?')">
+                                <i class="bi bi-question-circle me-1"></i>Interview Prep
+                            </button>
+                            <button class="btn btn-outline-info btn-sm" onclick="askQuestion('What skills should I develop next?')">
+                                <i class="bi bi-star me-1"></i>Skill Development
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="askQuestion('How can I network effectively?')">
+                                <i class="bi bi-people me-1"></i>Networking Tips
+                            </button>
+                            <button class="btn btn-outline-dark btn-sm" onclick="askQuestion('What are the current job market trends?')">
+                                <i class="bi bi-graph-up me-1"></i>Market Trends
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('assets/controllers/csrf_protection_controller.js') }}" type="module"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const chatForm = document.getElementById('chatForm');
@@ -255,6 +323,23 @@
             const chatMessages = document.getElementById('chatMessages');
             const sendButton = document.getElementById('sendButton');
             const personalizationToggle = document.getElementById('personalizationToggle');
+            const modeSelector = document.getElementById('modeSelector');
+            const currentModeSpan = document.getElementById('currentMode');
+            
+            let currentMode = 'general';
+
+            // Mode switching
+            document.querySelectorAll('[data-mode]').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const mode = this.getAttribute('data-mode');
+                    currentMode = mode;
+                    currentModeSpan.textContent = this.textContent.trim();
+                    
+                    // Add mode change message
+                    appendMessage('assistant', `Switched to ${this.textContent.trim()} mode. How can I help you?`);
+                });
+            });
 
             chatForm.addEventListener('submit', function (e) {
                 e.preventDefault();
@@ -276,12 +361,12 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': '{{ csrf_token("authenticate") }}'
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({
                         message: message,
-                        personalized: personalizationToggle.checked
+                        personalized: personalizationToggle.checked,
+                        mode: currentMode
                     })
                 })
                 .then(response => response.json())
@@ -294,7 +379,8 @@
                         appendMessage('assistant', '<span class="text-danger">Sorry, something went wrong.</span>');
                     }
                 })
-                .catch(() => {
+                .catch((error) => {
+                    console.error('Chat error:', error);
                     removeLastAssistantMessage();
                     appendMessage('assistant', '<span class="text-danger">Sorry, something went wrong.</span>');
                 })
@@ -341,6 +427,12 @@
                     .replace(/>/g, "&gt;")
                     .replace(/"/g, "&quot;")
                     .replace(/'/g, "&#039;");
+            }
+
+            // Quick Actions
+            window.askQuestion = function (question) {
+                messageInput.value = question;
+                chatForm.dispatchEvent(new Event('submit'));
             }
         });
     </script>

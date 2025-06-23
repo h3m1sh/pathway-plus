@@ -65,6 +65,7 @@ class CareerAssistantController extends AbstractController
             $data = json_decode($request->getContent(), true);
             $message = $data['message'] ?? '';
             $usePersonalization = $data['personalized'] ?? false;
+            $mode = $data['mode'] ?? 'general';
             
             if (empty($message)) {
                 return $this->json([
@@ -76,7 +77,7 @@ class CareerAssistantController extends AbstractController
             $user = $this->getUser();
             
             // Build context-aware prompt
-            $prompt = $this->buildCareerAssistantPrompt($message, $user, $usePersonalization);
+            $prompt = $this->buildCareerAssistantPrompt($message, $user, $usePersonalization, $mode);
             
             // Get AI response
             $response = $this->aiService->generateContent($prompt);
@@ -85,7 +86,8 @@ class CareerAssistantController extends AbstractController
             return $this->json([
                 'success' => true,
                 'response' => $aiResponse,
-                'timestamp' => (new \DateTimeImmutable())->format('Y-m-d H:i:s')
+                'timestamp' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
+                'mode' => $mode
             ]);
 
         } catch (\Exception $e) {
@@ -96,11 +98,33 @@ class CareerAssistantController extends AbstractController
         }
     }
 
-    private function buildCareerAssistantPrompt(string $message, $user, bool $personalized): string
+    private function buildCareerAssistantPrompt(string $message, $user, bool $personalized, string $mode = 'general'): string
     {
         $basePrompt = "You are a helpful, supportive career guidance assistant for higher education students. " .
                     "Your goal is to provide practical, actionable advice that helps students progress towards their career goals. " .
                     "Keep your tone positive, encouraging, and approachable.";
+
+        // Add mode specific instructions
+        switch ($mode) {
+            case 'interview':
+                $basePrompt .= " You are now in INTERVIEW SIMULATOR mode. Simulate a realistic job interview with the student. " .
+                               "Ask one interview question at a time. After the student responds, provide brief constructive feedback and suggest ways they can improve their answers. " .
+                               "Focus on common interview questions, behavioral questions (STAR method), and industry-specific scenarios. Maintain a professional but supportive tone.";
+                break;
+            case 'discovery':
+                $basePrompt .= " You are now in CAREER DISCOVERY mode. Act as a curious and supportive career counselor. " .
+                               "Ask the student open-ended questions to help them reflect on their interests, strengths, and goals. " .
+                               "Guide them to explore possible career paths, identify skill gaps, and map potential future steps. Keep responses conversational and encouraging.";
+                break;
+            case 'coach':
+                $basePrompt .= " You are now in DEVELOPMENT COACH mode. Act as a personal career coach. " .
+                               "Provide clear, actionable advice on professional development tasks such as resume writing, LinkedIn optimization, goal setting, networking strategies, and personal branding. " .
+                               "Break advice into small, manageable steps. Be motivational and encouraging.";
+                break;
+            default:
+                $basePrompt .= " You are in GENERAL CAREER GUIDANCE mode. Provide practical and encouraging career advice. " .
+                               "Answer the student's questions clearly and concisely. Help guide them toward achieving their career goals. Keep responses friendly and supportive.";
+        }
 
         if ($personalized) {
             // Get student data for personalization
