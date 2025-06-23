@@ -11,88 +11,83 @@
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
 
+    <script>
+        // Immediately sets theme from localStorage or system preference to prevent FOUC
+        (function() {
+            try {
+                var theme = localStorage.getItem('theme');
+                if (theme) {
+                    document.documentElement.setAttribute('data-theme', theme);
+                } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
+
     <style>
         :root {
-            /* Primary Colors */
             --midnight-navy: #1E2A38;
             --electric-blue: #007BFF;
-
-            /* Secondary Colors */
             --slate-gray: #6C757D;
             --cool-white: #F9FAFB;
-
-            /* Interactive/Highlight */
             --sky-blue: #5BC0EB;
             --soft-green: #28A745;
             --warm-yellow: #FFC107;
-
-            /* Text */
             --dark-charcoal: #212529;
             --muted-gray: #ADB5BD;
-
-            /* Background Colors */
             --bg-primary: #ffffff;
             --bg-secondary: #f8f9fa;
             --bg-tertiary: #e9ecef;
             --bg-card: #ffffff;
             --bg-navbar: var(--midnight-navy);
             --bg-footer: var(--cool-white);
-
-            /* Border Colors */
             --border-color: rgba(108, 117, 125, 0.2);
             --border-light: rgba(108, 117, 125, 0.15);
-
-            /* Shadow Colors */
             --shadow-color: rgba(30, 42, 56, 0.08);
             --shadow-hover: rgba(30, 42, 56, 0.12);
             --shadow-card: rgba(30, 42, 56, 0.12);
         }
 
-        /* Dark Theme Variables */
         [data-theme="dark"] {
-            /* Primary Colors - keep brand colors */
-            --midnight-navy: #1E2A38;
-            --electric-blue: #007BFF;
-
-            /* Secondary Colors - adjusted for dark */
-            --slate-gray: #6C757D;
             --cool-white: #1a1a1a;
-
-            /* Interactive/Highlight - keep for consistency */
-            --sky-blue: #5BC0EB;
-            --soft-green: #28A745;
-            --warm-yellow: #FFC107;
-
-            /* Text - inverted for dark theme */
             --dark-charcoal: #ffffff;
             --muted-gray: #cccccc;
-
-            /* Background Colors - dark variants */
             --bg-primary: #121212;
             --bg-secondary: #1e1e1e;
             --bg-tertiary: #2d2d2d;
             --bg-card: #1e1e1e;
-            --bg-navbar: #1E2A38; /* Keep brand color */
             --bg-footer: #1a1a1a;
-
-            /* Border Colors - darker variants */
             --border-color: rgba(255, 255, 255, 0.1);
             --border-light: rgba(255, 255, 255, 0.05);
-
-            /* Shadow Colors - darker variants */
             --shadow-color: rgba(0, 0, 0, 0.3);
             --shadow-hover: rgba(0, 0, 0, 0.4);
             --shadow-card: rgba(0, 0, 0, 0.4);
         }
 
-        /* Override Bootstrap classes for dark theme */
+        /* --- Global Dark Theme Overrides --- */
+        [data-theme="dark"] hr {
+            border-top-color: var(--border-color);
+        }
         [data-theme="dark"] .bg-light {
             background-color: var(--bg-tertiary) !important;
-            color: var(--dark-charcoal) !important;
         }
-
         [data-theme="dark"] .text-dark {
             color: var(--dark-charcoal) !important;
+        }
+        [data-theme="dark"] .text-primary { color: var(--sky-blue) !important; }
+        [data-theme="darl"] .text-success { color: #6ee391 !important; }
+        [data-theme="dark"] .text-warning { color: #ffd166 !important; }
+        
+        [data-theme="dark"] .card,
+        [data-theme="dark"] .modal-content,
+        [data-theme="dark"] .dropdown-menu {
+            background-color: var(--bg-card) !important;
+            color: var(--dark-charcoal) !important;
+        }
+        [data-theme="dark"] .card-header {
+            background-color: var(--bg-secondary) !important;
+            border-bottom: 1px solid var(--border-color) !important;
         }
         
         [data-theme="dark"] .badge.bg-light {
@@ -100,110 +95,61 @@
              color: #e0e0e0 !important;
              border-color: #555 !important;
         }
-
         [data-theme="dark"] .badge.bg-warning {
             background-color: #856404 !important;
             color: #ffecb3 !important;
         }
-
         [data-theme="dark"] .badge.bg-info {
             background-color: #0c5460 !important;
             color: #b8daff !important;
         }
 
+        /* --- Page & Component Specific Overrides --- */
         [data-theme="dark"] .dashboard-header h1, 
         [data-theme="dark"] .dashboard-header p {
             color: white !important;
         }
-
-        [data-theme="dark"] .text-primary {
-             color: var(--sky-blue) !important;
-        }
-
-        [data-theme="dark"] .text-success {
-             color: #6ee391 !important;
-        }
-
-        [data-theme="dark"] .text-warning {
-             color: #ffd166 !important;
-        }
-        
-        [data-theme="dark"] hr {
-            border-top: 1px solid var(--border-color);
-        }
-        
-        /* Custom card styling for dark theme to override inline styles */
-        [data-theme="dark"] .recommendation-card,
-        [data-theme="dark"] .card {
-            background-color: var(--bg-card) !important;
-            color: var(--dark-charcoal) !important;
-        }
-        
-        [data-theme="dark"] .card .card {
-             background-color: var(--bg-tertiary) !important;
-        }
-        
-        [data-theme="dark"] .recommendation-card h5 {
-            color: var(--dark-charcoal) !important;
-        }
-
-        /* Page-specific overrides for dark theme */
-        
-        /* Fix widget titles */
         [data-theme="dark"] .widget-title,
         [data-theme="dark"] .card-title {
             color: var(--dark-charcoal) !important;
         }
-
-        /* Career Progress & Profile Cards */
         [data-theme="dark"] .career-path-card,
         [data-theme="dark"] .profile-section .card {
             background-color: var(--bg-tertiary) !important;
             border: 1px solid var(--border-color);
         }
-        
         [data-theme="dark"] .progress-bar {
             background-color: var(--sky-blue);
         }
-
-        /* Browse Jobs Page */
         [data-theme="dark"] .job-card,
         [data-theme="dark"] .search-card,
-        [data-theme="dark"] .sidebar-card {
+        [data-theme="dark"] .sidebar-card,
+        [data-theme="dark"] .job-statistics .card,
+        [data-theme="dark"] .trending-jobs .card {
             background: var(--bg-tertiary) !important;
             border-color: var(--border-color) !important;
         }
-        
         [data-theme="dark"] .job-card:hover {
             border-color: var(--electric-blue) !important;
             box-shadow: 0 6px 20px var(--shadow-hover) !important;
         }
-        
-        [data-theme="dark"] .job-statistics .card,
-        [data-theme="dark"] .trending-jobs .card {
-             background-color: var(--bg-tertiary) !important;
-        }
-
-        /* Skill Passport Page */
         [data-theme="dark"] .filter-card {
             background: linear-gradient(135deg, #2a2a2a, #1c1c1c) !important;
             border-color: var(--border-color) !important;
         }
-        
         [data-theme="dark"] .stats-card,
         [data-theme="dark"] .bg-success,
         [data-theme="dark"] .bg-warning,
         [data-theme="dark"] .bg-info {
             color: white !important;
         }
-        
         [data-theme="dark"] .stats-card { background: linear-gradient(135deg, #007BFF, #5BC0EB) !important; }
         [data-theme="dark"] .bg-success { background: linear-gradient(135deg, #28A745, #20c997) !important; }
         [data-theme="dark"] .bg-warning { background: linear-gradient(135deg, #FFC107, #ffda6a) !important; }
         [data-theme="dark"] .bg-info { background: linear-gradient(135deg, #17a2b8, #66d9e8) !important; }
         
 
-        /* Theme Transition */
+        /* --- Base App Styling --- */
         * {
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
@@ -667,34 +613,18 @@
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
     {{ encore_entry_script_tags('app') }}
     <script>
-        // Enhanced Theme Toggle Functionality
+        // Manages theme toggle state and persists selection to localStorage
         document.addEventListener('DOMContentLoaded', function() {
             const themeToggle = document.getElementById('themeToggle');
-            
-            // Load saved theme preference
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            
-            // Set toggle state based on saved theme
             if (themeToggle) {
-                themeToggle.checked = savedTheme === 'dark';
+                // Set initial state from the data-theme attribute
+                themeToggle.checked = document.documentElement.getAttribute('data-theme') === 'dark';
                 
                 themeToggle.addEventListener('change', function() {
                     const newTheme = this.checked ? 'dark' : 'light';
                     document.documentElement.setAttribute('data-theme', newTheme);
                     localStorage.setItem('theme', newTheme);
                 });
-            }
-
-            // Check for system preference on first visit
-            if (!localStorage.getItem('theme')) {
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                const defaultTheme = prefersDark ? 'dark' : 'light';
-                document.documentElement.setAttribute('data-theme', defaultTheme);
-                localStorage.setItem('theme', defaultTheme);
-                if (themeToggle) {
-                    themeToggle.checked = prefersDark;
-                }
             }
         });
 
