@@ -215,5 +215,133 @@
                 </div>
             </div>
         </div>
+        <!-- Chat Interface -->
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                <div class="card widget-card">
+                    <div class="card-header bg-white d-flex align-items-center justify-content-between">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-chat-dots me-2"></i>Career Assistant Chat
+                        </h5>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="personalizationToggle" checked>
+                            <label class="form-check-label" for="personalizationToggle" title="Toggle personalized advice">Personalized</label>
+                        </div>
+                    </div>
+                    <div class="card-body" style="height: 350px; overflow-y: auto; background: #f9fafb;" id="chatMessages">
+                        <!-- Chat messages will appear here -->
+                    </div>
+                    <div class="card-footer bg-white">
+                        <form id="chatForm" class="d-flex align-items-center gap-2">
+                            <input type="text" id="messageInput" class="form-control" placeholder="Type your question..." autocomplete="off" required>
+                            <button type="submit" id="sendButton" class="btn btn-primary">
+                                <i class="bi bi-send"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/controllers/csrf_protection_controller.js') }}" type="module"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chatForm = document.getElementById('chatForm');
+            const messageInput = document.getElementById('messageInput');
+            const chatMessages = document.getElementById('chatMessages');
+            const sendButton = document.getElementById('sendButton');
+            const personalizationToggle = document.getElementById('personalizationToggle');
+
+            chatForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const message = messageInput.value.trim();
+                if (!message) return;
+
+                // Add user message to chat
+                appendMessage('user', message);
+
+                // Disable input while waiting
+                messageInput.value = '';
+                messageInput.disabled = true;
+                sendButton.disabled = true;
+
+                // Show loading indicator
+                appendMessage('assistant', '<span class="spinner-border spinner-border-sm text-primary" role="status"></span>');
+
+                fetch('{{ path('app_career_assistant_chat') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '{{ csrf_token("authenticate") }}'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        personalized: personalizationToggle.checked
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Remove loading indicator
+                    removeLastAssistantMessage();
+                    if (data.success) {
+                        appendMessage('assistant', data.response);
+                    } else {
+                        appendMessage('assistant', '<span class="text-danger">Sorry, something went wrong.</span>');
+                    }
+                })
+                .catch(() => {
+                    removeLastAssistantMessage();
+                    appendMessage('assistant', '<span class="text-danger">Sorry, something went wrong.</span>');
+                })
+                .finally(() => {
+                    messageInput.disabled = false;
+                    sendButton.disabled = false;
+                    messageInput.focus();
+                });
+            });
+
+            function appendMessage(sender, text) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('chat-message', sender === 'user' ? 'user-message' : 'assistant-message', 'mb-3');
+                messageDiv.innerHTML = sender === 'user'
+                    ? `<div class="d-flex align-items-start justify-content-end">
+                            <div class="chat-bubble bg-primary text-white rounded p-3 ms-auto" style="max-width: 80%;">
+                                <p class="mb-0">${escapeHtml(text)}</p>
+                            </div>
+                        </div>`
+                    : `<div class="d-flex align-items-start">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                 style="width: 32px; height: 32px; font-size: 0.8rem; min-width: 32px;">
+                                <i class="bi bi-robot"></i>
+                            </div>
+                            <div class="chat-bubble bg-light rounded p-3" style="max-width: 80%;">
+                                <p class="mb-0">${text}</p>
+                            </div>
+                        </div>`;
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            function removeLastAssistantMessage() {
+                const messages = chatMessages.querySelectorAll('.assistant-message');
+                if (messages.length > 0) {
+                    messages[messages.length - 1].remove();
+                }
+            }
+
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+        });
+    </script>
 {% endblock %}
