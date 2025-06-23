@@ -29,19 +29,196 @@
             /* Text */
             --dark-charcoal: #212529;
             --muted-gray: #ADB5BD;
+
+            /* Background Colors */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --bg-card: #ffffff;
+            --bg-navbar: var(--midnight-navy);
+            --bg-footer: var(--cool-white);
+
+            /* Border Colors */
+            --border-color: rgba(108, 117, 125, 0.2);
+            --border-light: rgba(108, 117, 125, 0.15);
+
+            /* Shadow Colors */
+            --shadow-color: rgba(30, 42, 56, 0.08);
+            --shadow-hover: rgba(30, 42, 56, 0.12);
+            --shadow-card: rgba(30, 42, 56, 0.12);
+        }
+
+        /* Dark Theme Variables */
+        [data-theme="dark"] {
+            /* Primary Colors - keep brand colors */
+            --midnight-navy: #1E2A38;
+            --electric-blue: #007BFF;
+
+            /* Secondary Colors - adjusted for dark */
+            --slate-gray: #6C757D;
+            --cool-white: #1a1a1a;
+
+            /* Interactive/Highlight - keep for consistency */
+            --sky-blue: #5BC0EB;
+            --soft-green: #28A745;
+            --warm-yellow: #FFC107;
+
+            /* Text - inverted for dark theme */
+            --dark-charcoal: #ffffff;
+            --muted-gray: #cccccc;
+
+            /* Background Colors - dark variants */
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2d2d2d;
+            --bg-card: #1e1e1e;
+            --bg-navbar: #1E2A38; /* Keep brand color */
+            --bg-footer: #1a1a1a;
+
+            /* Border Colors - darker variants */
+            --border-color: rgba(255, 255, 255, 0.1);
+            --border-light: rgba(255, 255, 255, 0.05);
+
+            /* Shadow Colors - darker variants */
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --shadow-hover: rgba(0, 0, 0, 0.4);
+            --shadow-card: rgba(0, 0, 0, 0.4);
+        }
+
+        /* Override Bootstrap classes for dark theme */
+        [data-theme="dark"] .bg-light {
+            background-color: var(--bg-tertiary) !important;
+            color: var(--dark-charcoal) !important;
+        }
+
+        [data-theme="dark"] .text-dark {
+            color: var(--dark-charcoal) !important;
+        }
+        
+        [data-theme="dark"] .badge.bg-light {
+             background-color: #3a3a3a !important;
+             color: #e0e0e0 !important;
+             border-color: #555 !important;
+        }
+
+        [data-theme="dark"] .badge.bg-warning {
+            background-color: #856404 !important;
+            color: #ffecb3 !important;
+        }
+
+        [data-theme="dark"] .badge.bg-info {
+            background-color: #0c5460 !important;
+            color: #b8daff !important;
+        }
+
+        [data-theme="dark"] .dashboard-header h1, 
+        [data-theme="dark"] .dashboard-header p {
+            color: white !important;
+        }
+
+        [data-theme="dark"] .text-primary {
+             color: var(--sky-blue) !important;
+        }
+
+        [data-theme="dark"] .text-success {
+             color: #6ee391 !important;
+        }
+
+        [data-theme="dark"] .text-warning {
+             color: #ffd166 !important;
+        }
+        
+        [data-theme="dark"] hr {
+            border-top: 1px solid var(--border-color);
+        }
+        
+        /* Custom card styling for dark theme to override inline styles */
+        [data-theme="dark"] .recommendation-card,
+        [data-theme="dark"] .card {
+            background-color: var(--bg-card) !important;
+            color: var(--dark-charcoal) !important;
+        }
+        
+        [data-theme="dark"] .card .card {
+             background-color: var(--bg-tertiary) !important;
+        }
+        
+        [data-theme="dark"] .recommendation-card h5 {
+            color: var(--dark-charcoal) !important;
+        }
+
+        /* Page-specific overrides for dark theme */
+        
+        /* Fix widget titles */
+        [data-theme="dark"] .widget-title,
+        [data-theme="dark"] .card-title {
+            color: var(--dark-charcoal) !important;
+        }
+
+        /* Career Progress & Profile Cards */
+        [data-theme="dark"] .career-path-card,
+        [data-theme="dark"] .profile-section .card {
+            background-color: var(--bg-tertiary) !important;
+            border: 1px solid var(--border-color);
+        }
+        
+        [data-theme="dark"] .progress-bar {
+            background-color: var(--sky-blue);
+        }
+
+        /* Browse Jobs Page */
+        [data-theme="dark"] .job-card,
+        [data-theme="dark"] .search-card,
+        [data-theme="dark"] .sidebar-card {
+            background: var(--bg-tertiary) !important;
+            border-color: var(--border-color) !important;
+        }
+        
+        [data-theme="dark"] .job-card:hover {
+            border-color: var(--electric-blue) !important;
+            box-shadow: 0 6px 20px var(--shadow-hover) !important;
+        }
+        
+        [data-theme="dark"] .job-statistics .card,
+        [data-theme="dark"] .trending-jobs .card {
+             background-color: var(--bg-tertiary) !important;
+        }
+
+        /* Skill Passport Page */
+        [data-theme="dark"] .filter-card {
+            background: linear-gradient(135deg, #2a2a2a, #1c1c1c) !important;
+            border-color: var(--border-color) !important;
+        }
+        
+        [data-theme="dark"] .stats-card,
+        [data-theme="dark"] .bg-success,
+        [data-theme="dark"] .bg-warning,
+        [data-theme="dark"] .bg-info {
+            color: white !important;
+        }
+        
+        [data-theme="dark"] .stats-card { background: linear-gradient(135deg, #007BFF, #5BC0EB) !important; }
+        [data-theme="dark"] .bg-success { background: linear-gradient(135deg, #28A745, #20c997) !important; }
+        [data-theme="dark"] .bg-warning { background: linear-gradient(135deg, #FFC107, #ffda6a) !important; }
+        [data-theme="dark"] .bg-info { background: linear-gradient(135deg, #17a2b8, #66d9e8) !important; }
+        
+
+        /* Theme Transition */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         /* Custom Pathway+ Styling */
         body {
-            background-color: var(--cool-white);
+            background-color: var(--bg-primary);
             color: var(--dark-charcoal);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .navbar-pathway {
-            background-color: var(--midnight-navy) !important;
+            background-color: var(--bg-navbar) !important;
             border-bottom: 3px solid var(--electric-blue);
-            box-shadow: 0 2px 10px rgba(30, 42, 56, 0.1);
+            box-shadow: 0 2px 10px var(--shadow-color);
         }
 
         .navbar-pathway .navbar-brand {
@@ -70,6 +247,68 @@
             color: white !important;
         }
 
+        /* Theme Toggle Switch */
+        .theme-toggle {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            margin: 0 10px;
+        }
+
+        .theme-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .theme-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.3);
+            transition: 0.3s;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .theme-slider:before {
+            position: absolute;
+            content: "☀️";
+            height: 18px;
+            width: 18px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            line-height: 18px;
+            text-align: center;
+        }
+
+        input:checked + .theme-slider {
+            background-color: var(--electric-blue);
+        }
+
+        input:checked + .theme-slider:before {
+            transform: translateX(26px);
+            content: "🌙";
+        }
+
+        .theme-toggle-label {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.8rem;
+            margin-right: 5px;
+            white-space: nowrap;
+        }
+
         .btn-primary {
             background-color: var(--electric-blue);
             border-color: var(--electric-blue);
@@ -92,14 +331,14 @@
         }
 
         .card {
-            background-color: white;
-            border: 1px solid rgba(108, 117, 125, 0.2);
-            box-shadow: 0 2px 8px rgba(30, 42, 56, 0.08);
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px var(--shadow-color);
             transition: all 0.3s ease;
         }
 
         .card:hover {
-            box-shadow: 0 4px 16px rgba(30, 42, 56, 0.12);
+            box-shadow: 0 4px 16px var(--shadow-hover);
             transform: translateY(-2px);
         }
 
@@ -112,7 +351,7 @@
         }
 
         .bg-light {
-            background-color: var(--cool-white) !important;
+            background-color: var(--bg-secondary) !important;
         }
 
         /* Dashboard specific styles */
@@ -126,27 +365,28 @@
 
         .widget-card {
             border-radius: 12px;
-            border: none;
-            background: white;
-            box-shadow: 0 2px 12px rgba(30, 42, 56, 0.08);
+            border: 2px solid var(--border-light);
+            background: var(--bg-card);
+            box-shadow: 0 4px 16px var(--shadow-card);
             transition: all 0.3s ease;
             height: 100%;
         }
 
         .widget-card:hover {
-            box-shadow: 0 6px 20px rgba(30, 42, 56, 0.15);
+            box-shadow: 0 8px 24px var(--shadow-hover);
             transform: translateY(-3px);
+            border-color: rgba(0, 123, 255, 0.3);
         }
 
         .widget-header {
-            background-color: var(--cool-white);
+            background-color: var(--bg-secondary);
             border-bottom: 2px solid var(--electric-blue);
             padding: 1rem 1.5rem;
             border-radius: 12px 12px 0 0;
         }
 
         .widget-title {
-            color: var(--midnight-navy);
+            color: var(--dark-charcoal);
             font-weight: 600;
             margin: 0;
             font-size: 1.1rem;
@@ -156,11 +396,86 @@
             padding: 1.5rem;
         }
 
-        /* Theme toggle preparation for future */
-        [data-theme="dark"] {
-            --cool-white: #1a1a1a;
-            --dark-charcoal: #ffffff;
-            --muted-gray: #cccccc;
+        /* Dropdown menu styling */
+        .dropdown-menu {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px var(--shadow-color);
+            border-radius: 8px;
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            transition: all 0.2s ease;
+            color: var(--dark-charcoal);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--bg-secondary);
+            color: var(--electric-blue);
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 3px solid var(--bg-secondary);
+            border-top: 3px solid var(--electric-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Footer styling */
+        .footer {
+            background-color: var(--bg-footer) !important;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Form elements */
+        .form-control, .form-select {
+            background-color: var(--bg-card);
+            border-color: var(--border-color);
+            color: var(--dark-charcoal);
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-card);
+            border-color: var(--electric-blue);
+            color: var(--dark-charcoal);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        /* Table styling */
+        .table {
+            color: var(--dark-charcoal);
+        }
+
+        .table th {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color);
+        }
+
+        .table td {
+            border-color: var(--border-color);
+        }
+
+        /* Modal styling */
+        .modal-content {
+            background-color: var(--bg-card);
+            border-color: var(--border-color);
+        }
+
+        .modal-header {
+            border-bottom-color: var(--border-color);
+        }
+
+        .modal-footer {
+            border-top-color: var(--border-color);
         }
 
         /* Responsive adjustments */
@@ -173,13 +488,17 @@
             .widget-card {
                 margin-bottom: 1rem;
             }
+
+            .theme-toggle-label {
+                display: none;
+            }
         }
 
         /* Flash messages styling */
         .alert {
             border: none;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(30, 42, 56, 0.08);
+            box-shadow: 0 2px 8px var(--shadow-color);
         }
 
         .alert-success {
@@ -197,36 +516,17 @@
             color: var(--dark-charcoal);
         }
 
-        /* Dropdown menu styling */
-        .dropdown-menu {
-            border: none;
-            box-shadow: 0 4px 12px rgba(30, 42, 56, 0.15);
-            border-radius: 8px;
+        [data-theme="dark"] .widget-header {
+            background-color: var(--bg-secondary);
+            border-bottom: 2px solid var(--electric-blue);
+            padding: 1rem 1.5rem;
+            border-radius: 12px 12px 0 0;
         }
 
-        .dropdown-item {
-            padding: 0.5rem 1rem;
-            transition: all 0.2s ease;
-        }
-
-        .dropdown-item:hover {
-            background-color: var(--cool-white);
-            color: var(--electric-blue);
-        }
-
-        /* Loading spinner */
-        .loading-spinner {
-            width: 3rem;
-            height: 3rem;
-            border: 3px solid var(--cool-white);
-            border-top: 3px solid var(--electric-blue);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        [data-theme="dark"] .card-header {
+            background-color: var(--bg-secondary) !important;
+            color: var(--dark-charcoal) !important;
+            border-bottom: 1px solid var(--border-color) !important;
         }
     </style>
 
@@ -276,7 +576,16 @@
                         </li>
                     </ul>
 
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav align-items-center">
+                        <!-- Theme Toggle -->
+                        <li class="nav-item d-flex align-items-center">
+                            <span class="theme-toggle-label"></span>
+                            <label class="theme-toggle">
+                                <input type="checkbox" id="themeToggle">
+                                <span class="theme-slider"></span>
+                            </label>
+                        </li>
+
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                                 {% if app.user.avatarUrl %}
@@ -308,7 +617,16 @@
                         </li>
                     </ul>
                 {% else %}
-                    <ul class="navbar-nav ms-auto">
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        <!-- Theme Toggle for non-authenticated users -->
+                        <li class="nav-item d-flex align-items-center">
+                            <span class="theme-toggle-label">Theme</span>
+                            <label class="theme-toggle">
+                                <input type="checkbox" id="themeToggle">
+                                <span class="theme-slider"></span>
+                            </label>
+                        </li>
+                        
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('app_login') }}">
                                 <i class="bi bi-box-arrow-in-right me-1"></i>Login
@@ -338,7 +656,7 @@
         {% block body %}{% endblock %}
     </main>
 
-    <footer class="footer mt-auto py-3 bg-light">
+    <footer class="footer mt-auto py-3">
         <div class="container text-center">
             <span class="text-muted">© {{ "now"|date("Y") }} Pathway+. All rights reserved.</span>
         </div>
@@ -347,33 +665,35 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+    {{ encore_entry_script_tags('app') }}
     <script>
-        // Theme toggle functionality
+        // Enhanced Theme Toggle Functionality
         document.addEventListener('DOMContentLoaded', function() {
             const themeToggle = document.getElementById('themeToggle');
+            
+            // Load saved theme preference
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            // Set toggle state based on saved theme
             if (themeToggle) {
-                themeToggle.addEventListener('click', function() {
-                    const html = document.documentElement;
-                    const currentTheme = html.getAttribute('data-theme');
-                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-                    html.setAttribute('data-theme', newTheme);
+                themeToggle.checked = savedTheme === 'dark';
+                
+                themeToggle.addEventListener('change', function() {
+                    const newTheme = this.checked ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', newTheme);
                     localStorage.setItem('theme', newTheme);
-                    
-
-                    const themeIcon = document.getElementById('themeIcon');
-                    if (themeIcon) {
-                        themeIcon.className = newTheme === 'light' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
-                    }
                 });
             }
 
-            // Load saved theme preference
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme) {
-                document.documentElement.setAttribute('data-theme', savedTheme);
-                const themeIcon = document.getElementById('themeIcon');
-                if (themeIcon) {
-                    themeIcon.className = savedTheme === 'light' ? 'bi bi-sun-fill' : 'bi bi-moon-fill';
+            // Check for system preference on first visit
+            if (!localStorage.getItem('theme')) {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const defaultTheme = prefersDark ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', defaultTheme);
+                localStorage.setItem('theme', defaultTheme);
+                if (themeToggle) {
+                    themeToggle.checked = prefersDark;
                 }
             }
         });

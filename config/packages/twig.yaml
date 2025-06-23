@@ -1,6 +1,10 @@
 twig:
     file_name_pattern: '*.twig'
 
+when@dev:
+    twig:
+        cache: false
+
 when@test:
     twig:
         strict_variables: true
