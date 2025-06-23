@@ -26,6 +26,7 @@
     </script>
 
     <style>
+        /* Theme variables */
         :root {
             --midnight-navy: #1E2A38;
             --electric-blue: #007BFF;
@@ -148,6 +149,111 @@
         [data-theme="dark"] .bg-warning { background: linear-gradient(135deg, #FFC107, #ffda6a) !important; }
         [data-theme="dark"] .bg-info { background: linear-gradient(135deg, #17a2b8, #66d9e8) !important; }
         
+
+        /* --- Admin Section Dark Theme Overrides --- */
+        [data-theme="dark"] .welcome-header {
+            background: linear-gradient(135deg, #2a2a2a, #1c1c1c) !important;
+        }
+        [data-theme="dark"] .dashboard-card {
+            background-color: var(--bg-tertiary) !important;
+            border-color: var(--border-color) !important;
+        }
+        [data-theme="dark"] .dashboard-card .card-header {
+             border-radius: 12px 12px 0 0; /* Fix for overlap issue */
+        }
+        [data-theme="dark"] .admin-nav, 
+        [data-theme="dark"] .admin-nav-item {
+            background-color: var(--bg-tertiary) !important;
+            border-color: var(--border-color) !important;
+            color: var(--dark-charcoal) !important;
+        }
+        [data-theme="dark"] .admin-nav-item:hover {
+            background-color: var(--bg-secondary) !important;
+        }
+        [data-theme="dark"] .recent-items-table tr:not(:last-child) td {
+            border-bottom: 1px solid var(--border-color) !important;
+        }
+        [data-theme="dark"] .table-light {
+            --bs-table-bg: var(--bg-secondary) !important;
+            --bs-table-color: var(--dark-charcoal) !important;
+            border-color: var(--border-color) !important;
+        }
+        [data-theme="dark"] .table-hover > tbody > tr:hover > * {
+            --bs-table-accent-bg: var(--bg-tertiary) !important;
+        }
+        [data-theme="dark"] code {
+            color: var(--sky-blue);
+        }
+        [data-theme="dark"] .breadcrumb-item a {
+            color: var(--sky-blue) !important;
+        }
+        [data-theme="dark"] .breadcrumb-item.active {
+            color: var(--muted-gray) !important;
+        }
+
+        /* Final overrides for stubborn elements */
+        [data-theme="dark"] .table > tbody > tr {
+            background-color: transparent !important;
+            color: var(--dark-charcoal) !important;
+        }
+        [data-theme="dark"] .table-hover > tbody > tr:hover > * {
+            --bs-table-accent-bg: var(--bg-secondary) !important;
+            color: var(--dark-charcoal) !important;
+        }
+        [data-theme="dark"] .form-text {
+            color: var(--muted-gray) !important;
+        }
+        [data-theme="dark"] .recent-items-table {
+            background-color: transparent !important;
+        }
+
+        /* --- Final Admin Section Overrides --- */
+
+        /* Fix Dashboard "Recent Activity" Widgets */
+        [data-theme="dark"] .dashboard-card .recent-items-table,
+        [data-theme="dark"] .dashboard-card .admin-nav {
+            background: transparent !important;
+        }
+        [data-theme="dark"] .recent-items-table td,
+        [data-theme="dark"] .admin-nav-item {
+            color: var(--dark-charcoal) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        /* Fix all Admin CRUD Index Tables */
+        [data-theme="dark"] .table > tbody > tr {
+            --bs-table-color: var(--dark-charcoal) !important;
+            --bs-table-bg: var(--bg-tertiary) !important;
+            border-color: var(--border-color) !important;
+        }
+        [data-theme="dark"] .table-hover > tbody > tr:hover > * {
+            --bs-table-accent-bg: var(--bg-secondary) !important;
+            color: var(--dark-charcoal) !important;
+        }
+        
+        /* Fix Admin Search Bars and Edit Forms */
+        [data-theme="dark"] .card-header.bg-white,
+        [data-theme="dark"] .card-footer.bg-white {
+             background-color: var(--bg-secondary) !important;
+        }
+        [data-theme="dark"] .form-control::placeholder {
+            color: var(--muted-gray);
+            opacity: 0.6;
+        }
+        [data-theme="dark"] .form-text {
+            color: var(--muted-gray) !important;
+        }
+
+        /* Fix search bar icon in dark mode */
+        [data-theme="dark"] .form-control {
+            color: var(--dark-charcoal) !important;
+        }
+        [data-theme="dark"] .form-control + .input-group-text,
+        [data-theme="dark"] .input-group-text {
+            background-color: var(--bg-secondary) !important;
+            border-color: var(--border-color) !important;
+            color: white !important;
+        }
 
         /* --- Base App Styling --- */
         * {
