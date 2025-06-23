@@ -12,6 +12,11 @@
             background: linear-gradient(145deg, #ffffff 0%, #f0f8ff 100%);
         }
         
+        [data-theme="dark"] .job-header-card {
+            background: var(--bg-tertiary) !important;
+            border-color: var(--border-color) !important;
+        }
+        
         .job-header-card:hover {
             box-shadow: 0 6px 20px rgba(0, 123, 255, 0.15);
             border-color: rgba(0, 123, 255, 0.3);
@@ -21,6 +26,11 @@
             border: 2px solid rgba(108, 117, 125, 0.2);
             box-shadow: 0 6px 20px rgba(30, 42, 56, 0.15);
             background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+        }
+        
+        [data-theme="dark"] .job-content-card {
+            background: var(--bg-secondary) !important;
+            border-color: var(--border-color) !important;
         }
         
         .job-content-card:hover {
@@ -35,6 +45,11 @@
             background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
         }
         
+        [data-theme="dark"] .detail-item {
+            background: var(--bg-tertiary) !important;
+            border-color: var(--border-color) !important;
+        }
+        
         .detail-item:hover {
             box-shadow: 0 4px 12px rgba(30, 42, 56, 0.12);
             border-color: rgba(0, 123, 255, 0.2);
@@ -45,6 +60,11 @@
             border: 1px solid rgba(0, 0, 0, 0.1);
             font-weight: 500;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        [data-theme="dark"] .badge.bg-secondary {
+            background-color: #4a4a4a !important;
+            color: #e0e0e0 !important;
         }
         
         /* Enhanced button styling */
@@ -70,6 +90,10 @@
             line-height: 1.6;
             color: var(--dark-charcoal);
             font-size: 0.95rem;
+        }
+
+        [data-theme="dark"] .job-content {
+            color: var(--dark-charcoal) !important;
         }
 
         .job-content p {
@@ -121,6 +145,11 @@
         .detail-value {
             color: var(--muted-gray);
             font-size: 0.9rem;
+        }
+
+        [data-theme="dark"] .detail-value,
+        [data-theme="dark"] .text-muted {
+            color: var(--muted-gray) !important;
         }
 
         .h2 {
