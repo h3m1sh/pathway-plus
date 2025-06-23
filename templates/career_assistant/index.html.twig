@@ -1,0 +1,219 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Career Assistant - {{ user.fullName }}{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        {# <!-- Breadcrumb Navigation -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('app_dashboard') }}" class="text-decoration-none">
+                        <i class="bi bi-house me-1"></i>Dashboard
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <i class="bi bi-robot me-1"></i>Career Assistant
+                </li>
+            </ol>
+        </nav> #}
+
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                         style="width: 60px; height: 60px; font-size: 1.5rem;">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                    <div>
+                        <h1 class="h3 mb-1">Career Assistant</h1>
+                        <p class="text-muted mb-0">
+                            AI-powered career guidance and development tools
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats Row -->
+        <div class="row mb-4">
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card widget-card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-primary mb-2">
+                            <i class="bi bi-award-fill" style="font-size: 2rem;"></i>
+                        </div>
+                        <h4 class="mb-1">{{ stats.totalCredentials }}</h4>
+                        <small class="text-muted">Earned Credentials</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card widget-card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-success mb-2">
+                            <i class="bi bi-star-fill" style="font-size: 2rem;"></i>
+                        </div>
+                        <h4 class="mb-1">{{ stats.totalSkills }}</h4>
+                        <small class="text-muted">Skills Developed</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card widget-card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-warning mb-2">
+                            <i class="bi bi-briefcase-fill" style="font-size: 2rem;"></i>
+                        </div>
+                        <h4 class="mb-1">{{ stats.careerInterests }}</h4>
+                        <small class="text-muted">Career Interests</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card widget-card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-info mb-2">
+                            <i class="bi bi-activity" style="font-size: 2rem;"></i>
+                        </div>
+                        <h4 class="mb-1">{{ stats.recentActivity }}</h4>
+                        <small class="text-muted">Recent Activity</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="row">
+            <!-- Assistant Modules -->
+            <div class="col-lg-8 mb-4">
+                <div class="card widget-card">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-grid-3x3-gap me-2"></i>Career Assistant Modules
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Interview Simulator -->
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-0 bg-light h-100">
+                                    <div class="card-body text-center p-4">
+                                        <div class="text-primary mb-3">
+                                            <i class="bi bi-camera-video-fill" style="font-size: 3rem;"></i>
+                                        </div>
+                                        <h5 class="card-title">Interview Simulator</h5>
+                                        <p class="card-text text-muted small">
+                                            Practice mock interviews with real-time feedback and adaptive questions
+                                        </p>
+                                        <button class="btn btn-outline-primary btn-sm" disabled>
+                                            <i class="bi bi-play-circle me-1"></i>Coming Soon
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Career Discovery -->
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-0 bg-light h-100">
+                                    <div class="card-body text-center p-4">
+                                        <div class="text-success mb-3">
+                                            <i class="bi bi-compass-fill" style="font-size: 3rem;"></i>
+                                        </div>
+                                        <h5 class="card-title">Career Discovery</h5>
+                                        <p class="card-text text-muted small">
+                                            Interest assessments, skills gap analysis, and career path mapping
+                                        </p>
+                                        <button class="btn btn-outline-success btn-sm" disabled>
+                                            <i class="bi bi-search me-1"></i>Coming Soon
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Professional Development Coach -->
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-0 bg-light h-100">
+                                    <div class="card-body text-center p-4">
+                                        <div class="text-warning mb-3">
+                                            <i class="bi bi-person-workspace" style="font-size: 3rem;"></i>
+                                        </div>
+                                        <h5 class="card-title">Development Coach</h5>
+                                        <p class="card-text text-muted small">
+                                            Resume review, LinkedIn optimization, and goal setting guidance
+                                        </p>
+                                        <button class="btn btn-outline-warning btn-sm" disabled>
+                                            <i class="bi bi-trophy me-1"></i>Coming Soon
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- AI Chat Assistant -->
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-0 bg-light h-100">
+                                    <div class="card-body text-center p-4">
+                                        <div class="text-info mb-3">
+                                            <i class="bi bi-chat-dots-fill" style="font-size: 3rem;"></i>
+                                        </div>
+                                        <h5 class="card-title">AI Chat Assistant</h5>
+                                        <p class="card-text text-muted small">
+                                            Personalized career guidance through conversational AI
+                                        </p>
+                                        <button class="btn btn-outline-info btn-sm" disabled>
+                                            <i class="bi bi-robot me-1"></i>Coming Soon
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar: Student Profile Snapshot -->
+            <div class="col-lg-4 mb-4">
+                <div class="card widget-card">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-person-circle me-2"></i>Your Profile
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        {% if user.avatarUrl %}
+                            <img src="{{ user.avatarUrl }}" alt="{{ user.fullName }}"
+                                 class="rounded-circle mb-2" style="width: 80px; height: 80px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2"
+                                 style="width: 80px; height: 80px; font-size: 2rem;">
+                                {{ user.firstName|slice(0,1) }}{{ user.lastName|slice(0,1) }}
+                            </div>
+                        {% endif %}
+                        <h6 class="mb-1">{{ user.fullName }}</h6>
+                        {% if user.studentId %}
+                            <small class="text-muted">ID: {{ user.studentId }}</small>
+                        {% endif %}
+
+                        <hr>
+                        <div class="mb-2">
+                            <span class="badge bg-primary me-1">{{ stats.totalSkills }} Skills</span>
+                            <span class="badge bg-success me-1">{{ stats.totalCredentials }} Credentials</span>
+                        </div>
+                        {% if careerInterests|length > 0 %}
+                            <h6 class="text-muted mb-2 mt-3">Career Interests</h6>
+                            <div class="d-flex flex-wrap justify-content-center gap-1">
+                                {% for interest in careerInterests|slice(0, 3) %}
+                                    <span class="badge bg-light text-dark border">{{ interest.title }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <a href="{{ path('app_profile') }}" class="btn btn-outline-secondary btn-sm mt-3">
+                            <i class="bi bi-person-gear me-1"></i>Edit Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -620,6 +620,14 @@
                                 </a>
                             </li>
                         {% endif %}
+                        {% if is_granted('ROLE_STUDENT') %}
+                            <li class="nav-item">
+                                <a class="nav-link {{ app.request.get('_route') == 'app_career_assistant' ? 'active' : '' }}"
+                                   href="{{ path('app_career_assistant') }}">
+                                    <i class="bi bi-robot me-1"></i>Career Assistant
+                                </a>
+                            </li>
+                        {% endif %}
                         <li class="nav-item">
                             <a class="nav-link {{ app.request.get('_route') == 'app_profile' ? 'active' : '' }}"
                                href="{{ path('app_profile') }}">

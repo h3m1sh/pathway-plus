@@ -9,4 +9,3 @@
 //     )
 // );
 
-console.log('Bootstrap.js loaded - Stimulus disabled for now');
