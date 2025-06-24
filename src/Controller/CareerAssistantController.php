@@ -28,7 +28,7 @@ class CareerAssistantController extends AbstractController
         private JobRoleRepository $jobRoleRepository,
         private ConversationRepository $conversationRepository,
         private GeminiAiService $aiService,
-        private EntityManagerInterface $entityManagerƒ
+        private EntityManagerInterface $entityManager
     ) {
     }
 
