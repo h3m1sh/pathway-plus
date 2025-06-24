@@ -184,10 +184,10 @@ class CareerAssistantController extends AbstractController
 
         return $this->applyGlobalFormattingRules("You are a career development expert analyzing a student's skill profile. Please provide a comprehensive analysis including:
 
-Student Profile:
-- Skills: {$skillsList}
-- Career Interests: {$interestsList}
-- Earned Credentials: {$credentialsList}
+        Student Profile:
+        - Skills: {$skillsList}
+        - Career Interests: {$interestsList}
+        - Earned Credentials: {$credentialsList}
 
         Please provide:
         1. A quick summary of the student's strengths (2-3 points max)

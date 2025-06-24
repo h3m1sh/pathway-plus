@@ -5,279 +5,565 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        .sidebar-widget {
-            height: auto !important;
-            max-height: 320px;
-            overflow-y: auto;
-        }
-        .sidebar-container {
-            position: sticky;
-            top: 20px;
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --card-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Enhanced card styling for browse jobs page */
-        .job-card {
-            border: 2px solid rgba(108, 117, 125, 0.2);
-            box-shadow: 0 6px 20px rgba(30, 42, 56, 0.15);
-            transition: all 0.3s ease;
-            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
         }
 
-        .job-card:hover {
-            box-shadow: 0 10px 30px rgba(30, 42, 56, 0.25);
-            transform: translateY(-4px);
-            border-color: rgba(0, 123, 255, 0.4);
+        /* Modern Header */
+        .page-header {
+            background: var(--primary-gradient);
+            border-radius: 0 0 24px 24px;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .page-header .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-header h1 {
+            color: white;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .job-count-badge {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+        }
+
+        /* Modern Search Card */
+        .search-container {
+            margin-top: -1rem;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 10;
         }
 
         .search-card {
-            border: 2px solid rgba(0, 123, 255, 0.2);
-            box-shadow: 0 4px 16px rgba(0, 123, 255, 0.1);
-            background: linear-gradient(145deg, #ffffff 0%, #f0f8ff 100%);
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            border: none;
+            padding: 1.5rem;
         }
 
+        .search-input-group {
+            position: relative;
+        }
+
+        .search-input {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: #f9fafb;
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            z-index: 5;
+        }
+
+        .modern-select {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 0.875rem 1rem;
+            background: #f9fafb;
+            transition: var(--transition);
+        }
+
+        .modern-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
+            outline: none;
+        }
+
+        .modern-btn {
+            border-radius: 12px;
+            padding: 0.875rem 1.5rem;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .modern-btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .modern-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .modern-btn-outline {
+            background: white;
+            border: 2px solid #e5e7eb;
+            color: #6b7280;
+        }
+
+        .modern-btn-outline:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        /* Modern Job Cards */
+        .job-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            border: none;
+            transition: var(--transition);
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .job-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: var(--transition);
+        }
+
+        .job-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .job-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .job-card-body {
+            padding: 1.5rem;
+        }
+
+        .job-title {
+            color: #1f2937;
+            font-weight: 700;
+            font-size: 1.125rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .job-title:hover {
+            color: #667eea;
+        }
+
+        .modern-badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: none;
+        }
+
+        .badge-industry {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .badge-salary {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .badge-skill {
+            background: #f3f4f6;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+        }
+
+        .job-description {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .job-meta {
+            color: #9ca3af;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .job-meta i {
+            width: 16px;
+            text-align: center;
+        }
+
+        /* Modern Sidebar */
         .sidebar-card {
-            border: 2px solid rgba(108, 117, 125, 0.18);
-            box-shadow: 0 4px 16px rgba(30, 42, 56, 0.12);
-            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            border: none;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
         }
 
-        .sidebar-card:hover {
-            box-shadow: 0 6px 20px rgba(30, 42, 56, 0.18);
-            border-color: rgba(0, 123, 255, 0.3);
+        .sidebar-header {
+            padding: 1rem 1.5rem;
+            font-weight: 700;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        /* Card header enhancements */
-        .card-header {
-            border-bottom: 2px solid rgba(0, 123, 255, 0.1);
-            background: linear-gradient(135deg, var(--bs-primary) 0%, #0056b3 100%);
+        .sidebar-header-stats {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
         }
 
-        /* Badge enhancements */
-        .badge {
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            font-weight: 500;
+        .sidebar-header-recent {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
         }
 
-        /* Enhanced button styling */
-        .btn-primary {
-            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+        .sidebar-header-trending {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            color: #8b4513;
         }
 
-        .btn-primary:hover {
-            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+        .sidebar-body {
+            padding: 1.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            background: #f9fafb;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .sidebar-item:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar-item-title {
+            font-weight: 600;
+            color: #1f2937;
+            text-decoration: none;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+
+        .sidebar-item-title:hover {
+            color: #667eea;
+        }
+
+        /* Modern Pagination */
+        .modern-pagination {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+
+        .modern-pagination .page-link {
+            border: none;
+            border-radius: 8px;
+            margin: 0 0.25rem;
+            padding: 0.5rem 0.75rem;
+            color: #6b7280;
+            transition: var(--transition);
+        }
+
+        .modern-pagination .page-link:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .modern-pagination .page-item.active .page-link {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        /* Search Results Alert */
+        .search-alert {
+            background: linear-gradient(135deg, #e0f2fe, #b3e5fc);
+            border: none;
+            border-radius: var(--border-radius);
+            color: #0277bd;
+            margin-bottom: 1.5rem;
+        }
+
+        /* No Results State */
+        .no-results {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+        }
+
+        .no-results-icon {
+            font-size: 4rem;
+            color: #d1d5db;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .search-card {
+                padding: 1rem;
+            }
+            
+            .job-card-body {
+                padding: 1rem;
+            }
         }
     </style>
 {% endblock %}
 
 {% block body %}
-<div class="container-fluid">
-    <!-- Page Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="dashboard-header">
-                <div class="container">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h1 class="mb-2">
-                                <i class="bi bi-briefcase me-2"></i>Browse Jobs
-                            </h1>
-                            <p class="mb-0 opacity-75">Explore career opportunities and find your perfect role</p>
-                        </div>
-                        <div class="col-md-4 text-md-end">
-                            <div class="d-flex justify-content-md-end">
-                                <span class="badge bg-primary fs-6">
-                                    <i class="bi bi-collection me-1"></i>{{ jobs.nbResults }} Jobs Available
-                                </span>
-                            </div>
-                        </div>
+<div class="container-fluid px-0">
+    <!-- Modern Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1>
+                        <i class="bi bi-briefcase me-3"></i>Browse Jobs
+                    </h1>
+                    <p class="mb-0">Discover your next career opportunity from our curated job listings</p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <div class="job-count-badge">
+                        <i class="bi bi-collection me-2"></i>{{ jobs.nbResults }} Available Positions
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Search Bar -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="card widget-card search-card">
-                <div class="card-body py-3">
-                    <form method="GET" action="{{ path('app_jobs_browse') }}" class="row g-3">
+    <div class="container">
+        <!-- Modern Search Section -->
+        <div class="search-container">
+            <div class="search-card">
+                <form method="GET" action="{{ path('app_jobs_browse') }}">
+                    <div class="row g-3 align-items-end">
                         <div class="col-md-6">
-                            <div class="input-group">
-                                <span class="input-group-text bg-primary text-white">
-                                    <i class="bi bi-search"></i>
-                                </span>
+                            <label class="form-label fw-semibold text-gray-700 mb-2">Search Jobs</label>
+                            <div class="search-input-group">
+                                <i class="bi bi-search search-icon"></i>
                                 <input type="text"
-                                       class="form-control"
+                                       class="form-control search-input"
                                        name="search"
                                        value="{{ search }}"
-                                       placeholder="Search jobs by title, industry, or skills..."
-                                       aria-label="Search jobs">
-                                <button class="btn btn-primary" type="submit">
-                                    <i class="bi bi-search me-1"></i>Search
-                                </button>
+                                       placeholder="Job title, skills, or keywords...">
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <select name="industry" class="form-select">
+                            <label class="form-label fw-semibold text-gray-700 mb-2">Industry</label>
+                            <select name="industry" class="form-select modern-select">
                                 <option value="">All Industries</option>
                                 <option value="Information Technology" {{ app.request.get('industry') == 'Information Technology' ? 'selected' : '' }}>Information Technology</option>
                                 <option value="Finance" {{ app.request.get('industry') == 'Finance' ? 'selected' : '' }}>Finance</option>
                                 <option value="Healthcare" {{ app.request.get('industry') == 'Healthcare' ? 'selected' : '' }}>Healthcare</option>
                                 <option value="Education" {{ app.request.get('industry') == 'Education' ? 'selected' : '' }}>Education</option>
                                 <option value="Design" {{ app.request.get('industry') == 'Design' ? 'selected' : '' }}>Design</option>
-                                <option value="Advertising and Marketing" {{ app.request.get('industry') == 'Advertising and Marketing' ? 'selected' : '' }}>Advertising and Marketing</option>
                                 <option value="Engineering" {{ app.request.get('industry') == 'Engineering' ? 'selected' : '' }}>Engineering</option>
                                 <option value="Sales" {{ app.request.get('industry') == 'Sales' ? 'selected' : '' }}>Sales</option>
-                                <option value="Administration" {{ app.request.get('industry') == 'Administration' ? 'selected' : '' }}>Administration</option>
-                                <option value="Architecture, Technical Design and Mapping" {{ app.request.get('industry') == 'Architecture, Technical Design and Mapping' ? 'selected' : '' }}>Architecture & Design</option>
-                                <option value="Community Services" {{ app.request.get('industry') == 'Community Services' ? 'selected' : '' }}>Community Services</option>
-                                <option value="Data & Analytics" {{ app.request.get('industry') == 'Data & Analytics' ? 'selected' : '' }}>Data & Analytics</option>
-                                <option value="Product Management" {{ app.request.get('industry') == 'Product Management' ? 'selected' : '' }}>Product Management</option>
-                                <option value="Creative Design" {{ app.request.get('industry') == 'Creative Design' ? 'selected' : '' }}>Creative Design</option>
-                                <option value="Entertainment" {{ app.request.get('industry') == 'Entertainment' ? 'selected' : '' }}>Entertainment</option>
                             </select>
                         </div>
                         <div class="col-md-3">
                             <div class="d-flex gap-2">
                                 {% if search or app.request.get('industry') %}
-                                    <a href="{{ path('app_jobs_browse') }}" class="btn btn-outline-secondary">
+                                    <a href="{{ path('app_jobs_browse') }}" class="modern-btn modern-btn-outline">
                                         <i class="bi bi-x-circle me-1"></i>Clear
                                     </a>
                                 {% endif %}
-                                <button type="submit" class="btn btn-primary flex-fill">
-                                    <i class="bi bi-funnel me-1"></i>Filter
+                                <button type="submit" class="modern-btn modern-btn-primary flex-fill">
+                                    <i class="bi bi-search me-1"></i>Search
                                 </button>
                             </div>
                         </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Search Results Info -->
-    {% if search %}
-        <div class="row mb-3">
-            <div class="col-12">
-                <div class="alert alert-info d-flex align-items-center py-2" role="alert">
-                    <i class="bi bi-info-circle me-2"></i>
-                    <div class="small">
-                        <strong>Search Results:</strong> Found {{ jobs.nbResults }} job{{ jobs.nbResults != 1 ? 's' : '' }} matching "{{ search }}"
                     </div>
-                </div>
+                </form>
             </div>
         </div>
-    {% endif %}
 
-    <!-- Main Content with Sidebar -->
-    <div class="row">
-        <!-- Main Jobs List -->
-        <div class="col-lg-9">
-            {% if jobs.nbResults > 0 %}
-                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-                    {% for job in jobs %}
-                        <div class="col">
-                            <div class="card widget-card job-card h-100">
-                                <div class="card-body py-3 d-flex flex-column">
-                                    <!-- Job Header -->
-                                    <div class="mb-2">
-                                        <h5 class="card-title text-primary mb-2 h6">
-                                            <i class="bi bi-briefcase me-1"></i>{{ job.title }}
-                                        </h5>
-                                        <div class="d-flex flex-wrap gap-1 mb-2">
-                                            {% if job.industry %}
-                                                <span class="badge bg-secondary small">{{ job.industry }}</span>
-                                            {% endif %}
-                                            {% if job.salaryRange %}
-                                                <span class="badge bg-success small">{{ job.salaryRange }}</span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
+        <!-- Search Results Info -->
+        {% if search %}
+            <div class="alert search-alert d-flex align-items-center" role="alert">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong>{{ jobs.nbResults }}</strong>&nbsp;job{{ jobs.nbResults != 1 ? 's' : '' }} found for "{{ search }}"
+            </div>
+        {% endif %}
 
-                                    <!-- Job Description -->
-                                    <div class="mb-2 flex-grow-1">
-                                        {% if job.description %}
-                                            <p class="card-text text-muted small">
-                                                {{ (job.description|striptags|raw)|length > 120 ? (job.description|striptags|raw)|slice(0, 120) ~ '...' : (job.description|striptags|raw) }}
-                                            </p>
-                                        {% else %}
-                                            <p class="card-text text-muted small">
-                                                <em>No description available</em>
-                                            </p>
-                                        {% endif %}
-                                    </div>
-
-                                    <!-- Required Skills -->
-                                    {% if job.skills|length > 0 %}
-                                        <div class="mb-2">
-                                            <h6 class="text-muted mb-1 small">
-                                                <i class="bi bi-tags me-1"></i>Required Skills:
-                                            </h6>
-                                            <div class="d-flex flex-wrap gap-1">
-                                                {% for skill in job.skills|slice(0, 3) %}
-                                                    <span class="badge bg-light text-dark border small">{{ skill.name }}</span>
-                                                {% endfor %}
-                                                {% if job.skills|length > 3 %}
-                                                    <span class="badge bg-light text-dark border small">+{{ job.skills|length - 3 }} more</span>
+        <!-- Main Content -->
+        <div class="row">
+            <!-- Jobs Grid -->
+            <div class="col-lg-9">
+                {% if jobs.nbResults > 0 %}
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+                        {% for job in jobs %}
+                            <div class="col">
+                                <div class="job-card">
+                                    <div class="job-card-body d-flex flex-column h-100">
+                                        <!-- Job Header -->
+                                        <div class="mb-3">
+                                            <h3 class="job-title">
+                                                <a href="{{ path('app_jobs_show', {id: job.id}) }}" class="text-decoration-none job-title">
+                                                    {{ job.title }}
+                                                </a>
+                                            </h3>
+                                            <div class="d-flex flex-wrap gap-2 mb-2">
+                                                {% if job.industry %}
+                                                    <span class="modern-badge badge-industry">{{ job.industry }}</span>
+                                                {% endif %}
+                                                {% if job.salaryRange %}
+                                                    <span class="modern-badge badge-salary">{{ job.salaryRange }}</span>
                                                 {% endif %}
                                             </div>
                                         </div>
-                                    {% endif %}
 
-                                    <!-- Job Details -->
-                                    <div class="mt-auto">
-                                        <div class="row text-muted small mb-2">
-                                            {% if job.jobCode %}
-                                                <div class="col-6">
-                                                    <i class="bi bi-hash me-1"></i>Code: {{ job.jobCode }}
-                                                </div>
-                                            {% endif %}
-                                            {% if job.yearsOfTraining %}
-                                                <div class="col-6">
-                                                    <i class="bi bi-clock me-1"></i>{{ job.yearsOfTraining }} {{ job.yearsOfTraining == '1' ? 'year' : 'years' }}
-                                                </div>
+                                        <!-- Job Description -->
+                                        <div class="job-description flex-grow-1 mb-3">
+                                            {% if job.description %}
+                                                {{ (job.description|striptags|raw)|length > 120 ? (job.description|striptags|raw)|slice(0, 120) ~ '...' : (job.description|striptags|raw) }}
+                                            {% else %}
+                                                <em class="text-muted">No description available</em>
                                             {% endif %}
                                         </div>
 
-                                        <a href="{{ path('app_jobs_show', {id: job.id}) }}"
-                                           class="btn btn-primary btn-sm w-100">
-                                            <i class="bi bi-eye me-1"></i>View Details
-                                        </a>
+                                        <!-- Skills -->
+                                        {% if job.skills|length > 0 %}
+                                            <div class="mb-3">
+                                                <div class="d-flex flex-wrap gap-1">
+                                                    {% for skill in job.skills|slice(0, 3) %}
+                                                        <span class="modern-badge badge-skill">{{ skill.name }}</span>
+                                                    {% endfor %}
+                                                    {% if job.skills|length > 3 %}
+                                                        <span class="modern-badge badge-skill">+{{ job.skills|length - 3 }}</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                        <!-- Job Meta -->
+                                        <div class="job-meta mb-3">
+                                            <div class="row">
+                                                {% if job.jobCode %}
+                                                    <div class="col-6">
+                                                        <i class="bi bi-hash"></i> {{ job.jobCode }}
+                                                    </div>
+                                                {% endif %}
+                                                {% if job.yearsOfTraining %}
+                                                    <div class="col-6">
+                                                        <i class="bi bi-clock"></i> {{ job.yearsOfTraining }} year{{ job.yearsOfTraining != '1' ? 's' : '' }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                        <!-- Action Button -->
+                                        <div class="mt-auto">
+                                            <a href="{{ path('app_jobs_show', {id: job.id}) }}" 
+                                               class="modern-btn modern-btn-primary w-100">
+                                                <i class="bi bi-arrow-right me-1"></i>View Details
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    {% endfor %}
-                </div>
+                        {% endfor %}
+                    </div>
 
-                <!-- Pagination -->
-                {% if jobs.haveToPaginate %}
-                    <div class="row mt-4">
-                        <div class="col-12">
+                    <!-- Modern Pagination -->
+                    {% if jobs.haveToPaginate %}
+                        <div class="modern-pagination">
                             <nav aria-label="Jobs pagination">
-                                <ul class="pagination justify-content-center">
+                                <ul class="pagination justify-content-center mb-0">
                                     {% if jobs.hasPreviousPage %}
                                         <li class="page-item">
                                             <a class="page-link" href="{{ path('app_jobs_browse', {page: jobs.previousPage, search: search, industry: industry}) }}">
-                                                <i class="bi bi-chevron-left"></i> Previous
+                                                <i class="bi bi-chevron-left"></i>
                                             </a>
                                         </li>
                                     {% endif %}
 
                                     {% set startPage = max(1, jobs.currentPage - 2) %}
                                     {% set endPage = min(jobs.nbPages, jobs.currentPage + 2) %}
-
-                                    {% if startPage > 1 %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="{{ path('app_jobs_browse', {page: 1, search: search, industry: industry}) }}">1</a>
-                                        </li>
-                                        {% if startPage > 2 %}
-                                            <li class="page-item disabled">
-                                                <span class="page-link">...</span>
-                                            </li>
-                                        {% endif %}
-                                    {% endif %}
 
                                     {% for page in startPage..endPage %}
                                         <li class="page-item {{ page == jobs.currentPage ? 'active' : '' }}">
@@ -287,155 +573,133 @@
                                         </li>
                                     {% endfor %}
 
-                                    {% if endPage < jobs.nbPages %}
-                                        {% if endPage < jobs.nbPages - 1 %}
-                                            <li class="page-item disabled">
-                                                <span class="page-link">...</span>
-                                            </li>
-                                        {% endif %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="{{ path('app_jobs_browse', {page: jobs.nbPages, search: search, industry: industry}) }}">{{ jobs.nbPages }}</a>
-                                        </li>
-                                    {% endif %}
-
                                     {% if jobs.hasNextPage %}
                                         <li class="page-item">
                                             <a class="page-link" href="{{ path('app_jobs_browse', {page: jobs.nextPage, search: search, industry: industry}) }}">
-                                                Next <i class="bi bi-chevron-right"></i>
+                                                <i class="bi bi-chevron-right"></i>
                                             </a>
                                         </li>
                                     {% endif %}
                                 </ul>
                             </nav>
                         </div>
+                    {% endif %}
+
+                {% else %}
+                    <!-- No Results State -->
+                    <div class="no-results">
+                        <div class="no-results-icon">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <h3 class="text-muted mb-3">
+                            {% if search %}
+                                No jobs found matching "{{ search }}"
+                            {% else %}
+                                No jobs available
+                            {% endif %}
+                        </h3>
+                        <p class="text-muted mb-4">
+                            {% if search %}
+                                Try adjusting your search terms or browse all available positions.
+                            {% else %}
+                                Check back later for new opportunities.
+                            {% endif %}
+                        </p>
+                        {% if search %}
+                            <a href="{{ path('app_jobs_browse') }}" class="modern-btn modern-btn-primary">
+                                <i class="bi bi-arrow-left me-1"></i>Browse All Jobs
+                            </a>
+                        {% endif %}
                     </div>
                 {% endif %}
+            </div>
 
-            {% else %}
-                <!-- No Results -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card widget-card search-card">
-                            <div class="card-body text-center py-5">
-                                <i class="bi bi-search display-1 text-muted mb-3"></i>
-                                <h3 class="text-muted mb-3">
-                                    {% if search %}
-                                        No jobs found matching "{{ search }}"
-                                    {% else %}
-                                        No jobs available at the moment
-                                    {% endif %}
-                                </h3>
-                                <p class="text-muted mb-4">
-                                    {% if search %}
-                                        Try adjusting your search terms or browse all available jobs.
-                                    {% else %}
-                                        Check back later for new opportunities.
-                                    {% endif %}
-                                </p>
-                                {% if search %}
-                                    <a href="{{ path('app_jobs_browse') }}" class="btn btn-primary">
-                                        <i class="bi bi-arrow-left me-1"></i>Browse All Jobs
-                                    </a>
-                                {% endif %}
-                            </div>
-                        </div>
+            <!-- Modern Sidebar -->
+            <div class="col-lg-3">
+                <!-- Statistics -->
+                <div class="sidebar-card">
+                    <div class="sidebar-header sidebar-header-stats">
+                        <i class="bi bi-graph-up me-2"></i>Statistics
                     </div>
-                </div>
-            {% endif %}
-        </div>
-
-        <!-- Sidebar -->
-        <div class="col-lg-3">
-            <div class="sidebar-container">
-                <!-- Statistics Widget -->
-                <div class="card widget-card sidebar-card sidebar-widget mb-2">
-                    <div class="card-header bg-primary text-white py-1">
-                        <h6 class="mb-0 small">
-                            <i class="bi bi-graph-up me-1"></i>Job Statistics
-                        </h6>
-                    </div>
-                    <div class="card-body py-2">
-                        <div class="row text-center mb-2">
+                    <div class="sidebar-body">
+                        <div class="row g-3 mb-3">
                             <div class="col-6">
-                                <div class="h6 text-primary mb-0">{{ jobStats.totalJobs }}</div>
-                                <div class="small text-muted">Jobs</div>
+                                <div class="stat-item">
+                                    <div class="stat-number">{{ jobStats.totalJobs }}</div>
+                                    <div class="stat-label">Total Jobs</div>
+                                </div>
                             </div>
                             <div class="col-6">
-                                <div class="h6 text-success mb-0">{{ jobStats.avgSkillsPerJob }}</div>
-                                <div class="small text-muted">Avg Skills</div>
+                                <div class="stat-item">
+                                    <div class="stat-number">{{ jobStats.avgSkillsPerJob }}</div>
+                                    <div class="stat-label">Avg Skills</div>
+                                </div>
                             </div>
                         </div>
 
                         {% if jobStats.topIndustries|length > 0 %}
-                            <hr class="my-2">
-                            <h6 class="text-muted mb-1 small">Top Industries</h6>
-                            {% for industry in jobStats.topIndustries|slice(0, 3) %}
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <span class="small">{{ industry.industry|length > 15 ? industry.industry|slice(0, 15) ~ '...' : industry.industry }}</span>
-                                    <span class="badge bg-light text-dark small">{{ industry.count }}</span>
+                            <h6 class="fw-semibold mb-2 text-muted small">Top Industries</h6>
+                            {% for industry in jobStats.topIndustries|slice(0, 4) %}
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="small">{{ industry.industry|length > 18 ? industry.industry|slice(0, 18) ~ '...' : industry.industry }}</span>
+                                    <span class="modern-badge badge-skill">{{ industry.count }}</span>
                                 </div>
                             {% endfor %}
                         {% endif %}
                     </div>
                 </div>
 
-                <!-- Recently Added Jobs -->
-                <div class="card widget-card sidebar-card sidebar-widget mb-2">
-                    <div class="card-header bg-info text-white py-1">
-                        <h6 class="mb-0 small">
-                            <i class="bi bi-clock-history me-1"></i>Recently Added
-                        </h6>
+                <!-- Recently Added -->
+                <div class="sidebar-card">
+                    <div class="sidebar-header sidebar-header-recent">
+                        <i class="bi bi-clock-history me-2"></i>Recently Added
                     </div>
-                    <div class="card-body py-2">
+                    <div class="sidebar-body">
                         {% if recentlyAddedJobs|length > 0 %}
                             {% for job in recentlyAddedJobs|slice(0, 5) %}
-                                <div class="mb-1 {% if not loop.last %}border-bottom pb-1{% endif %}">
-                                    <h6 class="mb-1 small">
-                                        <a href="{{ path('app_jobs_show', {id: job.id}) }}" class="text-decoration-none">
-                                            {{ job.title|length > 22 ? job.title|slice(0, 22) ~ '...' : job.title }}
-                                        </a>
-                                    </h6>
+                                <div class="sidebar-item">
+                                    <a href="{{ path('app_jobs_show', {id: job.id}) }}" class="sidebar-item-title">
+                                        {{ job.title|length > 25 ? job.title|slice(0, 25) ~ '...' : job.title }}
+                                    </a>
                                     {% if job.industry %}
-                                        <span class="badge bg-secondary small">{{ job.industry|length > 12 ? job.industry|slice(0, 12) ~ '...' : job.industry }}</span>
+                                        <div class="mt-1">
+                                            <span class="modern-badge badge-skill small">{{ job.industry|length > 15 ? job.industry|slice(0, 15) ~ '...' : job.industry }}</span>
+                                        </div>
                                     {% endif %}
                                 </div>
                             {% endfor %}
                         {% else %}
-                            <p class="text-muted small mb-0">No recent jobs</p>
+                            <p class="text-muted small mb-0">No recent jobs available</p>
                         {% endif %}
                     </div>
                 </div>
 
                 <!-- Trending Jobs -->
-                <div class="card widget-card sidebar-card sidebar-widget">
-                    <div class="card-header bg-warning text-white py-1">
-                        <h6 class="mb-0 small">
-                            <i class="bi bi-fire me-1"></i>Trending Jobs
-                        </h6>
+                <div class="sidebar-card">
+                    <div class="sidebar-header sidebar-header-trending">
+                        <i class="bi bi-fire me-2"></i>Trending Jobs
                     </div>
-                    <div class="card-body py-2">
+                    <div class="sidebar-body">
                         {% if trendingJobs|length > 0 %}
                             {% for result in trendingJobs|slice(0, 5) %}
                                 {% set job = result[0] %}
                                 {% set skillCount = result.skillCount %}
-                                <div class="mb-1 {% if not loop.last %}border-bottom pb-1{% endif %}">
-                                    <h6 class="mb-1 small">
-                                        <a href="{{ path('app_jobs_show', {id: job.id}) }}" class="text-decoration-none">
-                                            {{ job.title|length > 22 ? job.title|slice(0, 22) ~ '...' : job.title }}
-                                        </a>
-                                    </h6>
-                                    <div class="d-flex align-items-center">
+                                <div class="sidebar-item">
+                                    <a href="{{ path('app_jobs_show', {id: job.id}) }}" class="sidebar-item-title">
+                                        {{ job.title|length > 25 ? job.title|slice(0, 25) ~ '...' : job.title }}
+                                    </a>
+                                    <div class="d-flex align-items-center gap-2 mt-1">
                                         {% if job.industry %}
-                                            <span class="badge bg-secondary small me-1">{{ job.industry|length > 10 ? job.industry|slice(0, 10) ~ '...' : job.industry }}</span>
+                                            <span class="modern-badge badge-skill small">{{ job.industry|length > 12 ? job.industry|slice(0, 12) ~ '...' : job.industry }}</span>
                                         {% endif %}
-                                        <span class="badge bg-warning text-dark small">
+                                        <span class="modern-badge badge-salary small">
                                             <i class="bi bi-tags me-1"></i>{{ skillCount }}
                                         </span>
                                     </div>
                                 </div>
                             {% endfor %}
                         {% else %}
-                            <p class="text-muted small mb-0">No trending jobs</p>
+                            <p class="text-muted small mb-0">No trending jobs available</p>
                         {% endif %}
                     </div>
                 </div>
