@@ -716,10 +716,12 @@
             }
 
             window.generateInterviewQuestions = function() {
-                const industry = prompt('What industry are you interviewing for? (e.g., Technology, Healthcare, Finance)') || 'general';
-                const role = prompt('What role level? (e.g., entry-level, mid-level, senior)') || 'entry-level';
+                const jobRole = prompt('What job role are you interviewing for? (e.g., Software Developer, Marketing Manager, Data Analyst)') || 'general position';
+                const level = prompt('What level? (e.g., entry-level, mid-level, senior, lead)') || 'entry-level';
+                const industry = prompt('What industry? (optional - press Cancel to skip)') || '';
                 
-                appendMessage('user', `Generate interview questions for ${role} position in ${industry} industry`);
+                const industryText = industry ? ` in ${industry} industry` : '';
+                appendMessage('user', `Generate interview questions for ${level} ${jobRole}${industryText}`);
                 appendMessage('assistant', '<span class="spinner-border spinner-border-sm text-primary" role="status"></span>');
 
                 fetch('{{ path('app_career_assistant_interview_questions') }}', {
@@ -729,8 +731,9 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: JSON.stringify({
+                        jobRole: jobRole,
+                        level: level,
                         industry: industry,
-                        role: role,
                         experience: 'student'
                     })
                 })
@@ -751,14 +754,16 @@
             }
 
             window.startInterviewSimulation = function() {
-                const industry = prompt('What industry are you interviewing for?') || 'general';
-                const role = prompt('What role are you applying for?') || 'entry-level position';
+                const jobRole = prompt('What job role are you applying for? (e.g., Software Developer, Marketing Manager, Data Analyst)') || 'general position';
+                const level = prompt('What level? (e.g., entry-level, mid-level, senior, lead)') || 'entry-level';
+                const industry = prompt('What industry? (optional - press Cancel to skip)') || '';
                 
-                interviewContext = { industry: industry, role: role };
+                const industryText = industry ? ` in ${industry} industry` : '';
+                interviewContext = { jobRole: jobRole, level: level, industry: industry };
                 currentMode = 'interview';
                 currentModeSpan.textContent = 'Interview Simulator';
                 
-                appendMessage('assistant', `Starting interview simulation for ${role} in ${industry} industry. I'll ask you questions one by one and provide feedback. Let's begin!`);
+                appendMessage('assistant', `Starting interview simulation for ${level} ${jobRole}${industryText}. I'll ask you questions one by one and provide feedback. Let's begin!`);
             }
 
             // Quick Actions

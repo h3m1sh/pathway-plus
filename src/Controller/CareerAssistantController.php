@@ -28,7 +28,7 @@ class CareerAssistantController extends AbstractController
         private JobRoleRepository $jobRoleRepository,
         private ConversationRepository $conversationRepository,
         private GeminiAiService $aiService,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManagerƒ
     ) {
     }
 
@@ -259,14 +259,15 @@ Student Profile:
     {
         try {
             $data = json_decode($request->getContent(), true);
-            $industry = $data['industry'] ?? 'general';
-            $role = $data['role'] ?? 'entry-level';
+            $jobRole = $data['jobRole'] ?? 'general position';
+            $level = $data['level'] ?? 'entry-level';
+            $industry = $data['industry'] ?? '';
             $experience = $data['experience'] ?? 'student';
 
             $user = $this->getUser();
             $userSkills = array_map(fn($skill) => $skill->getName(), $user->getSkills()->toArray());
 
-            $prompt = $this->buildInterviewQuestionsPrompt($industry, $role, $experience, $userSkills);
+            $prompt = $this->buildInterviewQuestionsPrompt($jobRole, $level, $industry, $experience, $userSkills);
             
             $response = $this->aiService->generateContent($prompt);
             $questions = $response['candidates'][0]['content']['parts'][0]['text'] ?? 'Unable to generate interview questions.';
@@ -432,21 +433,23 @@ Student Profile:
         return $this->applyGlobalFormattingRules($basePrompt);
     }
 
-    private function buildInterviewQuestionsPrompt(string $industry, string $role, string $experience, array $userSkills): string
+    private function buildInterviewQuestionsPrompt(string $jobRole, string $level, string $industry, string $experience, array $userSkills): string
     {
         $skillsList = implode(', ', $userSkills);
+        $industryText = $industry ? "Industry: {$industry}" : "Industry: General";
 
         return $this->applyGlobalFormattingRules("You are an interview preparation expert. Generate a set of relevant interview questions for:
 
-        Industry: {$industry}
-        Role Level: {$role}
+        Job Role: {$jobRole}
+        Level: {$level}
+        {$industryText}
         Experience Level: {$experience}
         Student Skills: {$skillsList}
 
         Please provide:
         1. Technical Questions (if applicable): 2-3 questions.
         2. Behavioral Questions (STAR method): 2-3 questions.
-        3. Industry-Specific Questions: 2-3 questions.
+        3. Role-Specific Questions: 2-3 questions relevant to {$jobRole}.
         4. General Professional Questions: 2-3 questions.
         5. Questions the student should ask the interviewer: 2-3 suggestions.
 
