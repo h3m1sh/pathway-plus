@@ -173,7 +173,7 @@
                 </div>
                 <div class="col-12">
                     <div class="card widget-card mb-3">
-                        <div class="widget-item" data-widget="skillPassport" draggable="true">
+                        <div class="widget-item" data-widget="skillPassport" draggable="true" id="skillPassport">
                             <div class="card-body">
                                 {% if studentProgress|length > 0 %}
                                     <div class="row" id="credentialGrid">
@@ -231,7 +231,7 @@
                 </div>
                 <div class="col-12">
                     <div class="card widget-card mb-3">
-                        <div class="widget-item" data-widget="careerPath" draggable="true">
+                        <div class="widget-item" data-widget="careerPath" draggable="true" id="careerPath">
                             <div class="card-body">
                                 {% if careerPaths|length > 0 %}
                                     {% for path in careerPaths %}
@@ -418,7 +418,7 @@
                 </div>
                 <div class="col-12">
                     <div class="card widget-card mb-3">
-                        <div class="widget-item" data-widget="suggestions" draggable="true">
+                        <div class="widget-item" data-widget="suggestions" draggable="true" id="suggestions">
                             <div class="card-body">
                                 {% if aiSuggestions.suggestions is defined and aiSuggestions.suggestions|length > 0 %}
                                     <div class="mb-3">
