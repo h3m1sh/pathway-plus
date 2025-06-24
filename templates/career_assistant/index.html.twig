@@ -250,6 +250,24 @@
                                     <input class="form-check-input" type="checkbox" id="personalizationToggle" checked>
                                     <label class="form-check-label" for="personalizationToggle" title="Toggle personalized advice">Personalized</label>
                                 </div>
+                                <!-- History Actions -->
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-clock-history me-1"></i>History
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#" id="loadHistory">
+                                            <i class="bi bi-arrow-clockwise me-2"></i>Load Recent
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="#" id="exportHistory">
+                                            <i class="bi bi-download me-2"></i>Export Chat
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="#" id="clearHistory">
+                                            <i class="bi bi-trash me-2"></i>Clear History
+                                        </a></li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -280,7 +298,7 @@
 
             <!-- Quick Actions Sidebar -->
             <div class="col-lg-4">
-                <div class="card widget-card">
+                <div class="card widget-card mb-3">
                     <div class="card-header bg-white">
                         <h5 class="card-title mb-0">
                             <i class="bi bi-lightning me-2"></i>Quick Actions
@@ -309,6 +327,38 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Conversation History -->
+                <div class="card widget-card">
+                    <div class="card-header bg-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-clock-history me-2"></i>Recent Conversations
+                        </h5>
+                    </div>
+                    <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+                        {% if recentConversations is defined and recentConversations|length > 0 %}
+                            <div class="list-group list-group-flush">
+                                {% for conversation in recentConversations|slice(0, 5) %}
+                                    <div class="list-group-item border-0 px-0 py-2">
+                                        <div class="d-flex align-items-start">
+                                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                                 style="width: 24px; height: 24px; font-size: 0.7rem; min-width: 24px;">
+                                                <i class="bi bi-robot"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <small class="text-muted d-block">{{ conversation.timestamp|date('M j, g:i A') }}</small>
+                                                <small class="text-truncate d-block">{{ conversation.message|slice(0, 50) }}{% if conversation.message|length > 50 %}...{% endif %}</small>
+                                                <span class="badge bg-light text-dark border" style="font-size: 0.6rem;">{{ conversation.mode|title }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted small mb-0">No recent conversations. Start chatting to build your history!</p>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -325,6 +375,9 @@
             const personalizationToggle = document.getElementById('personalizationToggle');
             const modeSelector = document.getElementById('modeSelector');
             const currentModeSpan = document.getElementById('currentMode');
+            const loadHistoryBtn = document.getElementById('loadHistory');
+            const exportHistoryBtn = document.getElementById('exportHistory');
+            const clearHistoryBtn = document.getElementById('clearHistory');
             
             let currentMode = 'general';
 
@@ -339,6 +392,26 @@
                     // Add mode change message
                     appendMessage('assistant', `Switched to ${this.textContent.trim()} mode. How can I help you?`);
                 });
+            });
+
+            // Load conversation history
+            loadHistoryBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                loadConversationHistory();
+            });
+
+            // Export conversation history
+            exportHistoryBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                exportConversationHistory();
+            });
+
+            // Clear conversation history
+            clearHistoryBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Are you sure you want to clear all conversation history? This action cannot be undone.')) {
+                    clearConversationHistory();
+                }
             });
 
             chatForm.addEventListener('submit', function (e) {
@@ -390,6 +463,88 @@
                     messageInput.focus();
                 });
             });
+
+            function loadConversationHistory() {
+                fetch('{{ path('app_career_assistant_history') }}?mode=' + currentMode)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.history.length > 0) {
+                        // Clear current chat
+                        chatMessages.innerHTML = '';
+                        
+                        // Add welcome message back
+                        appendMessage('assistant', 'Hello! I\'ve loaded your recent conversation history. How can I help you today?');
+                        
+                        // Load recent conversations (last 5)
+                        const recentHistory = data.history.slice(0, 5).reverse();
+                        recentHistory.forEach(conv => {
+                            appendMessage('user', conv.message);
+                            appendMessage('assistant', conv.response);
+                        });
+                    } else {
+                        appendMessage('assistant', 'No recent conversation history found for this mode.');
+                    }
+                })
+                .catch(error => {
+                    console.error('History load error:', error);
+                    appendMessage('assistant', 'Failed to load conversation history.');
+                });
+            }
+
+            function exportConversationHistory() {
+                fetch('{{ path('app_career_assistant_history') }}?limit=50')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.history.length > 0) {
+                        const exportData = {
+                            exportDate: new Date().toISOString(),
+                            user: '{{ user.fullName }}',
+                            conversations: data.history
+                        };
+                        
+                        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `career-assistant-history-${new Date().toISOString().split('T')[0]}.json`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    } else {
+                        alert('No conversation history to export.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Export error:', error);
+                    alert('Failed to export conversation history.');
+                });
+            }
+
+            function clearConversationHistory() {
+                fetch('{{ path('app_career_assistant_clear_history') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Clear current chat
+                        chatMessages.innerHTML = '';
+                        appendMessage('assistant', 'Conversation history cleared. How can I help you today?');
+                        alert(data.message);
+                    } else {
+                        alert('Failed to clear conversation history.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Clear history error:', error);
+                    alert('Failed to clear conversation history.');
+                });
+            }
 
             function appendMessage(sender, text) {
                 const messageDiv = document.createElement('div');

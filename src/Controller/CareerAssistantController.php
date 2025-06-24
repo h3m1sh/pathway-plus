@@ -14,6 +14,9 @@ use App\Repository\JobRoleRepository;
 use Symfony\Component\HttpFoundation\Request;
 use App\Service\GeminiAiService;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Repository\ConversationRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Conversation;
 
 #[Route('/career-assistant')]
 #[IsGranted('ROLE_STUDENT')]
@@ -23,7 +26,9 @@ class CareerAssistantController extends AbstractController
         private StudentProgressRepository $studentProgressRepository,
         private SkillRepository $skillRepository,
         private JobRoleRepository $jobRoleRepository,
-        private GeminiAiService $aiService
+        private ConversationRepository $conversationRepository,
+        private GeminiAiService $aiService,
+        private EntityManagerInterface $entityManager
     ) {
     }
 
@@ -38,6 +43,9 @@ class CareerAssistantController extends AbstractController
         $careerInterests = $user->getJobRoleInterests()->toArray();
         $earnedCredentials = $user->getMicroCredentials()->toArray();
         
+        // Get recent conversation history
+        $recentConversations = $this->conversationRepository->findRecentByUser($user, 10);
+        
         // Calculate basic stats
         $stats = [
             'totalCredentials' => count($earnedCredentials),
@@ -45,7 +53,8 @@ class CareerAssistantController extends AbstractController
             'careerInterests' => count($careerInterests),
             'recentActivity' => count(array_filter($studentProgress, fn($p) => 
                 $p->getDateEarned() > new \DateTimeImmutable('-30 days')
-            ))
+            )),
+            'totalConversations' => count($recentConversations)
         ];
 
         return $this->render('career_assistant/index.html.twig', [
@@ -55,6 +64,7 @@ class CareerAssistantController extends AbstractController
             'careerInterests' => $careerInterests,
             'earnedCredentials' => $earnedCredentials,
             'stats' => $stats,
+            'recentConversations' => $recentConversations,
         ]);
     }
 
@@ -83,17 +93,78 @@ class CareerAssistantController extends AbstractController
             $response = $this->aiService->generateContent($prompt);
             $aiResponse = $response['candidates'][0]['content']['parts'][0]['text'] ?? 'I apologize, but I\'m unable to provide a response at the moment.';
 
+            // Save conversation to database
+            $conversation = new Conversation();
+            $conversation->setUser($user);
+            $conversation->setMode($mode);
+            $conversation->setMessage($message);
+            $conversation->setResponse($aiResponse);
+            $conversation->setPersonalized($usePersonalization);
+            
+            $this->entityManager->persist($conversation);
+            $this->entityManager->flush();
+
             return $this->json([
                 'success' => true,
                 'response' => $aiResponse,
                 'timestamp' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
-                'mode' => $mode
+                'mode' => $mode,
+                'conversationId' => $conversation->getId()
             ]);
 
         } catch (\Exception $e) {
             return $this->json([
                 'success' => false,
                 'error' => 'An error occurred while processing your request.'
+            ], 500);
+        }
+    }
+
+    #[Route('/history', name: 'app_career_assistant_history', methods: ['GET'])]
+    public function history(Request $request): JsonResponse
+    {
+        $user = $this->getUser();
+        $mode = $request->query->get('mode', 'all');
+        $limit = (int) $request->query->get('limit', 20);
+
+        if ($mode === 'all') {
+            $conversations = $this->conversationRepository->findRecentByUser($user, $limit);
+        } else {
+            $conversations = $this->conversationRepository->findConversationsByUserAndMode($user, $mode, $limit);
+        }
+
+        $history = array_map(function($conv) {
+            return [
+                'id' => $conv->getId(),
+                'message' => $conv->getMessage(),
+                'response' => $conv->getResponse(),
+                'mode' => $conv->getMode(),
+                'personalized' => $conv->isPersonalized(),
+                'timestamp' => $conv->getTimestamp()->format('Y-m-d H:i:s')
+            ];
+        }, $conversations);
+
+        return $this->json([
+            'success' => true,
+            'history' => $history
+        ]);
+    }
+
+    #[Route('/clear-history', name: 'app_career_assistant_clear_history', methods: ['POST'])]
+    public function clearHistory(): JsonResponse
+    {
+        try {
+            $user = $this->getUser();
+            $deletedCount = $this->conversationRepository->deleteConversationsByUser($user);
+
+            return $this->json([
+                'success' => true,
+                'message' => "Cleared {$deletedCount} conversations from history."
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'error' => 'Failed to clear conversation history.'
             ], 500);
         }
     }
