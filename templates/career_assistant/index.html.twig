@@ -42,11 +42,90 @@
             </div>
         </div>
 
+        <!-- Help Guide Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card sidebar-card">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h6 class="card-title mb-0 text-dark">
+                                <i class="bi bi-question-circle-fill text-info me-2"></i>How to Use Your Career Assistant
+                            </h6>
+                            <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#helpGuide" aria-expanded="true">
+                                <i class="bi bi-chevron-up"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="collapse show" id="helpGuide">
+                        <div class="card-body p-3">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="text-primary mb-2">
+                                        <i class="bi bi-lightbulb me-2"></i>Getting Started
+                                    </h6>
+                                    <ul class="list-unstyled small text-muted">
+                                        <li class="mb-1"><i class="bi bi-check-circle text-success me-2"></i>Ask questions about your career path</li>
+                                        <li class="mb-1"><i class="bi bi-check-circle text-success me-2"></i>Get personalized advice based on your skills</li>
+                                        <li class="mb-1"><i class="bi bi-check-circle text-success me-2"></i>Practice interview questions and scenarios</li>
+                                        <li class="mb-1"><i class="bi bi-check-circle text-success me-2"></i>Explore new career opportunities</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="text-success mb-2">
+                                        <i class="bi bi-gear me-2"></i>Available Modes
+                                    </h6>
+                                    <ul class="list-unstyled small text-muted">
+                                        <li class="mb-1"><i class="bi bi-chat-dots text-primary me-2"></i><strong>General Guidance:</strong> Career advice and questions</li>
+                                        <li class="mb-1"><i class="bi bi-camera-video text-warning me-2"></i><strong>Interview Simulator:</strong> Practice interviews</li>
+                                        <li class="mb-1"><i class="bi bi-compass text-info me-2"></i><strong>Career Discovery:</strong> Explore new paths</li>
+                                        <li class="mb-1"><i class="bi bi-person-workspace text-success me-2"></i><strong>Development Coach:</strong> Skill development</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="text-warning mb-2">
+                                        <i class="bi bi-magic me-2"></i>Quick Actions
+                                    </h6>
+                                    <ul class="list-unstyled small text-muted">
+                                        <li class="mb-1"><i class="bi bi-search text-primary me-2"></i>Click "Career Options" to explore roles</li>
+                                        <li class="mb-1"><i class="bi bi-file-earmark-text text-success me-2"></i>Use "Resume Help" for CV guidance</li>
+                                        <li class="mb-1"><i class="bi bi-question-circle text-warning me-2"></i>Try "Interview Prep" for practice</li>
+                                        <li class="mb-1"><i class="bi bi-star text-info me-2"></i>Get "Skill Development" recommendations</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="text-info mb-2">
+                                        <i class="bi bi-lightning me-2"></i>Pro Tips
+                                    </h6>
+                                    <ul class="list-unstyled small text-muted">
+                                        <li class="mb-1"><i class="bi bi-person-check text-primary me-2"></i>Keep "Personalized" enabled for tailored advice</li>
+                                        <li class="mb-1"><i class="bi bi-clock-history text-secondary me-2"></i>Your conversation history is saved</li>
+                                        <li class="mb-1"><i class="bi bi-download text-success me-2"></i>Export your chat history anytime</li>
+                                        <li class="mb-1"><i class="bi bi-arrow-repeat text-warning me-2"></i>Switch modes for different types of help</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="alert alert-info border-0 mb-0" style="background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);">
+                                <div class="d-flex align-items-start">
+                                    <i class="bi bi-info-circle-fill text-primary me-2 mt-1"></i>
+                                    <div class="small">
+                                        <strong>Remember:</strong> The AI analyzes your skills, credentials, and career interests to provide personalized guidance. 
+                                        Be specific in your questions for the best results!
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Main Chat Interface -->
         <div class="row">
             <!-- Chat Area -->
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm h-100" style="min-height: 600px;">
+                <div class="card chat-card h-100" style="min-height: 600px;">
                     <div class="card-header bg-white border-bottom py-3">
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-3">
@@ -103,14 +182,16 @@
                     
                     <!-- Chat Input Area -->
                     <div class="card-footer bg-white border-top py-3">
-                        <form id="chatForm" class="d-flex align-items-center gap-2">
+                        <form id="chatForm" class="d-flex align-items-end gap-2">
                             <div class="flex-grow-1 position-relative">
-                                <input type="text" id="messageInput" class="form-control border-0 bg-light rounded-pill px-4 py-2" 
-                                       placeholder="Ask me anything about your career..." autocomplete="off" required
-                                       style="box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                <textarea id="messageInput" class="form-control border-0 bg-light rounded-3 px-4 py-3" 
+                                          placeholder="Ask me anything about your career..." 
+                                          rows="3" 
+                                          style="box-shadow: 0 2px 4px rgba(0,0,0,0.1); resize: none; min-height: 80px; max-height: 120px;"
+                                          oninput="autoResize(this)"></textarea>
                             </div>
-                            <button type="submit" id="sendButton" class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center" 
-                                    style="width: 45px; height: 45px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                            <button type="submit" id="sendButton" class="btn btn-primary rounded-3 d-flex align-items-center justify-content-center" 
+                                    style="width: 50px; height: 50px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                                 <i class="bi bi-send"></i>
                             </button>
                         </form>
@@ -121,7 +202,7 @@
             <!-- Sidebar -->
             <div class="col-lg-4">
                 <!-- Quick Actions -->
-                <div class="card border-0 shadow-sm mb-4">
+                <div class="card sidebar-card mb-4">
                     <div class="card-header bg-white border-bottom py-3">
                         <h6 class="card-title mb-0 text-dark">
                             <i class="bi bi-lightning-fill text-warning me-2"></i>Quick Actions
@@ -146,7 +227,7 @@
                 </div>
 
                 <!-- AI Analysis Tools -->
-                <div class="card border-0 shadow-sm mb-4">
+                <div class="card sidebar-card mb-4">
                     <div class="card-header bg-white border-bottom py-3">
                         <h6 class="card-title mb-0 text-dark">
                             <i class="bi bi-magic text-info me-2"></i>AI Analysis
@@ -171,7 +252,7 @@
                 </div>
 
                 <!-- User Profile Card -->
-                <div class="card border-0 shadow-sm mb-4">
+                <div class="card sidebar-card mb-4">
                     <div class="card-header bg-white border-bottom py-3">
                         <h6 class="card-title mb-0 text-dark">
                             <i class="bi bi-person-circle text-primary me-2"></i>Your Profile
@@ -215,7 +296,7 @@
                 </div>
 
                 <!-- Conversation History -->
-                <div class="card border-0 shadow-sm">
+                <div class="card sidebar-card">
                     <div class="card-header bg-white border-bottom py-3">
                         <div class="d-flex align-items-center justify-content-between">
                             <h6 class="card-title mb-0 text-dark">
@@ -276,6 +357,36 @@
     <style>
         .bg-gradient-primary {
             background: linear-gradient(135deg, #007BFF, #5BC0EB) !important;
+        }
+        
+        /* Enhanced card styling for career assistant page */
+        .chat-card {
+            border: 2px solid rgba(108, 117, 125, 0.2);
+            box-shadow: 0 6px 20px rgba(30, 42, 56, 0.15);
+            transition: all 0.3s ease;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+        }
+
+        .chat-card:hover {
+            box-shadow: 0 10px 30px rgba(30, 42, 56, 0.25);
+            transform: translateY(-4px);
+            border-color: rgba(0, 123, 255, 0.4);
+        }
+
+        .sidebar-card {
+            border: 2px solid rgba(108, 117, 125, 0.18);
+            box-shadow: 0 4px 16px rgba(30, 42, 56, 0.12);
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+        }
+
+        .sidebar-card:hover {
+            box-shadow: 0 6px 20px rgba(30, 42, 56, 0.18);
+            border-color: rgba(0, 123, 255, 0.3);
+        }
+
+        /* Card header enhancements */
+        .card-header {
+            border-bottom: 2px solid rgba(0, 123, 255, 0.1);
         }
         
         .chat-message {
@@ -354,6 +465,67 @@
         .spinner-border-sm {
             width: 1rem;
             height: 1rem;
+        }
+
+        /* Dark mode overrides for Career Assistant */
+        [data-theme="dark"] .chat-card,
+        [data-theme="dark"] .sidebar-card {
+            background: var(--bg-tertiary) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] .chat-card .card-header,
+        [data-theme="dark"] .sidebar-card .card-header {
+            background-color: var(--bg-secondary) !important;
+            border-bottom-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] .chat-card .card-footer {
+            background-color: var(--bg-secondary) !important;
+            border-top-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] #chatMessages {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        [data-theme="dark"] .assistant-message .chat-bubble {
+            background-color: var(--bg-tertiary) !important;
+            border-color: var(--border-color) !important;
+            color: var(--dark-charcoal) !important;
+        }
+
+        [data-theme="dark"] .user-message .chat-bubble {
+            background: linear-gradient(135deg, #007BFF, #5BC0EB) !important;
+            color: white !important;
+            border: none !important;
+        }
+
+        [data-theme="dark"] #messageInput {
+            background-color: var(--bg-tertiary) !important;
+            color: var(--dark-charcoal) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] #messageInput::placeholder {
+            color: var(--muted-gray) !important;
+            opacity: 0.6;
+        }
+
+        [data-theme="dark"] .list-group-item {
+            background-color: transparent !important;
+            border-color: var(--border-color) !important;
+            color: var(--dark-charcoal) !important;
+        }
+
+        [data-theme="dark"] .list-group-item:hover {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        [data-theme="dark"] .alert-info {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+            border-color: var(--border-color) !important;
+            color: var(--dark-charcoal) !important;
         }
     </style>
     <script>
@@ -722,6 +894,20 @@
                 messageInput.value = question;
                 chatForm.dispatchEvent(new Event('submit'));
             }
+
+            // Auto-resize textarea function
+            function autoResize(textarea) {
+                textarea.style.height = 'auto';
+                textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+            }
+
+            // Handle Enter key in textarea (submit on Enter, new line on Shift+Enter)
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    chatForm.dispatchEvent(new Event('submit'));
+                }
+            });
         });
     </script>
 {% endblock %}
