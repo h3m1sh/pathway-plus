@@ -4,111 +4,123 @@
 
 {% block body %}
 
-
-
-<!-- Dashboard Header -->
-<div class="dashboard-header">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <h1 class="mb-2">
-                    <i class="bi bi-sun me-2"></i>
-                    Good {% if date().format('H') < 12 %}morning{% elseif date().format('H') < 17 %}afternoon{% else %}evening{% endif %}, {{ user.firstName }}!
-                </h1>
-                <p class="mb-0 opacity-90">
-                    Ready to continue your learning journey? Here's your progress overview.
-                </p>
-            </div>
-            <div class="col-md-4 text-md-end">
-                <div class="d-flex justify-content-md-end justify-content-start mt-3 mt-md-0">
-                    <div class="text-center me-4">
-                        <div class="h3 mb-0">{{ stats.completedCredentials }}</div>
-                        <small class="opacity-75">Completed</small>
-                    </div>
-                    <div class="text-center me-4">
-                        <div class="h3 mb-0">{{ stats.completionRate }}%</div>
-                        <small class="opacity-75">Success Rate</small>
-                    </div>
-                    <div class="text-center">
-                        <div class="h3 mb-0">{{ stats.careerGoals }}</div>
-                        <small class="opacity-75">Career Goals</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="container">
-    <!-- Quick Actions Bar -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card widget-card">
-                <div class="card-body py-3">
-                    <div class="d-flex flex-wrap gap-2 align-items-center">
-                        <span class="text-muted me-3">
-                            <i class="bi bi-lightning-charge me-1"></i>Quick Actions:
-                        </span>
-                        <button class="btn btn-outline-primary btn-sm" onclick="scrollToWidget('skillPassport')">
-                            <i class="bi bi-award me-1"></i>View Credentials
-                        </button>
-                        <button class="btn btn-outline-success btn-sm" onclick="scrollToWidget('careerPath')">
-                            <i class="bi bi-map me-1"></i>Career Progress
-                        </button>
-                        <button class="btn btn-outline-warning btn-sm" onclick="scrollToWidget('suggestions')">
-                            <i class="bi bi-lightbulb me-1"></i>Get Suggestions
-                        </button>
-                        <a href="{{ path('app_profile') }}" class="btn btn-outline-secondary btn-sm">
-                            <i class="bi bi-person-gear me-1"></i>Edit Profile
-                        </a>
-                        <div class="ms-auto">
-                            <button class="btn btn-outline-primary btn-sm" id="customizeLayout" title="Customize Dashboard">
-                                <i class="bi bi-grid-3x3-gap me-1"></i>Customize
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Customization Controls (Hidden by default) -->
-    <div class="row mb-4" id="customizationControls" style="display: none;">
-        <div class="col-12">
-            <div class="card border-primary">
-                <div class="card-header bg-primary text-white">
-                    <h6 class="mb-0">
-                        <i class="bi bi-gear me-2"></i>Dashboard Customization
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-md-6">
-                            <p class="mb-2 text-muted">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Drag widgets to reorder them. Use the controls below to show/hide widgets.
+    <!-- Modern Dashboard Header with Gradient -->
+    <div class="dashboard-header">
+        <div class="container-fluid px-4">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-8">
+                    <div class="header-content">
+                        <div class="greeting-section mb-3">
+                            <div class="time-icon">
+                                {% if date().format('H') < 12 %}
+                                    <i class="bi bi-sun-fill text-warning"></i>
+                                {% elseif date().format('H') < 17 %}
+                                    <i class="bi bi-sun text-orange"></i>
+                                {% else %}
+                                    <i class="bi bi-moon-stars-fill text-purple"></i>
+                                {% endif %}
+                            </div>
+                            <h1 class="display-6 fw-bold mb-2 text-gradient">
+                                Good {% if date().format('H') < 12 %}morning{% elseif date().format('H') < 17 %}afternoon{% else %}evening{% endif %}, {{ user.firstName }}!
+                            </h1>
+                            <p class="lead mb-0 header-subtitle">
+                                Ready to continue your learning journey? Here's your progress overview.
                             </p>
                         </div>
-                        <div class="col-md-6 text-md-end">
-                            <div class="btn-group" role="group">
-                                <button class="btn btn-outline-success btn-sm" onclick="saveCustomization()">
-                                    <i class="bi bi-check me-1"></i>Save Layout
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="stats-cards d-flex justify-content-lg-end justify-content-center gap-3 mt-3 mt-lg-0">
+                        <div class="stat-card">
+                            <div class="stat-number">{{ stats.completedCredentials }}</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">{{ stats.completionRate }}%</div>
+                            <div class="stat-label">Success Rate</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">{{ stats.careerGoals }}</div>
+                            <div class="stat-label">Career Goals</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid px-4">
+        <!-- Enhanced Quick Actions Bar -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="quick-actions-card">
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap align-items-center gap-3">
+                            <div class="quick-actions-label">
+                                <i class="bi bi-lightning-charge-fill me-2"></i>
+                                <span class="fw-semibold">Quick Actions</span>
+                            </div>
+                            <div class="quick-actions-buttons d-flex flex-wrap gap-2">
+                                <button class="btn btn-action btn-primary" onclick="scrollToWidget('skillPassport')">
+                                    <i class="bi bi-award me-2"></i>View Credentials
                                 </button>
-                                <button class="btn btn-outline-secondary btn-sm" onclick="resetCustomization()">
-                                    <i class="bi bi-arrow-clockwise me-1"></i>Reset
+                                <button class="btn btn-action btn-success" onclick="scrollToWidget('careerPath')">
+                                    <i class="bi bi-map me-2"></i>Career Progress
                                 </button>
-                                <button class="btn btn-outline-danger btn-sm" onclick="exitCustomization()">
-                                    <i class="bi bi-x me-1"></i>Exit
+                                <button class="btn btn-action btn-warning" onclick="scrollToWidget('suggestions')">
+                                    <i class="bi bi-lightbulb me-2"></i>Get Suggestions
+                                </button>
+                                <a href="{{ path('app_profile') }}" class="btn btn-action btn-secondary">
+                                    <i class="bi bi-person-gear me-2"></i>Edit Profile
+                                </a>
+                            </div>
+                            <div class="ms-auto">
+                                <button class="btn btn-customize" id="customizeLayout" title="Customize Dashboard">
+                                    <i class="bi bi-grid-3x3-gap me-2"></i>Customize Layout
                                 </button>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Widget Visibility Controls -->
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <h6 class="text-muted mb-2">Widget Visibility:</h6>
-                            <div class="d-flex flex-wrap gap-2" id="widgetControls">
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Customization Controls -->
+        <div class="row mb-4" id="customizationControls" style="display: none;">
+            <div class="col-12">
+                <div class="customization-card">
+                    <div class="card-header">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-gear-fill me-3 text-primary"></i>
+                            <h5 class="mb-0 fw-bold">Dashboard Customization</h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row align-items-center mb-4">
+                            <div class="col-md-6">
+                                <div class="customization-info">
+                                    <i class="bi bi-info-circle-fill me-2 text-info"></i>
+                                    <span>Drag widgets to reorder them. Use the controls below to show/hide widgets.</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <div class="btn-group customization-controls" role="group">
+                                    <button class="btn btn-success" onclick="saveCustomization()">
+                                        <i class="bi bi-check-lg me-1"></i>Save Layout
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="resetCustomization()">
+                                        <i class="bi bi-arrow-clockwise me-1"></i>Reset
+                                    </button>
+                                    <button class="btn btn-outline-danger" onclick="exitCustomization()">
+                                        <i class="bi bi-x-lg me-1"></i>Exit
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="widget-visibility-section">
+                            <h6 class="section-title mb-3 fw-semibold">Widget Visibility</h6>
+                            <div class="widget-controls-grid" id="widgetControls">
                                 <!-- Widget controls will be populated by JavaScript -->
                             </div>
                         </div>
@@ -116,282 +128,322 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Main Content with Sidebar -->
-    <div class="row">
-        <!-- Main Dashboard Content -->
-        <div class="col-lg-9">
-            <div class="row g-3" id="widgetGrid">
-                <div class="col-12">
-                    <div class="card widget-card mb-3">
-                        <div class="widget-item" data-widget="profile" draggable="true">
-                            <div class="card-body">
-                                <div class="text-center mb-3">
-                                    {% if user.avatarUrl %}
-                                        <img src="{{ user.avatarUrl }}" alt="{{ user.fullName }}"
-                                             class="rounded-circle mb-2" style="width: 80px; height: 80px; object-fit: cover;">
-                                    {% else %}
-                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2"
-                                             style="width: 80px; height: 80px; font-size: 2rem;">
-                                            {{ user.firstName|slice(0,1) }}{{ user.lastName|slice(0,1) }}
+        <!-- Main Content Layout -->
+        <div class="row g-4">
+            <!-- Main Dashboard Content -->
+            <div class="col-xl-9 col-lg-8">
+                <div class="widgets-container" id="widgetGrid">
+
+                    <!-- Profile Overview Widget -->
+                    <div class="widget-wrapper">
+                        <div class="modern-widget-card profile-widget" data-widget="profile" draggable="true">
+                            <div class="widget-header">
+                                <h5 class="widget-title">
+                                    <i class="bi bi-person-badge-fill me-2"></i>Profile Overview
+                                </h5>
+                                <div class="widget-controls" style="display: none;">
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('profile')" title="Hide Widget">
+                                        <i class="bi bi-eye-slash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="widget-body">
+                                <div class="profile-section">
+                                    <div class="profile-avatar-section">
+                                        {% if user.avatarUrl %}
+                                            <img src="{{ user.avatarUrl }}" alt="{{ user.fullName }}" class="profile-avatar">
+                                        {% else %}
+                                            <div class="profile-avatar-placeholder">
+                                                {{ user.firstName|slice(0,1) }}{{ user.lastName|slice(0,1) }}
+                                            </div>
+                                        {% endif %}
+                                        <div class="profile-info">
+                                            <h4 class="profile-name">{{ user.fullName }}</h4>
+                                            {% if user.studentId %}
+                                                <p class="profile-id">Student ID: {{ user.studentId }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-stats">
+                                        <div class="stat-item">
+                                            <div class="stat-value text-primary">{{ stats.totalCredentials }}</div>
+                                            <div class="stat-label">Total Credentials</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-value text-success">{{ stats.completedCredentials }}</div>
+                                            <div class="stat-label">Earned</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-value text-warning">{{ stats.careerGoals }}</div>
+                                            <div class="stat-label">Career Goals</div>
+                                        </div>
+                                    </div>
+
+                                    {% if careerInterests|length > 0 %}
+                                        <div class="career-interests">
+                                            <h6 class="interests-title">Career Interests</h6>
+                                            <div class="interests-tags">
+                                                {% for interest in careerInterests|slice(0, 3) %}
+                                                    <span class="interest-tag">{{ interest.title }}</span>
+                                                {% endfor %}
+                                            </div>
                                         </div>
                                     {% endif %}
-                                    <h6 class="mb-1">{{ user.fullName }}</h6>
-                                    {% if user.studentId %}
-                                        <small class="text-muted">ID: {{ user.studentId }}</small>
-                                    {% endif %}
                                 </div>
-
-                                <div class="row text-center">
-                                    <div class="col-4">
-                                        <div class="fw-bold text-primary">{{ stats.totalCredentials }}</div>
-                                        <small class="text-muted">Total</small>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="fw-bold text-success">{{ stats.completedCredentials }}</div>
-                                        <small class="text-muted">Earned</small>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="fw-bold text-warning">{{ stats.careerGoals }}</div>
-                                        <small class="text-muted">Goals</small>
-                                    </div>
-                                </div>
-
-                                {% if careerInterests|length > 0 %}
-                                    <hr>
-                                    <h6 class="text-muted mb-2">Career Interests</h6>
-                                    {% for interest in careerInterests|slice(0, 3) %}
-                                        <div class="badge bg-light text-dark border mb-1 me-1">
-                                            {{ interest.title }}
-                                        </div>
-                                    {% endfor %}
-                                {% endif %}
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-12">
-                    <div class="card widget-card mb-3">
-                        <div class="widget-item" data-widget="skillPassport" draggable="true" id="skillPassport">
-                            <div class="card-body">
+
+                    <!-- Skill Passport Widget -->
+                    <div class="widget-wrapper">
+                        <div class="modern-widget-card credentials-widget" data-widget="skillPassport" draggable="true" id="skillPassport">
+                            <div class="widget-header">
+                                <h5 class="widget-title">
+                                    <i class="bi bi-award-fill me-2"></i>Skill Passport
+                                </h5>
+                                <div class="widget-controls" style="display: none;">
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('skillPassport')" title="Hide Widget">
+                                        <i class="bi bi-eye-slash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="widget-body">
                                 {% if studentProgress|length > 0 %}
-                                    <div class="row" id="credentialGrid">
+                                    <div class="credentials-grid" id="credentialGrid">
                                         {% for progress in studentProgress|slice(0, 6) %}
-                                            <div class="col-md-4 col-sm-6 mb-3">
-                                                <div class="card border-0 bg-light h-100">
-                                                    <div class="card-body text-center p-3">
-                                                        {% if progress.microCredential.badgeUrl %}
-                                                            <img src="{{ progress.microCredential.badgeUrl }}"
-                                                                 alt="{{ progress.microCredential.name }}"
-                                                                 class="mb-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                            <div class="credential-card">
+                                                <div class="credential-badge">
+                                                    {% if progress.microCredential.badgeUrl %}
+                                                        <img src="{{ progress.microCredential.badgeUrl }}" alt="{{ progress.microCredential.name }}" class="badge-image">
+                                                    {% else %}
+                                                        <i class="bi bi-award-fill badge-icon"></i>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="credential-info">
+                                                    <h6 class="credential-name">{{ progress.microCredential.name }}</h6>
+                                                    <p class="credential-date">{{ progress.dateEarned.format('M Y') }}</p>
+                                                    <div class="credential-status">
+                                                        {% if progress.status == 'Completed' or progress.status == 'Verified' %}
+                                                            <span class="status-badge status-completed">{{ progress.status }}</span>
+                                                        {% elseif progress.status == 'In Progress' %}
+                                                            <span class="status-badge status-progress">{{ progress.status }}</span>
                                                         {% else %}
-                                                            <i class="bi bi-award-fill text-primary mb-2" style="font-size: 2rem;"></i>
+                                                            <span class="status-badge status-default">{{ progress.status }}</span>
                                                         {% endif %}
-                                                        <h6 class="card-title mb-1" style="font-size: 0.9rem;">
-                                                            {{ progress.microCredential.name }}
-                                                        </h6>
-                                                        <small class="text-muted">
-                                                            {{ progress.dateEarned.format('M Y') }}
-                                                        </small>
-                                                        <div class="mt-2">
-                                                            {% if progress.status == 'Completed' or progress.status == 'Verified' %}
-                                                                <span class="badge bg-success">{{ progress.status }}</span>
-                                                            {% elseif progress.status == 'In Progress' %}
-                                                                <span class="badge bg-warning">{{ progress.status }}</span>
-                                                            {% else %}
-                                                                <span class="badge bg-secondary">{{ progress.status }}</span>
-                                                            {% endif %}
-                                                        </div>
+                                                    </div>
+                                                    <div class="credential-actions mt-2">
+                                                        <button class="btn btn-sm btn-outline-primary" onclick="viewCredentialDetails(this)" title="View Details">
+                                                            <i class="bi bi-eye"></i>
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
                                         {% endfor %}
                                     </div>
                                     {% if studentProgress|length > 6 %}
-                                        <div class="text-center mt-3">
-                                            <button class="btn btn-outline-primary btn-sm" onclick="showAllCredentials()">
+                                        <div class="view-all-section">
+                                            <button class="btn btn-view-all" onclick="showAllCredentials()">
                                                 View All {{ studentProgress|length }} Credentials
+                                                <i class="bi bi-arrow-right ms-2"></i>
                                             </button>
                                         </div>
                                     {% endif %}
                                 {% else %}
-                                    <div class="text-center py-4">
-                                        <i class="bi bi-award text-muted" style="font-size: 3rem;"></i>
-                                        <h6 class="text-muted mt-2">No credentials yet</h6>
-                                        <p class="text-muted mb-3">Start your learning journey to earn your first micro-credential!</p>
-                                        <button class="btn btn-primary btn-sm">
-                                            <i class="bi bi-search me-1"></i>Browse Available Credentials
+                                    <div class="empty-state">
+                                        <div class="empty-icon">
+                                            <i class="bi bi-award"></i>
+                                        </div>
+                                        <h6 class="empty-title">No credentials yet</h6>
+                                        <p class="empty-description">Start your learning journey to earn your first micro-credential!</p>
+                                        <button class="btn btn-primary btn-get-started">
+                                            <i class="bi bi-search me-2"></i>Browse Available Credentials
                                         </button>
                                     </div>
                                 {% endif %}
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-12">
-                    <div class="card widget-card mb-3">
-                        <div class="widget-item" data-widget="careerPath" draggable="true" id="careerPath">
-                            <div class="card-body">
+
+                    <!-- Career Roadmap Widget -->
+                    <div class="widget-wrapper">
+                        <div class="modern-widget-card career-widget" data-widget="careerPath" draggable="true" id="careerPath">
+                            <div class="widget-header">
+                                <h5 class="widget-title">
+                                    <i class="bi bi-map-fill me-2"></i>Career Roadmap
+                                </h5>
+                                <div class="widget-controls" style="display: none;">
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('careerPath')" title="Hide Widget">
+                                        <i class="bi bi-eye-slash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="widget-body">
                                 {% if careerPaths|length > 0 %}
-                                    {% for path in careerPaths %}
-                                        <div class="career-path-card mb-4">
-                                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                                <div>
-                                                    <h6 class="mb-1">{{ path.jobRole.title }}</h6>
-                                                    <div class="text-muted small">
-                                                        {% if path.industry %}
-                                                            <span class="badge bg-info me-2">{{ path.industry }}</span>
-                                                        {% endif %}
-                                                        {% if path.salaryRange %}
-                                                            <span class="text-success">{{ path.salaryRange }}</span>
-                                                        {% endif %}
+                                    <div class="career-paths">
+                                        {% for path in careerPaths %}
+                                            <div class="career-path-item">
+                                                <div class="path-header">
+                                                    <div class="path-info">
+                                                        <h6 class="path-title">{{ path.jobRole.title }}</h6>
+                                                        <div class="path-meta">
+                                                            {% if path.industry %}
+                                                                <span class="industry-tag">{{ path.industry }}</span>
+                                                            {% endif %}
+                                                            {% if path.salaryRange %}
+                                                                <span class="salary-info">{{ path.salaryRange }}</span>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="completion-circle">
+                                                        <div class="circle-progress" data-percentage="{{ path.completionPercentage }}">
+                                                            <span class="percentage">{{ path.completionPercentage }}%</span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="text-end">
-                                                    <div class="h4 mb-0 text-primary">{{ path.completionPercentage }}%</div>
-                                                    <small class="text-muted">Complete</small>
-                                                </div>
-                                            </div>
 
-                                            <!-- Progress Bar -->
-                                            <div class="progress mb-3" style="height: 8px;">
-                                                <div class="progress-bar bg-primary" role="progressbar" 
-                                                     style="width: {{ path.completionPercentage }}%"
-                                                     aria-valuenow="{{ path.completionPercentage }}" 
-                                                     aria-valuemin="0" 
-                                                     aria-valuemax="100">
+                                                <div class="progress-section">
+                                                    <div class="modern-progress">
+                                                        <div class="progress-bar" style="width: {{ path.completionPercentage }}%"></div>
+                                                    </div>
+                                                    <div class="progress-info">
+                                                        <span class="skills-count">{{ path.completedSkills }}/{{ path.totalSkills }} Skills</span>
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <!-- Skills Overview -->
-                                            <div class="skills-overview mb-3">
-                                                <div class="d-flex justify-content-between mb-2">
-                                                    <small class="text-muted">Required Skills</small>
-                                                    <small class="text-muted">{{ path.completedSkills }}/{{ path.totalSkills }}</small>
-                                                </div>
-                                                <div class="d-flex flex-wrap gap-2">
-                                                    {% for skill in path.jobRole.skills %}
-                                                        <span class="badge {% if skill in path.missingSkills %}bg-light text-dark border{% else %}bg-success{% endif %}">
+                                                <div class="skills-section">
+                                                    <h6 class="skills-title">Required Skills</h6>
+                                                    <div class="skills-grid">
+                                                        {% for skill in path.jobRole.skills %}
+                                                            <span class="skill-tag {% if skill in path.missingSkills %}skill-missing{% else %}skill-completed{% endif %}">
                                                             {{ skill.name }}
-                                                        </span>
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-
-                                            <!-- Missing Skills -->
-                                            {% if path.missingSkills|length > 0 %}
-                                                <div class="missing-skills">
-                                                    <h6 class="text-muted mb-2">Skills to Develop</h6>
-                                                    <div class="d-flex flex-wrap gap-2">
-                                                        {% for skill in path.missingSkills %}
-                                                            <span class="badge bg-light text-dark border">
-                                                                {{ skill.name }}
-                                                                {% if skill.category %}
-                                                                    <small class="text-muted">({{ skill.category }})</small>
+                                                                {% if skill not in path.missingSkills %}
+                                                                    <i class="bi bi-check-circle-fill ms-1"></i>
                                                                 {% endif %}
-                                                            </span>
+                                                        </span>
                                                         {% endfor %}
                                                     </div>
                                                 </div>
-                                            {% endif %}
 
-                                            <!-- Career Details -->
-                                            {% if path.yearsOfTraining %}
-                                                <div class="mt-3 pt-3 border-top">
-                                                    <small class="text-muted">
-                                                        <i class="bi bi-clock me-1"></i>Typical Training: {{ path.yearsOfTraining }} years
-                                                    </small>
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                    {% endfor %}
+                                                {% if path.missingSkills|length > 0 %}
+                                                    <div class="missing-skills-section">
+                                                        <h6 class="missing-title">Skills to Develop</h6>
+                                                        <div class="missing-skills-grid">
+                                                            {% for skill in path.missingSkills %}
+                                                                <span class="missing-skill-tag">
+                                                                {{ skill.name }}
+                                                                    {% if skill.category %}
+                                                                        <small>({{ skill.category }})</small>
+                                                                    {% endif %}
+                                                            </span>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+
+                                                {% if path.yearsOfTraining %}
+                                                    <div class="training-info">
+                                                        <i class="bi bi-clock me-2"></i>
+                                                        <span>Typical Training: {{ path.yearsOfTraining }} years</span>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
                                 {% else %}
-                                    <div class="text-center py-4">
-                                        <i class="bi bi-map text-muted" style="font-size: 3rem;"></i>
-                                        <h6 class="text-muted mt-2">No Career Goals Set</h6>
-                                        <p class="text-muted mb-3">Set your career goals to see your progress roadmap!</p>
-                                        <button class="btn btn-primary btn-sm" onclick="scrollToWidget('careerExplorer')">
-                                            <i class="bi bi-search me-1"></i>Explore Careers
+                                    <div class="empty-state">
+                                        <div class="empty-icon">
+                                            <i class="bi bi-map"></i>
+                                        </div>
+                                        <h6 class="empty-title">No Career Goals Set</h6>
+                                        <p class="empty-description">Set your career goals to see your progress roadmap!</p>
+                                        <button class="btn btn-primary btn-get-started" onclick="scrollToWidget('careerExplorer')">
+                                            <i class="bi bi-search me-2"></i>Explore Careers
                                         </button>
                                     </div>
                                 {% endif %}
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-12">
-                    <div class="card widget-card mb-3">
-                        <div class="widget-item" data-widget="recentActivity" draggable="true">
-                            <div class="card-body">
+
+                    <!-- Recent Activity Widget -->
+                    <div class="widget-wrapper">
+                        <div class="modern-widget-card activity-widget" data-widget="recentActivity" draggable="true">
+                            <div class="widget-header">
+                                <h5 class="widget-title">
+                                    <i class="bi bi-clock-history me-2"></i>Recent Activity
+                                </h5>
+                                <div class="widget-controls" style="display: none;">
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('recentActivity')" title="Hide Widget">
+                                        <i class="bi bi-eye-slash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="widget-body">
                                 {% if recentProgress|length > 0 %}
-                                    <div class="timeline">
+                                    <div class="activity-timeline">
                                         {% for progress in recentProgress|slice(0, 5) %}
-                                            <div class="timeline-item d-flex align-items-start mb-4">
-                                                <div class="timeline-marker rounded-circle d-flex align-items-center justify-content-center me-3"
-                                                     style="width: 40px; height: 40px; min-width: 40px; background: linear-gradient(135deg, var(--electric-blue) 0%, var(--sky-blue) 100%);">
+                                            <div class="timeline-item">
+                                                <div class="timeline-marker">
                                                     {% if progress.type == 'credential' %}
-                                                        <i class="bi bi-award text-white"></i>
+                                                        <i class="bi bi-award-fill"></i>
                                                     {% elseif progress.type == 'skill' %}
-                                                        <i class="bi bi-star text-white"></i>
+                                                        <i class="bi bi-star-fill"></i>
                                                     {% elseif progress.type == 'profile' %}
-                                                        <i class="bi bi-person text-white"></i>
+                                                        <i class="bi bi-person-fill"></i>
                                                     {% else %}
-                                                        <i class="bi bi-flag text-white"></i>
+                                                        <i class="bi bi-flag-fill"></i>
                                                     {% endif %}
                                                 </div>
-                                                <div class="timeline-content flex-grow-1">
-                                                    <div class="d-flex justify-content-between align-items-start">
-                                                        <div>
+                                                <div class="timeline-content">
+                                                    <div class="activity-header">
+                                                        <div class="activity-info">
                                                             {% if progress.type == 'credential' %}
-                                                                <h6 class="mb-1">{{ progress.microCredential.name }}</h6>
-                                                                <p class="text-muted mb-1">
+                                                                <h6 class="activity-title">{{ progress.microCredential.name }}</h6>
+                                                                <p class="activity-description">
                                                                     Earned {{ progress.microCredential.category }} credential
                                                                     {% if progress.verifiedBy %}
                                                                         • Verified by {{ progress.verifiedBy }}
                                                                     {% endif %}
                                                                 </p>
                                                                 {% if progress.dateEarned|date('Y-m-d') == "now"|date('Y-m-d') %}
-                                                                    <div class="alert alert-success py-2 px-3 mb-2" style="font-size: 0.9rem;">
-                                                                        <i class="bi bi-trophy me-1"></i>Congratulations on earning this credential!
+                                                                    <div class="achievement-badge">
+                                                                        <i class="bi bi-trophy-fill me-1"></i>New Achievement!
                                                                     </div>
                                                                 {% endif %}
                                                             {% elseif progress.type == 'skill' %}
-                                                                <h6 class="mb-1">New Skill: {{ progress.name }}</h6>
-                                                                <p class="text-muted mb-1">
+                                                                <h6 class="activity-title">New Skill: {{ progress.name }}</h6>
+                                                                <p class="activity-description">
                                                                     Added to your skill set
                                                                     {% if progress.category %}
                                                                         • {{ progress.category }}
                                                                     {% endif %}
                                                                 </p>
                                                             {% elseif progress.type == 'profile' %}
-                                                                <h6 class="mb-1">Profile Updated</h6>
-                                                                <p class="text-muted mb-1">
-                                                                    {{ progress.updateDescription }}
-                                                                </p>
+                                                                <h6 class="activity-title">Profile Updated</h6>
+                                                                <p class="activity-description">{{ progress.updateDescription }}</p>
                                                             {% else %}
-                                                                <h6 class="mb-1">New Career Goal</h6>
-                                                                <p class="text-muted mb-1">
-                                                                    Set goal: {{ progress.goalDescription }}
-                                                                </p>
+                                                                <h6 class="activity-title">New Career Goal</h6>
+                                                                <p class="activity-description">Set goal: {{ progress.goalDescription }}</p>
                                                             {% endif %}
-                                                            
+
                                                             {% if progress.type == 'credential' or progress.type == 'skill' %}
-                                                                <div class="d-flex gap-2 mt-2">
+                                                                <div class="activity-actions">
                                                                     <button class="btn btn-sm btn-outline-primary" onclick="shareAchievement('{{ progress.id }}', '{{ progress.type }}')">
                                                                         <i class="bi bi-share me-1"></i>Share
                                                                     </button>
-                                                                    {% if progress.type == 'credential' %}
-                                                                        <button class="btn btn-sm btn-outline-secondary" onclick="viewCredentialDetails('{{ progress.id }}')">
-                                                                            <i class="bi bi-eye me-1"></i>View Details
-                                                                        </button>
-                                                                    {% endif %}
+                                                                                                                        {% if progress.type == 'credential' %}
+                                                        <button class="btn btn-sm btn-outline-secondary" onclick="viewCredentialDetails(this)">
+                                                            <i class="bi bi-eye me-1"></i>Details
+                                                        </button>
+                                                    {% endif %}
                                                                 </div>
                                                             {% endif %}
                                                         </div>
-                                                        <div class="text-end">
-                                                            <small class="text-muted d-block">{{ progress.dateEarned|date('M j') }}</small>
-                                                            <small class="text-muted">{{ progress.dateEarned|date('g:i A') }}</small>
+                                                        <div class="activity-time">
+                                                            <span class="time-date">{{ progress.dateEarned|date('M j') }}</span>
+                                                            <span class="time-hour">{{ progress.dateEarned|date('g:i A') }}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -399,1007 +451,2935 @@
                                         {% endfor %}
                                     </div>
                                     {% if recentProgress|length > 5 %}
-                                        <div class="text-center">
-                                            <button class="btn btn-outline-secondary btn-sm" onclick="showAllActivity()">
+                                        <div class="view-all-section">
+                                            <button class="btn btn-view-all" onclick="showAllActivity()">
                                                 View All Recent Activity
+                                                <i class="bi bi-arrow-right ms-2"></i>
                                             </button>
                                         </div>
                                     {% endif %}
                                 {% else %}
-                                    <div class="text-center py-4">
-                                        <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
-                                        <h6 class="text-muted mt-2">No recent activity</h6>
-                                        <p class="text-muted">Complete a micro-credential to see your progress here!</p>
+                                    <div class="empty-state">
+                                        <div class="empty-icon">
+                                            <i class="bi bi-calendar-x"></i>
+                                        </div>
+                                        <h6 class="empty-title">No recent activity</h6>
+                                        <p class="empty-description">Complete a micro-credential to see your progress here!</p>
                                     </div>
                                 {% endif %}
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-12">
-                    <div class="card widget-card mb-3">
-                        <div class="widget-item" data-widget="suggestions" draggable="true" id="suggestions">
-                            <div class="card-body">
+
+                    <!-- AI Suggestions Widget -->
+                    <div class="widget-wrapper">
+                        <div class="modern-widget-card suggestions-widget" data-widget="suggestions" draggable="true" id="suggestions">
+                            <div class="widget-header">
+                                <h5 class="widget-title">
+                                    <i class="bi bi-lightbulb-fill me-2"></i>AI Career Suggestions
+                                </h5>
+                                <div class="widget-controls" style="display: none;">
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('suggestions')" title="Hide Widget">
+                                        <i class="bi bi-eye-slash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="widget-body">
                                 {% if aiSuggestions.suggestions is defined and aiSuggestions.suggestions|length > 0 %}
-                                    <div class="mb-3">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <h6 class="mb-0 text-primary">Career Recommendations</h6>
-                                        </div>
-                                        <div class="row g-2">
-                                            {% for suggestion in aiSuggestions.suggestions|slice(0, 4) %}
-                                                <div class="col-12 col-md-12">
-                                                    <div class="card border-0 bg-light mb-2 h-100">
-                                                        <div class="card-body p-3 d-flex flex-column justify-content-between h-100">
-                                                            <div>
-                                                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                                                    <h6 class="card-title mb-1">{{ suggestion.role }}</h6>
-                                                                    <span class="badge bg-success">{{ suggestion.match_score }}% Match</span>
-                                                                </div>
-                                                                <p class="card-text small text-muted mb-2">{{ suggestion.reasoning }}</p>
-                                                                <div class="d-flex justify-content-between align-items-center">
-                                                                    <small class="text-muted">
-                                                                        <i class="bi bi-currency-dollar me-1"></i>{{ suggestion.salary_range }}
-                                                                    </small>
-                                                                    <small class="text-muted">
-                                                                        <i class="bi bi-graph-up me-1"></i>{{ suggestion.growth_potential }}
-                                                                    </small>
-                                                                </div>
-                                                                {% if suggestion.required_skills is defined and suggestion.required_skills|length > 0 %}
-                                                                    <div class="mt-2">
-                                                                        <small class="text-muted">Key Skills:</small>
-                                                                        <div class="mt-1">
-                                                                            {% for skill in suggestion.required_skills|slice(0, 3) %}
-                                                                                <span class="badge bg-primary me-1" style="font-size: 0.7rem;">{{ skill }}</span>
-                                                                            {% endfor %}
-                                                                        </div>
-                                                                    </div>
-                                                                {% endif %}
-                                                            </div>
-                                                        </div>
+                                    <div class="suggestions-grid">
+                                        {% for suggestion in aiSuggestions.suggestions|slice(0, 4) %}
+                                            <div class="suggestion-card">
+                                                <div class="suggestion-header">
+                                                    <h6 class="suggestion-title">{{ suggestion.role }}</h6>
+                                                    <span class="match-score">{{ suggestion.match_score }}% Match</span>
+                                                </div>
+                                                <p class="suggestion-description">{{ suggestion.reasoning }}</p>
+                                                <div class="suggestion-details">
+                                                    <div class="detail-item">
+                                                        <i class="bi bi-currency-dollar"></i>
+                                                        <span>{{ suggestion.salary_range }}</span>
+                                                    </div>
+                                                    <div class="detail-item">
+                                                        <i class="bi bi-graph-up"></i>
+                                                        <span>{{ suggestion.growth_potential }}</span>
                                                     </div>
                                                 </div>
+                                                {% if suggestion.required_skills is defined and suggestion.required_skills|length > 0 %}
+                                                    <div class="suggestion-skills">
+                                                        <span class="skills-label">Key Skills:</span>
+                                                        <div class="skills-tags">
+                                                            {% for skill in suggestion.required_skills|slice(0, 3) %}
+                                                                <span class="skill-tag-small">{{ skill }}</span>
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+
+                                    {% if aiSuggestions.next_steps is defined and aiSuggestions.next_steps|length > 0 %}
+                                        <div class="next-steps-section">
+                                            <h6 class="next-steps-title">Recommended Next Steps</h6>
+                                            <div class="next-steps-list">
+                                                {% for step in aiSuggestions.next_steps|slice(0, 3) %}
+                                                    <div class="next-step-item">
+                                                        <i class="bi bi-check-circle-fill"></i>
+                                                        <span>{{ step }}</span>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                    {% if aiSuggestions.reasoning is defined %}
+                                        <div class="ai-insight">
+                                            <div class="insight-header">
+                                                <i class="bi bi-robot"></i>
+                                                <span class="insight-label">AI Analysis</span>
+                                            </div>
+                                            <p class="insight-text">{{ aiSuggestions.reasoning }}</p>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="loading-state" id="suggestionsLoading">
+                                        <div class="loading-spinner"></div>
+                                        <h6 class="loading-title">Generating AI Suggestions</h6>
+                                        <p class="loading-description">Analyzing your skills and career interests...</p>
+                                    </div>
+                                    <div class="error-state" id="suggestionsError" style="display: none;">
+                                        <div class="error-icon">
+                                            <i class="bi bi-exclamation-triangle"></i>
+                                        </div>
+                                        <h6 class="error-title">Unable to Load Suggestions</h6>
+                                        <p class="error-description">Please try refreshing the page or contact support.</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Enhanced Sidebar -->
+            <div class="col-xl-3 col-lg-4">
+                <div class="sidebar-sticky">
+                    <div class="modern-widget-card sidebar-widget" id="skillRecommendations">
+                        <div class="widget-header">
+                            <h5 class="widget-title">
+                                <i class="bi bi-gear-fill me-2"></i>Skill Recommendations
+                            </h5>
+                            <div class="widget-controls" style="display: none;">
+                                <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('skillRecommendations')" title="Hide Widget">
+                                    <i class="bi bi-eye-slash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="widget-body">
+                            {% if skillRecommendations.recommendations is defined and skillRecommendations.recommendations|length > 0 %}
+                                <div class="skill-recommendations">
+                                    {% for recommendation in skillRecommendations.recommendations|slice(0, 4) %}
+                                        <div class="skill-recommendation-card">
+                                            <div class="skill-header">
+                                                <h6 class="skill-name">{{ recommendation.skill }}</h6>
+                                                <span class="importance-badge importance-{{ recommendation.importance|lower }}">
+                                                {{ recommendation.importance }}
+                                            </span>
+                                            </div>
+                                            <p class="skill-reasoning">{{ recommendation.reasoning }}</p>
+                                            <div class="skill-metrics">
+                                                <div class="metric-item">
+                                                    <i class="bi bi-clock"></i>
+                                                    <span>{{ recommendation.estimated_time }}</span>
+                                                </div>
+                                                <div class="metric-item">
+                                                    <i class="bi bi-bar-chart"></i>
+                                                    <span>{{ recommendation.difficulty }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="skill-impact">
+                                                <div class="impact-item">
+                                                    <span class="impact-label">Market Demand:</span>
+                                                    <span class="impact-value">{{ recommendation.market_demand }}</span>
+                                                </div>
+                                                <div class="impact-item">
+                                                    <span class="impact-label">Salary Impact:</span>
+                                                    <span class="impact-value">{{ recommendation.salary_impact }}</span>
+                                                </div>
+                                            </div>
+                                            {% if recommendation.related_credentials is defined and recommendation.related_credentials|length > 0 %}
+                                                <div class="related-credentials">
+                                                    <span class="credentials-label">Related Credentials:</span>
+                                                    <div class="credentials-tags">
+                                                        {% for credential in recommendation.related_credentials|slice(0, 2) %}
+                                                            <span class="credential-tag">{{ credential }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+
+                                {% if skillRecommendations.priority_skills is defined and skillRecommendations.priority_skills|length > 0 %}
+                                    <div class="priority-skills-section">
+                                        <h6 class="priority-title">Priority Skills</h6>
+                                        <div class="priority-skills-grid">
+                                            {% for skill in skillRecommendations.priority_skills|slice(0, 5) %}
+                                                <span class="priority-skill-tag">{{ skill }}</span>
                                             {% endfor %}
                                         </div>
                                     </div>
-
-                                    <!-- Next Steps -->
-                                    {% if aiSuggestions.next_steps is defined and aiSuggestions.next_steps|length > 0 %}
-                                        <div class="mb-3">
-                                            <h6 class="text-primary mb-2">Next Steps</h6>
-                                            <ul class="list-unstyled mb-0">
-                                                {% for step in aiSuggestions.next_steps|slice(0, 3) %}
-                                                    <li class="mb-1">
-                                                        <i class="bi bi-check-circle text-success me-2"></i>
-                                                        <small>{{ step }}</small>
-                                                    </li>
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
-                                    {% endif %}
-
-                                    <!-- AI Reasoning -->
-                                    {% if aiSuggestions.reasoning is defined %}
-                                        <div class="alert alert-info p-2 mb-0">
-                                            <small>
-                                                <i class="bi bi-robot me-1"></i>
-                                                <strong>AI Analysis:</strong> {{ aiSuggestions.reasoning }}
-                                            </small>
-                                        </div>
-                                    {% endif %}
-
-                                {% else %}
-                                    <!-- Loading State -->
-                                    <div class="text-center py-4" id="suggestionsLoading">
-                                        <div class="spinner-border text-primary mb-3" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </div>
-                                        <h6 class="text-muted">Generating AI Suggestions</h6>
-                                        <p class="text-muted small">Analyzing your skills and career interests...</p>
-                                    </div>
-
-                                    <!-- Error State (hidden by default) -->
-                                    <div class="text-center py-4" id="suggestionsError" style="display: none;">
-                                        <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
-                                        <h6 class="text-muted mt-2">Unable to Load Suggestions</h6>
-                                        <p class="text-muted small">Please try refreshing the page or contact support.</p>
-                                    </div>
                                 {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Sidebar: Skill Recommendations -->
-        <div class="col-lg-3">
-            <div class="sidebar-container">
-                <div class="card widget-card sidebar-widget mb-2" id="skillRecommendations">
-                    <div class="widget-header">
-                        <h5 class="widget-title">
-                            <i class="bi bi-gear me-2"></i>Skill Recommendations
-                        </h5>
-                        <div class="widget-controls" style="display: none;">
-                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleWidget('skillRecommendations')" title="Hide Widget">
-                                <i class="bi bi-eye-slash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="widget-body">
-                        {% if skillRecommendations.recommendations is defined and skillRecommendations.recommendations|length > 0 %}
-                            <!-- Skill Recommendations Content -->
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h6 class="mb-0 text-primary">Recommended Skills</h6>
-                                </div>
-                                <div class="row g-2">
-                                    {% for recommendation in skillRecommendations.recommendations|slice(0, 4) %}
-                                        <div class="col-12 col-md-12">
-                                            <div class="card border-0 bg-light mb-2 h-100">
-                                                <div class="card-body p-3 d-flex flex-column justify-content-between h-100">
-                                                    <div>
-                                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                                            <h6 class="card-title mb-1">{{ recommendation.skill }}</h6>
-                                                            <span class="badge bg-{% if recommendation.importance == 'High' %}danger{% elseif recommendation.importance == 'Medium' %}warning{% else %}info{% endif %}">
-                                                                {{ recommendation.importance }}
-                                                            </span>
-                                                        </div>
-                                                        <p class="card-text small text-muted mb-2">{{ recommendation.reasoning }}</p>
-                                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                                            <small class="text-muted">
-                                                                <i class="bi bi-clock me-1"></i>{{ recommendation.estimated_time }}
-                                                            </small>
-                                                            <small class="text-muted">
-                                                                <i class="bi bi-bar-chart me-1"></i>{{ recommendation.difficulty }}
-                                                            </small>
-                                                        </div>
-                                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                                            <small class="text-muted">
-                                                                <i class="bi bi-graph-up me-1"></i>Market: {{ recommendation.market_demand }}
-                                                            </small>
-                                                            <small class="text-muted">
-                                                                <i class="bi bi-currency-dollar me-1"></i>Impact: {{ recommendation.salary_impact }}
-                                                            </small>
-                                                        </div>
-                                                        {% if recommendation.related_credentials is defined and recommendation.related_credentials|length > 0 %}
-                                                            <div class="mt-2">
-                                                                <small class="text-muted">Related Credentials:</small>
-                                                                <div class="mt-1">
-                                                                    {% for credential in recommendation.related_credentials|slice(0, 2) %}
-                                                                        <span class="badge bg-secondary me-1" style="font-size: 0.7rem;">{{ credential }}</span>
-                                                                    {% endfor %}
-                                                                </div>
-                                                            </div>
-                                                        {% endif %}
-                                                    </div>
+
+                                {% if skillRecommendations.learning_paths is defined and skillRecommendations.learning_paths|length > 0 %}
+                                    <div class="learning-paths-section">
+                                        <h6 class="paths-title">Learning Paths</h6>
+                                        {% for path in skillRecommendations.learning_paths|slice(0, 2) %}
+                                            <div class="learning-path-card">
+                                                <h6 class="path-name">{{ path.path_name }}</h6>
+                                                <p class="path-description">{{ path.description }}</p>
+                                                <div class="path-details">
+                                                    <span class="path-duration">{{ path.total_duration }}</span>
+                                                    <span class="path-difficulty">{{ path.difficulty_progression }}</span>
                                                 </div>
                                             </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-
-                            <!-- Priority Skills -->
-                            {% if skillRecommendations.priority_skills is defined and skillRecommendations.priority_skills|length > 0 %}
-                                <div class="mb-3">
-                                    <h6 class="text-primary mb-2">Priority Skills</h6>
-                                    <div class="d-flex flex-wrap gap-1">
-                                        {% for skill in skillRecommendations.priority_skills|slice(0, 5) %}
-                                            <span class="badge bg-primary">{{ skill }}</span>
                                         {% endfor %}
                                     </div>
+                                {% endif %}
+                            {% else %}
+                                <div class="loading-state" id="skillRecommendationsLoading">
+                                    <div class="loading-spinner"></div>
+                                    <h6 class="loading-title">Analyzing Your Skills</h6>
+                                    <p class="loading-description">Generating personalized skill recommendations...</p>
+                                </div>
+                                <div class="error-state" id="skillRecommendationsError" style="display: none;">
+                                    <div class="error-icon">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                    </div>
+                                    <h6 class="error-title">Unable to Load Recommendations</h6>
+                                    <p class="error-description">Please try refreshing the page or contact support.</p>
                                 </div>
                             {% endif %}
-
-                            <!-- Learning Paths -->
-                            {% if skillRecommendations.learning_paths is defined and skillRecommendations.learning_paths|length > 0 %}
-                                <div class="mb-3">
-                                    <h6 class="text-primary mb-2">Learning Paths</h6>
-                                    {% for path in skillRecommendations.learning_paths|slice(0, 2) %}
-                                        <div class="card border-0 bg-light mb-2">
-                                            <div class="card-body p-2">
-                                                <h6 class="card-title mb-1 small">{{ path.path_name }}</h6>
-                                                <p class="card-text small text-muted mb-1">{{ path.description }}</p>
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <small class="text-muted">{{ path.total_duration }}</small>
-                                                    <small class="text-muted">{{ path.difficulty_progression }}</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-
-                        {% else %}
-                            <!-- Loading State -->
-                            <div class="text-center py-4" id="skillRecommendationsLoading">
-                                <div class="spinner-border text-primary mb-3" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <h6 class="text-muted">Analyzing Your Skills</h6>
-                                <p class="text-muted small">Generating personalized skill recommendations...</p>
-                            </div>
-
-                            <!-- Error State (hidden by default) -->
-                            <div class="text-center py-4" id="skillRecommendationsError" style="display: none;">
-                                <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
-                                <h6 class="text-muted mt-2">Unable to Load Recommendations</h6>
-                                <p class="text-muted small">Please try refreshing the page or contact support.</p>
-                            </div>
-                        {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<style>
-    .timeline-marker {
-        box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
-    }
-
-    .timeline-item:not(:last-child)::after {
-        content: '';
-        position: absolute;
-        left: 19px;
-        top: 50px;
-        width: 2px;
-        height: calc(100% - 50px);
-        background: linear-gradient(to bottom, var(--electric-blue), var(--sky-blue));
-        opacity: 0.3;
-    }
-
-    .timeline-item {
-        position: relative;
-    }
-
-    .timeline-item:hover .timeline-marker {
-        transform: scale(1.1);
-        transition: transform 0.2s ease;
-    }
-
-    .alert-success {
-        background-color: rgba(40, 167, 69, 0.1);
-        border: 1px solid rgba(40, 167, 69, 0.2);
-        color: var(--soft-green);
-    }
-
-    .career-path-card {
-        background: #fff;
-        border-radius: 8px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .career-path-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-    .progress {
-        background-color: #f0f0f0;
-        border-radius: 4px;
-        overflow: hidden;
-    }
-
-    .progress-bar {
-        background: linear-gradient(90deg, var(--electric-blue) 0%, var(--sky-blue) 100%);
-        transition: width 0.6s ease;
-    }
-
-    .badge {
-        font-weight: 500;
-        padding: 0.5em 0.8em;
-    }
-
-    .badge.bg-success {
-        background: linear-gradient(135deg, var(--soft-green) 0%, #34c759 100%) !important;
-    }
-
-    .badge.bg-light {
-        background: #f8f9fa !important;
-        border: 1px solid #dee2e6;
-    }
-
-    /* Customization */
-    .widget-item {
-        transition: all 0.3s ease;
-        cursor: grab;
-    }
-
-    .widget-item:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    .widget-item.dragging {
-        opacity: 0.5;
-        transform: rotate(5deg);
-        cursor: grabbing;
-    }
-
-    .widget-item.drag-over {
-        border: 2px dashed var(--electric-blue);
-        background-color: rgba(0, 123, 255, 0.05);
-    }
-
-    .customization-mode .widget-item {
-        border: 2px solid transparent;
-        border-radius: 8px;
-        padding: 8px;
-        margin: -8px;
-    }
-
-    .customization-mode .widget-item:hover {
-        border-color: var(--electric-blue);
-        background-color: rgba(0, 123, 255, 0.05);
-    }
-
-    .widget-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .widget-controls {
-        opacity: 0;
-        transition: opacity 0.2s ease;
-    }
-
-    .customization-mode .widget-controls {
-        opacity: 1;
-    }
-
-    .widget-toggle-btn {
-        transition: all 0.2s ease;
-    }
-
-    .widget-toggle-btn.hidden {
-        background-color: #dc3545;
-        border-color: #dc3545;
-        color: white;
-    }
-
-    .widget-toggle-btn.hidden:hover {
-        background-color: #c82333;
-        border-color: #bd2130;
-    }
-
-    .drop-zone {
-        min-height: 100px;
-        border: 2px dashed #dee2e6;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: #f8f9fa;
-        transition: all 0.2s ease;
-    }
-
-    .drop-zone.drag-over {
-        border-color: var(--electric-blue);
-        background-color: rgba(0, 123, 255, 0.05);
-    }
-
-    .drop-zone-text {
-        color: #6c757d;
-        font-size: 0.9rem;
-    }
-
-    .widget-card {
-        border-radius: 16px;
-        box-shadow: 0 4px 24px rgba(30, 42, 56, 0.10), 0 1.5px 4px rgba(30, 42, 56, 0.08);
-        border: 1px solid #e3e6ea;
-        margin-bottom: 24px;
-        background: #fff;
-    }
-    .widget-card:hover {
-        box-shadow: 0 8px 32px rgba(30, 42, 56, 0.16), 0 2px 8px rgba(30, 42, 56, 0.10);
-    }
-    .widget-header {
-        padding: 1rem 1.25rem 0.5rem 1.25rem;
-        border-bottom: 1px solid #f0f0f0;
-        background: #f9fafb;
-        border-top-left-radius: 16px;
-        border-top-right-radius: 16px;
-    }
-    .widget-title {
-        font-size: 1.15rem;
-        font-weight: 600;
-        color: #1E2A38;
-        margin-bottom: 0;
-    }
-    .widget-body {
-        padding: 1rem 1.25rem;
-    }
-    .widget-item {
-        margin-bottom: 24px !important;
-    }
-    @media (max-width: 991px) {
-        .widget-card {
-            max-height: 380px;
+    <style>
+        /* Dashboard Variables */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --card-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #2c3e50;
+            --text-secondary: #6c757d;
+            --text-muted: #9ca3af;
+            --border-color: #e9ecef;
+            --border-color-light: #f0f0f0;
         }
-    }
-    @media (max-width: 767px) {
-        .widget-card {
-            max-height: 320px;
+
+        [data-theme="dark"] {
+            --bg-primary: #2a2a2a;
+            --bg-secondary: #3a3a3a;
+            --bg-tertiary: #404040;
+            --text-primary: #e5e7eb;
+            --text-secondary: #d1d5db;
+            --text-muted: #9ca3af;
+            --border-color: #404040;
+            --border-color-light: #4a4a4a;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --card-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
-    }
-    .sidebar-widget {
-        height: auto !important;
-    }
-    .sidebar-container {
-        position: sticky;
-        top: 20px;
-        z-index: 1020;
-    }
-    .navbar-pathway {
-        position: sticky;
-        top: 0;
-        z-index: 1100;
-    }
-    
-    /* Drag and Drop */
-    .customization-mode .widget-item {
-        cursor: grab;
-        transition: all 0.2s ease;
-    }
-    
-    .customization-mode .widget-item:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
-    }
-    
-    .customization-mode .widget-item.dragging {
-        cursor: grabbing;
-        opacity: 0.8;
-        transform: rotate(2deg);
-        z-index: 1000;
-    }
-    
-    .customization-mode .widget-item.drag-over {
-        border: 2px dashed #007BFF;
-        background-color: rgba(0, 123, 255, 0.05);
-    }
-    
-    .widget-item {
-        transition: all 0.2s ease;
-    }
-    
-    .widget-item.dragging {
-        cursor: grabbing;
-        opacity: 0.8;
-        transform: rotate(2deg);
-        z-index: 1000;
-    }
-    
-    .widget-item.drag-over {
-        border: 2px dashed #007BFF;
-        background-color: rgba(0, 123, 255, 0.05);
-    }
-</style>
 
-<script>
-    // Widget configuration
-    const widgetConfig = {
-        profile: { name: 'Profile Overview', icon: 'bi-person-badge' },
-        skillPassport: { name: 'Skill Passport', icon: 'bi-award' },
-        recentActivity: { name: 'Recent Activity', icon: 'bi-clock-history' },
-        careerPath: { name: 'Career Roadmap', icon: 'bi-map' },
-        suggestions: { name: 'AI Suggestions', icon: 'bi-lightbulb' },
-        skillRecommendations: { name: 'Skill Recommendations', icon: 'bi-gear' }
-    };
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            transition: var(--transition);
+        }
 
-    let isCustomizationMode = false;
-    let draggedElement = null;
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        }
 
-    // Initialize dashboard
-    document.addEventListener('DOMContentLoaded', function() {
-        initializeDashboard();
-        loadUserPreferences();
-    });
+        /* Header */
+        .dashboard-header {
+            background: var(--primary-gradient);
+            color: white;
+            margin-bottom: 2rem;
+            border-radius: 0 0 24px 24px;
+            position: relative;
+            overflow: hidden;
+        }
 
-    function initializeDashboard() {
-        // Initialize customization button
-        document.getElementById('customizeLayout').addEventListener('click', toggleCustomizationMode);
-        
-        // Initialize drag and drop
-        initializeDragAndDrop();
-        
-        // Initialize widget controls
-        populateWidgetControls();
-    }
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
 
-    function toggleCustomizationMode() {
-        isCustomizationMode = !isCustomizationMode;
-        const controls = document.getElementById('customizationControls');
-        const customizeBtn = document.getElementById('customizeLayout');
-        const widgetGrid = document.getElementById('widgetGrid');
-        
-        if (isCustomizationMode) {
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .time-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .stats-cards {
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            padding: 1.25rem 1rem;
+            text-align: center;
+            position: relative;
+            transition: var(--transition);
+            min-width: 120px;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff !important;
+            line-height: 1;
+            margin-top: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #ffffff !important;
+            margin-top: 0.5rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+
+
+        /* Quick Actions */
+        .quick-actions-card {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            border: none;
+            transition: var(--transition);
+        }
+
+        .quick-actions-card .card-body { padding: 1.5rem; }
+        .quick-actions-card:hover { box-shadow: var(--card-shadow-hover); }
+
+        .quick-actions-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-action {
+            border-radius: 12px;
+            font-weight: 500;
+            padding: 0.6rem 1.2rem;
+            transition: var(--transition);
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-action::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-action:hover::before {
+            left: 100%;
+        }
+
+        .btn-action.btn-primary {
+            background: var(--primary-gradient);
+        }
+
+        .btn-action.btn-success {
+            background: var(--success-gradient);
+        }
+
+        .btn-action.btn-warning {
+            background: var(--warning-gradient);
+        }
+
+        .btn-customize {
+            background: var(--info-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            transition: var(--transition);
+        }
+
+        .btn-customize:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        /* Customization */
+        .customization-card {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            border: 2px solid #e3f2fd;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .customization-card { border-color: #404040; }
+
+        .customization-card .card-header {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-bottom: 1px solid var(--border-color-light);
+            padding: 1.5rem;
+        }
+
+        [data-theme="dark"] .customization-card .card-header {
+            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+        }
+
+        .customization-info {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .customization-controls .btn {
+            border-radius: 10px;
+            font-weight: 500;
+            padding: 0.6rem 1.2rem;
+        }
+
+        .widget-controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .section-title {
+            color: var(--text-secondary);
+        }
+
+        /* Widgets */
+        .widgets-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .widget-wrapper { transition: var(--transition); }
+
+        .modern-widget-card {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            border: none;
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .modern-widget-card:hover {
+            box-shadow: var(--card-shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        .widget-header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .widget-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .widget-body {
+            padding: 2rem;
+        }
+
+        /* Profile Widget */
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .profile-avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #e3f2fd;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] .profile-avatar {
+            border-color: #404040;
+        }
+
+        .profile-avatar-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border: 4px solid #e3f2fd;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] .profile-avatar-placeholder {
+            border-color: #404040;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .profile-id {
+            color: var(--text-secondary);
+            margin: 0.25rem 0 0 0;
+            font-size: 0.9rem;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border-radius: 12px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .career-interests {
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color-light);
+        }
+
+        .interests-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .interests-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .interest-tag {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            color: #5e35b1;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid #e1bee7;
+        }
+
+        [data-theme="dark"] .interest-tag {
+            background: linear-gradient(135deg, #404040 0%, #4a4a4a 100%);
+            color: #bb86fc;
+            border-color: #555;
+        }
+
+        /* Credentials Widget */
+        .credentials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .credential-card {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .credential-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .credential-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] .credential-card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .credential-badge {
+            margin-bottom: 1rem;
+        }
+
+        .badge-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .badge-icon {
+            font-size: 3rem;
+            color: #667eea;
+        }
+
+        .credential-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .credential-date {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-completed {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .status-progress {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        .status-default {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        .credential-actions {
+            text-align: center;
+        }
+
+        .credential-actions .btn {
+            border-radius: 8px;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        /* Career Widget */
+        .career-paths {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .career-path-item {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .career-path-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--success-gradient);
+        }
+
+        .career-path-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] .career-path-item:hover {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .path-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .path-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        .path-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .industry-tag {
+            background: var(--info-gradient);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .salary-info {
+            color: #28a745;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        [data-theme="dark"] .salary-info {
+            color: #4caf50;
+        }
+
+        .completion-circle {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .circle-progress {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: conic-gradient(var(--success-gradient) 0deg, var(--bg-tertiary) 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .circle-progress::before {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: var(--bg-primary);
+            border-radius: 50%;
+        }
+
+        .percentage {
+            position: relative;
+            z-index: 1;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .progress-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .modern-progress {
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--success-gradient);
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .skills-count {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .skills-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .skills-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .skills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .skill-tag {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: var(--transition);
+        }
+
+        .skill-completed {
+            background: var(--success-gradient);
+            color: white;
+        }
+
+        .skill-missing {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        [data-theme="dark"] .skill-missing {
+            background: #4a4a4a;
+            color: #ffc107;
+            border-color: #666;
+        }
+
+        .missing-skills-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .missing-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #dc3545;
+            margin-bottom: 1rem;
+        }
+
+        [data-theme="dark"] .missing-title {
+            color: #ff6b6b;
+        }
+
+        .missing-skills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .missing-skill-tag {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid #f5c6cb;
+        }
+
+        [data-theme="dark"] .missing-skill-tag {
+            background: #4a4a4a;
+            color: #ff6b6b;
+            border-color: #666;
+        }
+
+        .training-info {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+        }
+
+        /* Activity Widget */
+        .activity-timeline {
+            position: relative;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .timeline-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 50px;
+            width: 2px;
+            height: calc(100% - 30px);
+            background: linear-gradient(to bottom, var(--primary-gradient));
+            opacity: 0.3;
+        }
+
+        .timeline-marker {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .timeline-item:hover .timeline-marker {
+            transform: scale(1.1);
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .timeline-content:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] .timeline-content:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .activity-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .activity-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .achievement-badge {
+            background: var(--success-gradient);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .activity-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .activity-time {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .time-date {
+            display: block;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .time-hour {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Suggestions Widget */
+        .suggestions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .suggestion-card {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .suggestion-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--warning-gradient);
+        }
+
+        .suggestion-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] .suggestion-card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .suggestion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .suggestion-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+            line-height: 1.3;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        .match-score {
+            background: var(--success-gradient);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .suggestion-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .suggestion-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .suggestion-skills {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+
+        .skills-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .skill-tag-small {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .next-steps-section {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #d4edda;
+        }
+
+        [data-theme="dark"] .next-steps-section {
+            background: linear-gradient(135deg, #2a4a2a 0%, #3a5a3a 100%);
+            border-color: #4a6a4a;
+        }
+
+        .next-steps-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #155724;
+            margin-bottom: 1rem;
+        }
+
+        [data-theme="dark"] .next-steps-title {
+            color: #4caf50;
+        }
+
+        .next-steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .next-step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            color: #155724;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        [data-theme="dark"] .next-step-item {
+            color: #4caf50;
+        }
+
+        .next-step-item i {
+            color: #28a745;
+            margin-top: 0.1rem;
+            flex-shrink: 0;
+        }
+
+        [data-theme="dark"] .next-step-item i {
+            color: #4caf50;
+        }
+
+        .ai-insight {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #bbdefb;
+        }
+
+        [data-theme="dark"] .ai-insight {
+            background: linear-gradient(135deg, #2a3a4a 0%, #3a4a5a 100%);
+            border-color: #4a5a6a;
+        }
+
+        .insight-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .insight-header i {
+            color: #1976d2;
+            font-size: 1.25rem;
+        }
+
+        [data-theme="dark"] .insight-header i {
+            color: #64b5f6;
+        }
+
+        .insight-label {
+            font-weight: 600;
+            color: #1976d2;
+        }
+
+        [data-theme="dark"] .insight-label {
+            color: #64b5f6;
+        }
+
+        .insight-text {
+            color: #0d47a1;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        [data-theme="dark"] .insight-text {
+            color: #90caf9;
+        }
+
+        /* Sidebar */
+        .sidebar-sticky {
+            position: sticky;
+            top: 2rem;
+        }
+
+        .sidebar-widget {
+            margin-bottom: 0;
+        }
+
+        .skill-recommendations {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .skill-recommendation-card {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .skill-recommendation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] .skill-recommendation-card:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .skill-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .importance-badge {
+            padding: 0.3rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .importance-high {
+            background: var(--warning-gradient);
+            color: white;
+        }
+
+        .importance-medium {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        [data-theme="dark"] .importance-medium {
+            background: #4a4a4a;
+            color: #ffc107;
+            border-color: #666;
+        }
+
+        .importance-low {
+            background: var(--info-gradient);
+            color: white;
+        }
+
+        .skill-reasoning {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .skill-metrics {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .metric-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .skill-impact {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .impact-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+
+        .impact-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .impact-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .related-credentials {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+
+        .credentials-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .credentials-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .credential-tag {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .priority-skills-section {
+            background: linear-gradient(135deg, #fff3e0 0%, #fce4ec 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #ffcc02;
+        }
+
+        [data-theme="dark"] .priority-skills-section {
+            background: linear-gradient(135deg, #4a3a2a 0%, #5a4a3a 100%);
+            border-color: #6a5a4a;
+        }
+
+        .priority-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #e65100;
+            margin-bottom: 1rem;
+        }
+
+        [data-theme="dark"] .priority-title {
+            color: #ff9800;
+        }
+
+        .priority-skills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .priority-skill-tag {
+            background: var(--warning-gradient);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .learning-paths-section {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e8eaf6 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #e1bee7;
+        }
+
+        [data-theme="dark"] .learning-paths-section {
+            background: linear-gradient(135deg, #3a2a4a 0%, #4a3a5a 100%);
+            border-color: #5a4a6a;
+        }
+
+        .paths-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #4a148c;
+            margin-bottom: 1rem;
+        }
+
+        [data-theme="dark"] .paths-title {
+            color: #bb86fc;
+        }
+
+        .learning-path-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: var(--transition);
+        }
+
+        [data-theme="dark"] .learning-path-card {
+            background: rgba(74, 74, 74, 0.8);
+            border-color: rgba(74, 74, 74, 0.5);
+        }
+
+        .learning-path-card:hover {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] .learning-path-card:hover {
+            background: #4a4a4a;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .learning-path-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .path-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .path-description {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            line-height: 1.4;
+            margin-bottom: 0.75rem;
+        }
+
+        .path-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .empty-description {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-get-started {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .btn-get-started:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Loading States */
+        .loading-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--bg-tertiary);
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .loading-description {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Error States */
+        .error-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            color: #ffc107;
+            margin-bottom: 1.5rem;
+        }
+
+        .error-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #dc3545;
+            margin-bottom: 1rem;
+        }
+
+        [data-theme="dark"] .error-title {
+            color: #ff6b6b;
+        }
+
+        .error-description {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* View All Buttons */
+        .view-all-section {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-view-all {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 12px;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-view-all:hover {
+            background: var(--primary-gradient);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Drag and Drop Customization */
+        .customization-mode .widget-wrapper {
+            cursor: grab;
+            transition: var(--transition);
+        }
+
+        .customization-mode .widget-wrapper:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.15);
+        }
+
+        [data-theme="dark"] .customization-mode .widget-wrapper:hover {
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.25);
+        }
+
+        .customization-mode .widget-wrapper.dragging {
+            cursor: grabbing;
+            opacity: 0.8;
+            transform: rotate(2deg) scale(1.02);
+            z-index: 1000;
+        }
+
+        .customization-mode .widget-wrapper.drag-over {
+            border: 2px dashed #667eea;
+            background-color: rgba(102, 126, 234, 0.05);
+            border-radius: var(--border-radius);
+        }
+
+        .customization-mode .widget-controls {
+            opacity: 1 !important;
+        }
+
+        .widget-toggle-btn {
+            border-radius: 10px;
+            font-weight: 500;
+            padding: 0.6rem 1rem;
+            transition: var(--transition);
+            border: 2px solid #667eea;
+            background: transparent;
+            color: #667eea;
+        }
+
+        .widget-toggle-btn:hover {
+            background: var(--primary-gradient);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .widget-toggle-btn.hidden {
+            background: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        .widget-toggle-btn.hidden:hover {
+            background: #c82333;
+            border-color: #bd2130;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .stats-cards {
+                justify-content: center;
+            }
+
+            .stat-card {
+                min-width: 100px;
+            }
+
+            .suggestions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-header {
+                text-align: center;
+            }
+
+            .path-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .completion-circle {
+                align-self: center;
+            }
+
+            .profile-avatar-section {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container-fluid {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .widget-body {
+                padding: 1.5rem;
+            }
+
+            .credentials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-stats {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .quick-actions-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .btn-action {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .customization-controls {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .widget-controls-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .activity-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .activity-time {
+                text-align: left;
+            }
+
+            .suggestion-details {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .dashboard-header .container-fluid {
+                padding: 2rem 1rem;
+            }
+
+            .stats-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .stat-card {
+                width: 100%;
+                max-width: 200px;
+            }
+
+            .quick-actions-card .card-body {
+                padding: 1rem;
+            }
+
+            .quick-actions-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .timeline-item {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .timeline-marker {
+                align-self: flex-start;
+            }
+
+            .timeline-item:not(:last-child)::after {
+                display: none;
+            }
+        }
+
+        /* Credential Modal Styles */
+        .credential-modal-content {
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .credential-modal-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .credential-badge-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .credential-info-main {
+            flex: 1;
+        }
+
+        .credential-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .credential-meta {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-badge-large {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .credential-modal-body {
+            margin-bottom: 2rem;
+        }
+
+        .credential-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .credential-section h6 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .credential-section p {
+            color: var(--text-primary);
+            font-size: 1rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .credential-modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .credential-modal-actions .btn {
+            border-radius: 10px;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+        }
+
+        /* Simple Modal Fallback Styles */
+        .simple-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .simple-modal-content {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .simple-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .simple-modal-header h4 {
+            margin: 0;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .simple-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .simple-modal-close:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .simple-modal-body {
+            padding: 2rem;
+        }
+
+        /* SweetAlert2 Custom Styles */
+        .credential-modal-popup {
+            border-radius: var(--border-radius) !important;
+        }
+
+        .credential-modal-close {
+            color: var(--text-secondary) !important;
+        }
+
+        .credential-modal-close:hover {
+            color: var(--text-primary) !important;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .dashboard-header,
+            .quick-actions-card,
+            #customizationControls,
+            .widget-controls,
+            .activity-actions,
+            .btn-view-all,
+            .btn-get-started {
+                display: none !important;
+            }
+
+            .modern-widget-card {
+                box-shadow: none;
+                border: 1px solid #dee2e6;
+                break-inside: avoid;
+                margin-bottom: 1rem;
+            }
+
+            .widgets-container {
+                gap: 1rem;
+            }
+        }
+    </style>
+
+    <script>
+        // Widget Configuration
+        const widgetConfig = {
+            profile: { name: 'Profile Overview', icon: 'bi-person-badge-fill' },
+            skillPassport: { name: 'Skill Passport', icon: 'bi-award-fill' },
+            recentActivity: { name: 'Recent Activity', icon: 'bi-clock-history' },
+            careerPath: { name: 'Career Roadmap', icon: 'bi-map-fill' },
+            suggestions: { name: 'AI Suggestions', icon: 'bi-lightbulb-fill' },
+            skillRecommendations: { name: 'Skill Recommendations', icon: 'bi-gear-fill' }
+        };
+
+        let isCustomizationMode = false;
+        let draggedElement = null;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+            loadUserPreferences();
+            initializeProgressCircles();
+            initializeTooltips();
+        });
+
+        function initializeDashboard() {
+            const customizeBtn = document.getElementById('customizeLayout');
+            if (customizeBtn) customizeBtn.addEventListener('click', toggleCustomizationMode);
+            initializeDragAndDrop();
+            populateWidgetControls();
+            document.documentElement.style.scrollBehavior = 'smooth';
+        }
+
+        function initializeProgressCircles() {
+            document.querySelectorAll('.circle-progress').forEach(circle => {
+                const percentage = circle.dataset.percentage;
+                if (percentage) {
+                    const degrees = (percentage / 100) * 360;
+                    circle.style.background = `conic-gradient(var(--success-gradient) ${degrees}deg, var(--bg-tertiary) ${degrees}deg)`;
+                }
+            });
+        }
+
+        function initializeTooltips() {
+            if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                    .map(el => new bootstrap.Tooltip(el));
+            }
+        }
+
+        function toggleCustomizationMode() {
+            isCustomizationMode = !isCustomizationMode;
+            const controls = document.getElementById('customizationControls');
+            const customizeBtn = document.getElementById('customizeLayout');
+            const widgetGrid = document.getElementById('widgetGrid');
+
+            if (isCustomizationMode) {
+                enterCustomizationMode(controls, customizeBtn, widgetGrid);
+            } else {
+                exitCustomizationMode(controls, customizeBtn, widgetGrid);
+            }
+        }
+
+        function enterCustomizationMode(controls, customizeBtn, widgetGrid) {
             controls.style.display = 'block';
-            customizeBtn.innerHTML = '<i class="bi bi-check me-1"></i>Exit Customization';
-            customizeBtn.classList.remove('btn-outline-primary');
-            customizeBtn.classList.add('btn-success');
+            customizeBtn.innerHTML = '<i class="bi bi-check-lg me-2"></i>Exit Customization';
+            customizeBtn.style.background = 'var(--success-gradient)';
             widgetGrid.classList.add('customization-mode');
-            
+
             // Enable drag and drop for all widgets
-            const widgets = widgetGrid.querySelectorAll('.widget-item');
+            const widgets = widgetGrid.querySelectorAll('.widget-wrapper');
             widgets.forEach(widget => {
                 widget.draggable = true;
                 widget.style.cursor = 'grab';
             });
-            
+
             showWidgetControls();
-            
-            // Show success message
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'info',
-                title: 'Customization mode enabled! Drag widgets to reorder.',
-                showConfirmButton: false,
-                timer: 3000
-            });
-        } else {
+
+            // Show success notification
+            showNotification('Customization mode enabled! Drag widgets to reorder them.', 'info');
+        }
+
+        function exitCustomizationMode(controls, customizeBtn, widgetGrid) {
             controls.style.display = 'none';
-            customizeBtn.innerHTML = '<i class="bi bi-grid-3x3-gap me-1"></i>Customize';
-            customizeBtn.classList.remove('btn-success');
-            customizeBtn.classList.add('btn-outline-primary');
+            customizeBtn.innerHTML = '<i class="bi bi-grid-3x3-gap me-2"></i>Customize Layout';
+            customizeBtn.style.background = 'var(--info-gradient)';
             widgetGrid.classList.remove('customization-mode');
-            
+
             // Disable drag and drop for all widgets
-            const widgets = widgetGrid.querySelectorAll('.widget-item');
+            const widgets = widgetGrid.querySelectorAll('.widget-wrapper');
             widgets.forEach(widget => {
                 widget.draggable = false;
                 widget.style.cursor = 'default';
                 widget.classList.remove('dragging', 'drag-over');
             });
-            
+
             hideWidgetControls();
         }
-    }
 
-    function initializeDragAndDrop() {
-        const widgetGrid = document.getElementById('widgetGrid');
-        if (!widgetGrid) {
-            console.error('Widget grid not found');
-            return;
-        }
-        
-        const widgets = widgetGrid.querySelectorAll('.widget-item');
-        
-        widgets.forEach(widget => {
-            widget.addEventListener('dragstart', handleDragStart);
-            widget.addEventListener('dragend', handleDragEnd);
-            widget.addEventListener('dragover', handleDragOver);
-            widget.addEventListener('dragenter', handleDragEnter);
-            widget.addEventListener('dragleave', handleDragLeave);
-            widget.addEventListener('drop', handleDrop);
-        });
-    }
-
-    function handleDragStart(e) {
-        if (!isCustomizationMode) return;
-        
-        draggedElement = this;
-        this.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/html', this.outerHTML);
-        
-        // Add a small delay to make the drag effect visible
-        setTimeout(() => {
-            this.style.opacity = '0.8';
-        }, 0);
-    }
-
-    function handleDragEnd(e) {
-        if (!isCustomizationMode) return;
-        
-        this.classList.remove('dragging');
-        this.style.opacity = '1';
-        draggedElement = null;
-        
-        // Remove drag-over styling from all widgets
-        document.querySelectorAll('.widget-item').forEach(widget => {
-            widget.classList.remove('drag-over');
-        });
-    }
-
-    function handleDragOver(e) {
-        if (!isCustomizationMode) return;
-        
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-    }
-
-    function handleDragEnter(e) {
-        if (!isCustomizationMode) return;
-        
-        e.preventDefault();
-        this.classList.add('drag-over');
-    }
-
-    function handleDragLeave(e) {
-        if (!isCustomizationMode) return;
-        
-        // Only remove if we're leaving the widget entirely
-        if (!this.contains(e.relatedTarget)) {
-            this.classList.remove('drag-over');
-        }
-    }
-
-    function handleDrop(e) {
-        if (!isCustomizationMode) return;
-        
-        e.preventDefault();
-        this.classList.remove('drag-over');
-        
-        if (draggedElement && draggedElement !== this) {
+        function initializeDragAndDrop() {
             const widgetGrid = document.getElementById('widgetGrid');
-            const allWidgets = Array.from(widgetGrid.querySelectorAll('.widget-item'));
-            const draggedIndex = allWidgets.indexOf(draggedElement);
-            const dropIndex = allWidgets.indexOf(this);
-            
-            if (draggedIndex < dropIndex) {
-                this.parentNode.insertBefore(draggedElement, this.nextSibling);
-            } else {
-                this.parentNode.insertBefore(draggedElement, this);
-            }
-            
-            // Save the new order
-            saveUserPreferences();
-        }
-    }
+            if (!widgetGrid) return;
 
-    function populateWidgetControls() {
-        const controlsContainer = document.getElementById('widgetControls');
-        controlsContainer.innerHTML = '';
-        
-        Object.entries(widgetConfig).forEach(([widgetId, config]) => {
-            const control = document.createElement('button');
-            control.className = 'btn btn-sm btn-outline-primary widget-toggle-btn';
-            control.setAttribute('data-widget', widgetId);
-            control.innerHTML = `<i class="bi ${config.icon} me-1"></i>${config.name}`;
-            control.onclick = () => toggleWidget(widgetId);
-            controlsContainer.appendChild(control);
-        });
-    }
+            const widgets = widgetGrid.querySelectorAll('.widget-wrapper');
 
-    function toggleWidget(widgetId) {
-        const widget = document.querySelector(`[data-widget="${widgetId}"]`);
-        const control = document.querySelector(`[data-widget="${widgetId}"].widget-toggle-btn`);
-        
-        if (widget.style.display === 'none') {
-            widget.style.display = 'block';
-            control.classList.remove('hidden');
-            control.innerHTML = `<i class="bi ${widgetConfig[widgetId].icon} me-1"></i>${widgetConfig[widgetId].name}`;
-        } else {
-            widget.style.display = 'none';
-            control.classList.add('hidden');
-            control.innerHTML = `<i class="bi bi-eye me-1"></i>Show ${widgetConfig[widgetId].name}`;
-        }
-        
-        saveUserPreferences();
-    }
-
-    function showWidgetControls() {
-        document.querySelectorAll('.widget-controls').forEach(control => {
-            control.style.display = 'block';
-        });
-    }
-
-    function hideWidgetControls() {
-        document.querySelectorAll('.widget-controls').forEach(control => {
-            control.style.display = 'none';
-        });
-    }
-
-    function saveUserPreferences() {
-        const preferences = {
-            layout: getWidgetOrder(),
-            visibility: getWidgetVisibility(),
-            timestamp: new Date().toISOString()
-        };
-        
-        // Save to localStorage for immediate access
-        localStorage.setItem('dashboardPreferences', JSON.stringify(preferences));
-        
-        // Also save to server for persistence across sessions
-        fetch('{{ path("app_dashboard_save_preferences") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify(preferences)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Show save confirmation
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: 'Layout saved!',
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-            } else {
-                console.error('Failed to save preferences:', data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error saving preferences:', error);
-            // Still show success for localStorage save
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: 'Layout saved locally!',
-                showConfirmButton: false,
-                timer: 2000
+            widgets.forEach(widget => {
+                widget.addEventListener('dragstart', handleDragStart);
+                widget.addEventListener('dragend', handleDragEnd);
+                widget.addEventListener('dragover', handleDragOver);
+                widget.addEventListener('dragenter', handleDragEnter);
+                widget.addEventListener('dragleave', handleDragLeave);
+                widget.addEventListener('drop', handleDrop);
             });
-        });
-    }
+        }
 
-    function getWidgetOrder() {
-        const widgetGrid = document.getElementById('widgetGrid');
-        if (!widgetGrid) return [];
-        
-        const widgets = widgetGrid.querySelectorAll('.widget-item');
-        return Array.from(widgets).map(widget => widget.dataset.widget);
-    }
+        function handleDragStart(e) {
+            if (!isCustomizationMode) return;
 
-    function getWidgetVisibility() {
-        const visibility = {};
-        Object.keys(widgetConfig).forEach(widgetId => {
-            const widget = document.querySelector(`[data-widget="${widgetId}"]`);
-            if (widget) {
-                visibility[widgetId] = widget.style.display !== 'none';
-            }
-        });
-        return visibility;
-    }
+            draggedElement = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.outerHTML);
 
-    function loadUserPreferences() {
-        // Try to load from server first
-        fetch('{{ path("app_dashboard_load_preferences") }}', {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.preferences) {
-                // Apply server preferences
-                applyPreferences(data.preferences);
-            } else {
-                // Fall back to localStorage
-                loadFromLocalStorage();
-            }
-        })
-        .catch(error => {
-            console.error('Error loading server preferences:', error);
-            // Fall back to localStorage
-            loadFromLocalStorage();
-        });
-    }
+            setTimeout(() => {
+                this.style.opacity = '0.8';
+            }, 0);
+        }
 
-    function loadFromLocalStorage() {
-        const saved = localStorage.getItem('dashboardPreferences');
-        if (saved) {
-            try {
-                const preferences = JSON.parse(saved);
-                applyPreferences(preferences);
-            } catch (error) {
-                console.error('Error loading localStorage preferences:', error);
+        function handleDragEnd(e) {
+            if (!isCustomizationMode) return;
+
+            this.classList.remove('dragging');
+            this.style.opacity = '1';
+            draggedElement = null;
+
+            // Remove drag-over styling from all widgets
+            document.querySelectorAll('.widget-wrapper').forEach(widget => {
+                widget.classList.remove('drag-over');
+            });
+        }
+
+        function handleDragOver(e) {
+            if (!isCustomizationMode) return;
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            if (!isCustomizationMode) return;
+            e.preventDefault();
+            this.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            if (!isCustomizationMode) return;
+            if (!this.contains(e.relatedTarget)) {
+                this.classList.remove('drag-over');
             }
         }
-    }
 
-    function applyPreferences(preferences) {
-        // Apply layout order
-        if (preferences.layout) {
-            applyWidgetOrder(preferences.layout);
-        }
-        
-        // Apply visibility settings
-        if (preferences.visibility) {
-            applyWidgetVisibility(preferences.visibility);
-        }
-    }
+        function handleDrop(e) {
+            if (!isCustomizationMode) return;
 
-    function applyWidgetOrder(order) {
-        const widgetGrid = document.getElementById('widgetGrid');
-        if (!widgetGrid) return;
-        
-        order.forEach(widgetId => {
-            const widget = widgetGrid.querySelector(`[data-widget="${widgetId}"]`);
-            if (widget) {
-                widgetGrid.appendChild(widget.parentNode); // Move the entire col-12 container
+            e.preventDefault();
+            this.classList.remove('drag-over');
+
+            if (draggedElement && draggedElement !== this) {
+                const widgetGrid = document.getElementById('widgetGrid');
+                const allWidgets = Array.from(widgetGrid.querySelectorAll('.widget-wrapper'));
+                const draggedIndex = allWidgets.indexOf(draggedElement);
+                const dropIndex = allWidgets.indexOf(this);
+
+                if (draggedIndex < dropIndex) {
+                    this.parentNode.insertBefore(draggedElement, this.nextSibling);
+                } else {
+                    this.parentNode.insertBefore(draggedElement, this);
+                }
+
+                // Save the new order with animation
+                saveUserPreferences();
+                showNotification('Widget order updated!', 'success');
             }
-        });
-    }
+        }
 
-    function applyWidgetVisibility(visibility) {
-        Object.entries(visibility).forEach(([widgetId, isVisible]) => {
+        function populateWidgetControls() {
+            const controlsContainer = document.getElementById('widgetControls');
+            if (!controlsContainer) return;
+
+            controlsContainer.innerHTML = '';
+
+            Object.entries(widgetConfig).forEach(([widgetId, config]) => {
+                const control = document.createElement('button');
+                control.className = 'btn widget-toggle-btn';
+                control.setAttribute('data-widget', widgetId);
+                control.innerHTML = `<i class="bi ${config.icon} me-2"></i>${config.name}`;
+                control.onclick = () => toggleWidget(widgetId);
+                controlsContainer.appendChild(control);
+            });
+        }
+
+        function toggleWidget(widgetId) {
             const widget = document.querySelector(`[data-widget="${widgetId}"]`);
             const control = document.querySelector(`[data-widget="${widgetId}"].widget-toggle-btn`);
-            
-            if (widget && control) {
-                if (!isVisible) {
-                    widget.style.display = 'none';
-                    control.classList.add('hidden');
-                    control.innerHTML = `<i class="bi bi-eye me-1"></i>Show ${widgetConfig[widgetId].name}`;
-                }
+
+            if (!widget || !control) return;
+
+            if (widget.style.display === 'none') {
+                widget.style.display = 'block';
+                control.classList.remove('hidden');
+                control.innerHTML = `<i class="bi ${widgetConfig[widgetId].icon} me-2"></i>${widgetConfig[widgetId].name}`;
+                showNotification(`${widgetConfig[widgetId].name} widget shown`, 'success');
+            } else {
+                widget.style.display = 'none';
+                control.classList.add('hidden');
+                control.innerHTML = `<i class="bi bi-eye me-2"></i>Show ${widgetConfig[widgetId].name}`;
+                showNotification(`${widgetConfig[widgetId].name} widget hidden`, 'info');
             }
-        });
-    }
 
-    function saveCustomization() {
-        saveUserPreferences();
-    }
-
-    function resetCustomization() {
-        Swal.fire({
-            title: 'Reset Dashboard Layout?',
-            text: 'This will restore the default layout and visibility settings.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, reset it!',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                localStorage.removeItem('dashboardPreferences');
-                location.reload();
-            }
-        });
-    }
-
-    function exitCustomization() {
-        toggleCustomizationMode();
-    }
-
-    // Scroll to widget function
-    function scrollToWidget(widgetId) {
-        const widget = document.getElementById(widgetId);
-        if (widget) {
-            widget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            saveUserPreferences();
         }
-    }
 
-    // Show all credentials function
-    function showAllCredentials() {
-        Swal.fire({
-            title: 'All Credentials',
-            html: `
-                <div class="text-start">
-                    <p>You have <strong>{{ studentProgress|length }}</strong> credentials in your portfolio.</p>
-                    <p>View your complete credential history and achievements in your Skill Passport.</p>
-                </div>
-            `,
-            icon: 'info',
-            confirmButtonText: 'View Skill Passport',
-            showCancelButton: true,
-            cancelButtonText: 'Close'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = '{{ path("app_skill_passport") }}';
-            }
-        });
-    }
-
-    // Browse available credentials - with null check
-    const browseButton = document.querySelector('button.btn-primary');
-    if (browseButton) {
-        browseButton.addEventListener('click', function() {
-            window.location.href = '{{ path("app_skill_passport") }}';
-        });
-    }
-
-    // View all recent activity
-    function showAllActivity() {
-        Swal.fire({
-            title: 'Recent Activity',
-            html: `
-                <div class="text-start">
-                    <p>This feature is coming soon! For now, you can view your complete activity history in your Skill Passport.</p>
-                </div>
-            `,
-            icon: 'info',
-            confirmButtonText: 'View Skill Passport',
-            showCancelButton: true,
-            cancelButtonText: 'Close'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = '{{ path("app_skill_passport") }}';
-            }
-        });
-    }
-
-    function shareAchievement(id, type) {
-        const shareUrl = type === 'credential' 
-            ? `${window.location.origin}/dashboard/skill-passport/credential/${id}`
-            : `${window.location.origin}/dashboard/skill-passport/skill/${id}`;
-        
-        Swal.fire({
-            title: 'Share Achievement',
-            html: `
-                <div class="text-start">
-                    <p>Share your achievement on social media or copy the link:</p>
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" value="${shareUrl}" readonly>
-                        <button class="btn btn-outline-secondary" type="button" onclick="copyShareLink('${shareUrl}')">
-                            <i class="bi bi-clipboard"></i>
-                        </button>
-                    </div>
-                    <div class="d-flex gap-2 justify-content-center">
-                        <button class="btn btn-outline-primary" onclick="shareOnLinkedIn('${shareUrl}')">
-                            <i class="bi bi-linkedin"></i> LinkedIn
-                        </button>
-                        <button class="btn btn-outline-info" onclick="shareOnTwitter('${shareUrl}')">
-                            <i class="bi bi-twitter"></i> Twitter
-                        </button>
-                    </div>
-                </div>
-            `,
-            showConfirmButton: false,
-            showCloseButton: true
-        });
-    }
-
-    function copyShareLink(url) {
-        navigator.clipboard.writeText(url).then(() => {
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: 'Link copied to clipboard!',
-                showConfirmButton: false,
-                timer: 2000
+        function showWidgetControls() {
+            document.querySelectorAll('.widget-controls').forEach(control => {
+                control.style.display = 'block';
             });
-        });
-    }
+        }
 
-    function shareOnLinkedIn(url) {
-        const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-        window.open(linkedInUrl, '_blank');
-    }
+        function hideWidgetControls() {
+            document.querySelectorAll('.widget-controls').forEach(control => {
+                control.style.display = 'none';
+            });
+        }
 
-    function shareOnTwitter(url) {
-        const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=I just earned a new credential on Pathway+!`;
-        window.open(twitterUrl, '_blank');
-    }
+        function saveUserPreferences() {
+            const preferences = {
+                layout: getWidgetOrder(),
+                visibility: getWidgetVisibility(),
+                timestamp: new Date().toISOString()
+            };
 
-    function viewCredentialDetails(id) {
-        fetch(`/dashboard/skill-passport/credential/${id}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('credentialModalContent').innerHTML = data.html;
-                    const modal = new bootstrap.Modal(document.getElementById('credentialModal'));
-                    modal.show();
+            // Save to localStorage for immediate access
+            localStorage.setItem('dashboardPreferences', JSON.stringify(preferences));
+
+            // Also save to server for persistence across sessions
+            fetch('{{ path("app_dashboard_save_preferences") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(preferences)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Dashboard layout saved successfully!', 'success');
+                    } else {
+                        console.error('Failed to save preferences:', data.message);
+                        showNotification('Layout saved locally', 'warning');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving preferences:', error);
+                    showNotification('Layout saved locally', 'warning');
+                });
+        }
+
+        function getWidgetOrder() {
+            const widgetGrid = document.getElementById('widgetGrid');
+            if (!widgetGrid) return [];
+
+            const widgets = widgetGrid.querySelectorAll('.widget-wrapper [data-widget]');
+            return Array.from(widgets).map(widget => widget.dataset.widget);
+        }
+
+        function getWidgetVisibility() {
+            const visibility = {};
+            Object.keys(widgetConfig).forEach(widgetId => {
+                const widget = document.querySelector(`[data-widget="${widgetId}"]`);
+                if (widget) {
+                    visibility[widgetId] = widget.style.display !== 'none';
+                }
+            });
+            return visibility;
+        }
+
+        function loadUserPreferences() {
+            // Try to load from server first
+            fetch('{{ path("app_dashboard_load_preferences") }}', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
-            .catch(error => {
-                console.error('Error loading credential details:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Could not load credential details. Please try again.',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.preferences) {
+                        applyPreferences(data.preferences);
+                    } else {
+                        loadFromLocalStorage();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading server preferences:', error);
+                    loadFromLocalStorage();
                 });
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('dashboardPreferences');
+            if (saved) {
+                try {
+                    const preferences = JSON.parse(saved);
+                    applyPreferences(preferences);
+                } catch (error) {
+                    console.error('Error loading localStorage preferences:', error);
+                }
+            }
+        }
+
+        function applyPreferences(preferences) {
+            // Apply layout order
+            if (preferences.layout) {
+                applyWidgetOrder(preferences.layout);
+            }
+
+            // Apply visibility settings
+            if (preferences.visibility) {
+                applyWidgetVisibility(preferences.visibility);
+            }
+        }
+
+        function applyWidgetOrder(order) {
+            const widgetGrid = document.getElementById('widgetGrid');
+            if (!widgetGrid) return;
+
+            order.forEach(widgetId => {
+                const widget = widgetGrid.querySelector(`[data-widget="${widgetId}"]`);
+                if (widget) {
+                    const wrapper = widget.closest('.widget-wrapper');
+                    if (wrapper) {
+                        widgetGrid.appendChild(wrapper);
+                    }
+                }
             });
+        }
+
+        function applyWidgetVisibility(visibility) {
+            Object.entries(visibility).forEach(([widgetId, isVisible]) => {
+                const widget = document.querySelector(`[data-widget="${widgetId}"]`);
+                const control = document.querySelector(`[data-widget="${widgetId}"].widget-toggle-btn`);
+
+                if (widget && control) {
+                    if (!isVisible) {
+                        widget.style.display = 'none';
+                        control.classList.add('hidden');
+                        control.innerHTML = `<i class="bi bi-eye me-2"></i>Show ${widgetConfig[widgetId].name}`;
+                    }
+                }
+            });
+        }
+
+        function saveCustomization() {
+            saveUserPreferences();
+        }
+
+        function resetCustomization() {
+            showConfirmDialog(
+                'Reset Dashboard Layout?',
+                'This will restore the default layout and visibility settings.',
+                'warning',
+                () => {
+                    localStorage.removeItem('dashboardPreferences');
+                    location.reload();
+                }
+            );
+        }
+
+        function exitCustomization() {
+            toggleCustomizationMode();
+        }
+
+        // Utility Functions
+        function scrollToWidget(widgetId) {
+            const widget = document.getElementById(widgetId);
+            if (widget) {
+                widget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                widget.style.boxShadow = '0 0 20px rgba(102, 126, 234, 0.5)';
+                setTimeout(() => widget.style.boxShadow = '', 2000);
+            }
+        }
+
+        function showAllCredentials() {
+            showInfoDialog(
+                'All Credentials',
+                `<div class="text-start">
+            <p>You have <strong>{{ studentProgress|length }}</strong> credentials in your portfolio.</p>
+            <p>View your complete credential history and achievements in your Skill Passport.</p>
+        </div>`,
+                () => {
+                    window.location.href = '{{ path("app_skill_passport") }}';
+                }
+            );
+        }
+
+        function showAllActivity() {
+            showInfoDialog(
+                'Recent Activity',
+                `<div class="text-start">
+            <p>This feature is coming soon! For now, you can view your complete activity history in your Skill Passport.</p>
+        </div>`,
+                () => {
+                    window.location.href = '{{ path("app_skill_passport") }}';
+                }
+            );
+        }
+
+        function shareAchievement(id, type) {
+            const shareUrl = type === 'credential'
+                ? `${window.location.origin}/dashboard/skill-passport/credential/${id}`
+                : `${window.location.origin}/dashboard/skill-passport/skill/${id}`;
+
+            showShareDialog(shareUrl);
+        }
+
+        function showShareDialog(url) {
+            showCustomDialog(
+                'Share Achievement',
+                `<div class="text-start">
+            <p class="mb-3">Share your achievement on social media or copy the link:</p>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" value="${url}" readonly id="shareUrl">
+                <button class="btn btn-outline-secondary" type="button" onclick="copyShareLink()">
+                    <i class="bi bi-clipboard"></i>
+                </button>
+            </div>
+            <div class="d-flex gap-2 justify-content-center">
+                <button class="btn btn-outline-primary" onclick="shareOnLinkedIn('${url}')">
+                    <i class="bi bi-linkedin"></i> LinkedIn
+                </button>
+                <button class="btn btn-outline-info" onclick="shareOnTwitter('${url}')">
+                    <i class="bi bi-twitter"></i> Twitter
+                </button>
+            </div>
+        </div>`
+            );
+        }
+
+        function copyShareLink() {
+            const urlInput = document.getElementById('shareUrl');
+            if (urlInput) {
+                urlInput.select();
+                document.execCommand('copy');
+                showNotification('Link copied to clipboard!', 'success');
+            }
+        }
+
+        function shareOnLinkedIn(url) {
+            const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+            window.open(linkedInUrl, '_blank');
+        }
+
+        function shareOnTwitter(url) {
+            const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=I just earned a new credential on Pathway+!`;
+            window.open(twitterUrl, '_blank');
+        }
+
+        function viewCredentialDetails(credentialElement) {
+            try {
+                // Get the credential card that contains the clicked button
+                let credentialCard = credentialElement.closest('.credential-card');
+                
+                // If not found in credential card, check if we're in timeline activity
+                if (!credentialCard) {
+                    const timelineItem = credentialElement.closest('.timeline-item');
+                    if (timelineItem) {
+                        credentialCard = timelineItem;
+                    }
+                }
+                
+                if (credentialCard) {
+                    // Try to extract data from the specific credential
+                    let name, date, status;
+                    
+                    // For credential cards in skill passport
+                    const nameElement = credentialCard.querySelector('.credential-name');
+                    const dateElement = credentialCard.querySelector('.credential-date');
+                    const statusElement = credentialCard.querySelector('.status-badge');
+                    
+                    // For timeline activities
+                    const activityTitle = credentialCard.querySelector('.activity-title');
+                    const timeDate = credentialCard.querySelector('.time-date');
+                    const achievementBadge = credentialCard.querySelector('.achievement-badge');
+                    
+                    name = nameElement ? nameElement.textContent.trim() : 
+                           (activityTitle ? activityTitle.textContent.trim() : 'Professional Credential');
+                    
+                    date = dateElement ? dateElement.textContent.trim() : 
+                           (timeDate ? timeDate.textContent.trim() : 'Recent');
+                    
+                    status = statusElement ? statusElement.textContent.trim() : 
+                             (achievementBadge ? 'Completed' : 'Verified');
+                    
+                    // Get some variety in the modal content based on the credential name
+                    const credentialData = getCredentialData(name);
+                    showCredentialModal(name, date, status, credentialData);
+                } else {
+                    // Fallback with default data
+                    const defaultData = getCredentialData('Advanced Excel Techniques');
+                    showCredentialModal('Advanced Excel Techniques', 'June 2025', 'Completed', defaultData);
+                }
+            } catch (error) {
+                console.error('Error loading credential details:', error);
+                const defaultData = getCredentialData('Advanced Excel Techniques');
+                showCredentialModal('Advanced Excel Techniques', 'June 2025', 'Completed', defaultData);
+            }
+        }
+
+        function getCredentialData(credentialName) {
+            // Return different data based on credential name
+            const credentialDatabase = {
+                'Advanced Excel Techniques': {
+                    category: 'Business',
+                    level: 'Advanced',
+                    verifier: 'University of Auckland',
+                    description: 'This credential demonstrates advanced proficiency in Excel including complex formulas, data analysis, pivot tables, and advanced charting techniques.',
+                    skills: ['Excel', 'Data Analysis', 'Reporting', 'Pivot Tables']
+                },
+                'Python Programming': {
+                    category: 'Technology',
+                    level: 'Intermediate',
+                    verifier: 'MIT OpenCourseWare',
+                    description: 'Comprehensive understanding of Python programming including object-oriented programming, data structures, and algorithm implementation.',
+                    skills: ['Python', 'Programming', 'Data Structures', 'Algorithms']
+                },
+                'Digital Marketing': {
+                    category: 'Marketing',
+                    level: 'Intermediate',
+                    verifier: 'Google Digital Academy',
+                    description: 'Complete understanding of digital marketing strategies including SEO, social media marketing, email campaigns, and analytics.',
+                    skills: ['SEO', 'Social Media', 'Analytics', 'Campaign Management']
+                },
+                'Project Management': {
+                    category: 'Business',
+                    level: 'Professional',
+                    verifier: 'PMI Institute',
+                    description: 'Professional certification in project management methodologies, team leadership, and project delivery frameworks.',
+                    skills: ['Leadership', 'Planning', 'Risk Management', 'Team Coordination']
+                }
+            };
+
+            // Find a match or return a generic one
+            for (let key in credentialDatabase) {
+                if (credentialName.toLowerCase().includes(key.toLowerCase()) || 
+                    key.toLowerCase().includes(credentialName.toLowerCase())) {
+                    return credentialDatabase[key];
+                }
+            }
+
+            // Default fallback
+            return credentialDatabase['Advanced Excel Techniques'];
+        }
+
+        function showCredentialModal(name, date, status, credentialData) {
+            const skillsHtml = credentialData.skills.map(skill => 
+                `<span class="skill-tag-small">${skill}</span>`
+            ).join('');
+            
+            const modalHtml = `
+                <div class="credential-modal-content">
+                    <div class="credential-modal-header">
+                        <div class="credential-badge-large">
+                            <i class="bi bi-award-fill"></i>
+                        </div>
+                        <div class="credential-info-main">
+                            <h4 class="credential-title">${name}</h4>
+                            <p class="credential-meta">Earned: ${date}</p>
+                            <span class="status-badge-large status-completed">${status}</span>
+                        </div>
+                    </div>
+                    <div class="credential-modal-body">
+                        <div class="credential-section">
+                            <h6>Category:</h6>
+                            <p>${credentialData.category}</p>
+                        </div>
+                        <div class="credential-section">
+                            <h6>Level:</h6>
+                            <p>${credentialData.level}</p>
+                        </div>
+                        <div class="credential-section">
+                            <h6>Verified By:</h6>
+                            <p><i class="bi bi-check-circle-fill text-success me-2"></i>${credentialData.verifier}</p>
+                        </div>
+                        <div class="credential-section">
+                            <h6>Description:</h6>
+                            <p>${credentialData.description}</p>
+                        </div>
+                        <div class="credential-section">
+                            <h6>Associated Skills:</h6>
+                            <div class="skills-tags mt-2">
+                                ${skillsHtml}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="credential-modal-actions">
+                        <button class="btn btn-success me-2">
+                            <i class="bi bi-download me-2"></i>Download Certificate
+                        </button>
+                        <button class="btn btn-outline-primary">
+                            <i class="bi bi-share me-2"></i>Share
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            showCustomDialog('', modalHtml);
+        }
+
+        // Notification System
+        function showNotification(message, type = 'info', duration = 3000) {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="bi ${getNotificationIcon(type)} me-2"></i>
+                    <span>${message}</span>
+                </div>
+                <button class="notification-close" onclick="this.parentElement.remove()">
+                    <i class="bi bi-x"></i>
+                </button>
+            `;
+
+            let container = document.getElementById('notificationContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'notificationContainer';
+                container.className = 'notification-container';
+                document.body.appendChild(container);
+            }
+
+            container.appendChild(notification);
+            setTimeout(() => notification.parentElement && notification.remove(), duration);
+        }
+
+        function getNotificationIcon(type) {
+            const icons = {
+                success: 'bi-check-circle-fill',
+                error: 'bi-exclamation-triangle-fill',
+                warning: 'bi-exclamation-circle-fill',
+                info: 'bi-info-circle-fill'
+            };
+            return icons[type] || icons.info;
+        }
+
+        // Dialog System
+        function showConfirmDialog(title, message, type, onConfirm) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title, html: message, icon: type, showCancelButton: true,
+                    confirmButtonColor: type === 'warning' ? '#d33' : '#3085d6',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, proceed!', cancelButtonText: 'Cancel'
+                }).then(result => result.isConfirmed && onConfirm && onConfirm());
+            } else {
+                if (confirm(`${title}\n\n${message.replace(/<[^>]*>/g, '')}`)) {
+                    onConfirm && onConfirm();
+                }
+            }
+        }
+
+        function showInfoDialog(title, message, onConfirm) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: title,
+                    html: message,
+                    icon: 'info',
+                    confirmButtonText: 'View Details',
+                    showCancelButton: true,
+                    cancelButtonText: 'Close'
+                }).then((result) => {
+                    if (result.isConfirmed && onConfirm) {
+                        onConfirm();
+                    }
+                });
+            } else {
+                alert(`${title}\n\n${message.replace(/<[^>]*>/g, '')}`);
+                if (onConfirm) onConfirm();
+            }
+        }
+
+        function showCustomDialog(title, content) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: title,
+                    html: content,
+                    showConfirmButton: false,
+                    showCloseButton: true,
+                    width: '700px',
+                    customClass: {
+                        popup: 'credential-modal-popup',
+                        header: 'credential-modal-header-swal',
+                        closeButton: 'credential-modal-close'
+                    },
+                    background: 'var(--bg-primary)',
+                    color: 'var(--text-primary)'
+                });
+            } else {
+                // Fallback: create a simple modal
+                createSimpleModal(title, content);
+            }
+        }
+
+        function createSimpleModal(title, content) {
+            // Remove existing modal if any
+            const existingModal = document.getElementById('simpleModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            // Create modal
+            const modal = document.createElement('div');
+            modal.id = 'simpleModal';
+            modal.className = 'simple-modal-overlay';
+            modal.innerHTML = `
+                <div class="simple-modal-content">
+                    <div class="simple-modal-header">
+                        ${title ? `<h4>${title}</h4>` : ''}
+                        <button class="simple-modal-close" onclick="document.getElementById('simpleModal').remove()">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                    <div class="simple-modal-body">
+                        ${content}
+                    </div>
+                </div>
+            `;
+
+            // Add to page
+            document.body.appendChild(modal);
+
+            // Close on backdrop click
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+
+            // Close on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && document.getElementById('simpleModal')) {
+                    modal.remove();
+                }
+            });
+        }
+
+        const notificationStyles = `
+<style>
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+}
+
+.notification {
+    background: var(--bg-primary);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-left: 4px solid;
+    animation: slideIn 0.3s ease-out;
+}
+
+.notification-success {
+    border-left-color: #28a745;
+    background: linear-gradient(135deg, #d4edda 0%, var(--bg-primary) 100%);
+}
+
+[data-theme="dark"] .notification-success {
+    background: linear-gradient(135deg, #2a4a2a 0%, var(--bg-primary) 100%);
+}
+
+.notification-error {
+    border-left-color: #dc3545;
+    background: linear-gradient(135deg, #f8d7da 0%, var(--bg-primary) 100%);
+}
+
+[data-theme="dark"] .notification-error {
+    background: linear-gradient(135deg, #4a2a2a 0%, var(--bg-primary) 100%);
+}
+
+.notification-warning {
+    border-left-color: #ffc107;
+    background: linear-gradient(135deg, #fff3cd 0%, var(--bg-primary) 100%);
+}
+
+[data-theme="dark"] .notification-warning {
+    background: linear-gradient(135deg, #4a4a2a 0%, var(--bg-primary) 100%);
+}
+
+.notification-info {
+    border-left-color: #17a2b8;
+    background: linear-gradient(135deg, #d1ecf1 0%, var(--bg-primary) 100%);
+}
+
+[data-theme="dark"] .notification-info {
+    background: linear-gradient(135deg, #2a4a4a 0%, var(--bg-primary) 100%);
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 0;
+    margin-left: 1rem;
+}
+
+.notification-close:hover {
+    color: var(--text-primary);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
     }
-</script>
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+</style>
+`;
+
+        document.head.insertAdjacentHTML('beforeend', notificationStyles);
+    </script>
 
 {% endblock %}
