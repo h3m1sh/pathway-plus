@@ -55,8 +55,16 @@ class JobController extends AbstractController
             throw $this->createNotFoundException('Job role not found.');
         }
 
+        
+        $userHasInterest = false;
+        $user = $this->getUser();
+        if ($user) {
+            $userHasInterest = $user->getJobRoleInterests()->contains($job);
+        }
+
         return $this->render('jobs/show.html.twig', [
             'job' => $job,
+            'userHasInterest' => $userHasInterest,
         ]);
     }
 

@@ -239,9 +239,21 @@
                         </div>
                         <div class="col-md-4 text-md-end">
                             <div class="d-grid gap-2">
-                                <button type="button" class="btn btn-primary btn-sm" onclick="addToInterests({{ job.id }})">
-                                    <i class="bi bi-heart me-1"></i>Add to Interests
-                                </button>
+                                {% if app.user %}
+                                    {% if userHasInterest %}
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="removeFromInterests({{ job.id }})">
+                                            <i class="bi bi-heart-fill me-1"></i>Remove from Interests
+                                        </button>
+                                    {% else %}
+                                        <button type="button" class="btn btn-primary btn-sm" onclick="addToInterests({{ job.id }})">
+                                            <i class="bi bi-heart me-1"></i>Add to Interests
+                                        </button>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{{ path('app_login') }}" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-person me-1"></i>Login to Add Interests
+                                    </a>
+                                {% endif %}
                                 <button type="button" class="btn btn-outline-primary btn-sm" onclick="shareJob()">
                                     <i class="bi bi-share me-1"></i>Share Job
                                 </button>
@@ -381,9 +393,12 @@ function addToInterests(jobId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            button.innerHTML = '<i class="bi bi-heart-fill me-1"></i>Added to Interests';
+            // Transform button to "Remove from Interests"
+            button.innerHTML = '<i class="bi bi-heart-fill me-1"></i>Remove from Interests';
             button.classList.remove('btn-primary');
-            button.classList.add('btn-success');
+            button.classList.add('btn-danger');
+            button.setAttribute('onclick', `removeFromInterests(${jobId})`);
+            button.disabled = false;
             
             // Show success message
             Swal.fire({
@@ -401,6 +416,64 @@ function addToInterests(jobId) {
             Swal.fire({
                 title: 'Error',
                 text: data.message || 'Failed to add job to interests',
+                icon: 'error'
+            });
+        }
+    })
+    .catch(error => {
+        // Handle network error
+        button.innerHTML = originalText;
+        button.disabled = false;
+        
+        Swal.fire({
+            title: 'Error',
+            text: 'Network error. Please try again.',
+            icon: 'error'
+        });
+    });
+}
+
+function removeFromInterests(jobId) {
+    // Show loading state
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Removing...';
+    button.disabled = true;
+
+    // Make API call to remove from interests
+    fetch(`/jobs/${jobId}/remove-from-interests`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Transform button to "Add to Interests"
+            button.innerHTML = '<i class="bi bi-heart me-1"></i>Add to Interests';
+            button.classList.remove('btn-danger');
+            button.classList.add('btn-primary');
+            button.setAttribute('onclick', `addToInterests(${jobId})`);
+            button.disabled = false;
+            
+            // Show success message
+            Swal.fire({
+                title: 'Removed from Interests!',
+                text: data.message,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else {
+            // Handle error
+            button.innerHTML = originalText;
+            button.disabled = false;
+            
+            Swal.fire({
+                title: 'Error',
+                text: data.message || 'Failed to remove job from interests',
                 icon: 'error'
             });
         }
