@@ -6,23 +6,23 @@
     {{ parent() }}
     <style>
         .sidebar-card {
-            background: #fff;
+            background: var(--bg-card);
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border: 1px solid var(--border-color);
         }
 
         .main-card {
-            background: #fff;
+            background: var(--bg-card);
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border: 1px solid var(--border-color);
         }
 
         .badge-placeholder {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--electric-blue) 0%, #764ba2 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -38,7 +38,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 8px 0;
-            border-bottom: 1px solid #f8f9fa;
+            border-bottom: 1px solid var(--border-light);
         }
 
         .meta-item:last-child {
@@ -47,23 +47,28 @@
 
         .meta-label {
             font-weight: 500;
-            color: #6c757d;
+            color: var(--slate-gray);
             font-size: 0.875rem;
         }
 
         .meta-value {
             font-weight: 600;
-            color: #212529;
+            color: var(--dark-charcoal);
             font-size: 0.875rem;
         }
 
         .category-badge {
-            background: #e3f2fd;
-            color: #1976d2;
+            background: var(--electric-blue);
+            color: white;
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 500;
+        }
+
+        [data-theme="light"] .category-badge {
+            background: #e3f2fd;
+            color: #1976d2;
         }
 
         .visibility-badge {
@@ -74,11 +79,21 @@
         }
 
         .visibility-visible {
+            background: var(--soft-green);
+            color: white;
+        }
+
+        [data-theme="light"] .visibility-visible {
             background: #d4edda;
             color: #155724;
         }
 
         .visibility-hidden {
+            background: #dc3545;
+            color: white;
+        }
+
+        [data-theme="light"] .visibility-hidden {
             background: #f8d7da;
             color: #721c24;
         }
@@ -90,10 +105,10 @@
         .form-section-title {
             font-size: 1.125rem;
             font-weight: 600;
-            color: #212529;
+            color: var(--dark-charcoal);
             margin-bottom: 1rem;
             padding-bottom: 0.5rem;
-            border-bottom: 2px solid #f8f9fa;
+            border-bottom: 2px solid var(--border-light);
         }
 
         .action-buttons {
@@ -113,12 +128,12 @@
         }
 
         .form-check-input:checked {
-            background-color: #198754;
-            border-color: #198754;
+            background-color: var(--soft-green);
+            border-color: var(--soft-green);
         }
 
         .tooltip-icon {
-            color: #6c757d;
+            color: var(--slate-gray);
             cursor: help;
             margin-left: 0.25rem;
         }
