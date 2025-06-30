@@ -2496,11 +2496,11 @@
         }
 
         @keyframes slideIn {
-            from { 
+            from {
                 opacity: 0;
                 transform: translateY(-20px) scale(0.95);
             }
-            to { 
+            to {
                 opacity: 1;
                 transform: translateY(0) scale(1);
             }
@@ -2999,7 +2999,7 @@
             try {
                 // Get the credential card that contains the clicked button
                 let credentialCard = credentialElement.closest('.credential-card');
-                
+
                 // If not found in credential card, check if we're in timeline activity
                 if (!credentialCard) {
                     const timelineItem = credentialElement.closest('.timeline-item');
@@ -3007,30 +3007,30 @@
                         credentialCard = timelineItem;
                     }
                 }
-                
+
                 if (credentialCard) {
                     // Try to extract data from the specific credential
                     let name, date, status;
-                    
+
                     // For credential cards in skill passport
                     const nameElement = credentialCard.querySelector('.credential-name');
                     const dateElement = credentialCard.querySelector('.credential-date');
                     const statusElement = credentialCard.querySelector('.status-badge');
-                    
+
                     // For timeline activities
                     const activityTitle = credentialCard.querySelector('.activity-title');
                     const timeDate = credentialCard.querySelector('.time-date');
                     const achievementBadge = credentialCard.querySelector('.achievement-badge');
-                    
-                    name = nameElement ? nameElement.textContent.trim() : 
+
+                    name = nameElement ? nameElement.textContent.trim() :
                            (activityTitle ? activityTitle.textContent.trim() : 'Professional Credential');
-                    
-                    date = dateElement ? dateElement.textContent.trim() : 
+
+                    date = dateElement ? dateElement.textContent.trim() :
                            (timeDate ? timeDate.textContent.trim() : 'Recent');
-                    
-                    status = statusElement ? statusElement.textContent.trim() : 
+
+                    status = statusElement ? statusElement.textContent.trim() :
                              (achievementBadge ? 'Completed' : 'Verified');
-                    
+
                     // Get some variety in the modal content based on the credential name
                     const credentialData = getCredentialData(name);
                     showCredentialModal(name, date, status, credentialData);
@@ -3081,7 +3081,7 @@
 
             // Find a match or return a generic one
             for (let key in credentialDatabase) {
-                if (credentialName.toLowerCase().includes(key.toLowerCase()) || 
+                if (credentialName.toLowerCase().includes(key.toLowerCase()) ||
                     key.toLowerCase().includes(credentialName.toLowerCase())) {
                     return credentialDatabase[key];
                 }
@@ -3092,10 +3092,10 @@
         }
 
         function showCredentialModal(name, date, status, credentialData) {
-            const skillsHtml = credentialData.skills.map(skill => 
+            const skillsHtml = credentialData.skills.map(skill =>
                 `<span class="skill-tag-small">${skill}</span>`
             ).join('');
-            
+
             const modalHtml = `
                 <div class="credential-modal-content">
                     <div class="credential-modal-header">
@@ -3142,7 +3142,7 @@
                     </div>
                 </div>
             `;
-            
+
             showCustomDialog('', modalHtml);
         }
 

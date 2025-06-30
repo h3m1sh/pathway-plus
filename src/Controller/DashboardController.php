@@ -68,24 +68,6 @@ class DashboardController extends AbstractController
         ]);
     }
 
-    #[Route('/dashboard/suggestions/refresh', name: 'app_dashboard_refresh_suggestions', methods: ['POST'])]
-    #[IsGranted('ROLE_USER')]
-    public function refreshSuggestions(
-        Request $request,
-        StudentProgressRepository $studentProgressRepository
-    ): JsonResponse {
-        /** @var User $user */
-        $user = $this->getUser();
-        $studentProgress = $studentProgressRepository->findBy(['student' => $user], ['dateEarned' => 'DESC']);
-        $careerInterests = $user->getJobRoleInterests()->toArray();
-
-        $suggestions = $this->generateAiSuggestions($user, $studentProgress, $careerInterests);
-
-        return new JsonResponse([
-            'success' => true,
-            'suggestions' => $suggestions
-        ]);
-    }
 
     #[Route('/dashboard/preferences/save', name: 'app_dashboard_save_preferences', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
